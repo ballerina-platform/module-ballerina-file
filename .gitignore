@@ -27,3 +27,17 @@ hs_err_pid*
 
 # Ignore Gradle build output directory
 build
+
+target
+# IDEA Files
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# MacOS
+*.DS_Store
+
+# Ballerina
+velocity.log*
+*Ballerina.lock

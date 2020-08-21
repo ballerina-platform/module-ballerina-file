@@ -19,8 +19,8 @@
 package org.ballerinalang.stdlib.filepath;
 
 import org.ballerinalang.jvm.values.ErrorValue;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.nio.file.InvalidPathException;
 
@@ -37,25 +37,23 @@ public class UtilsTest {
 
         // Get Path error with reason and throwable.
         ErrorValue error1 = Utils.getPathError(Constants.INVALID_PATH_ERROR, exp.getMessage());
-        Assert.assertEquals(error1.getMessage(),
-                "Invalid path format: /User/ballerina/path\\test");
+        assertEquals("Invalid path format: /User/ballerina/path\\test", error1.getMessage());
 
         // Get Path error without reason.
         ErrorValue error2 = Utils.getPathError(null, exp.getMessage());
-        Assert.assertEquals(error2.getMessage(),
-                "Invalid path format: /User/ballerina/path\\test");
+        assertEquals( "Invalid path format: /User/ballerina/path\\test", error2.getMessage());
 
         // Get Path error without throwable.
         ErrorValue error3 = Utils.getPathError(Constants.INVALID_PATH_ERROR, null);
-        Assert.assertEquals(error3.getMessage(), "Unknown Error");
+        assertEquals("Unknown Error", error3.getMessage());
 
         // Get Path error without both reason and throwable.
         ErrorValue error4 = Utils.getPathError(null, null);
-        Assert.assertEquals(error4.getMessage(), "Unknown Error");
+        assertEquals("Unknown Error", error4.getMessage());
 
         // Get Path error without throwable message.
         Exception exp2 = new Exception();
         ErrorValue error5 = Utils.getPathError(Constants.INVALID_PATH_ERROR, exp2.getMessage());
-        Assert.assertEquals(error5.getMessage(), "Unknown Error");
+        assertEquals("Unknown Error", error5.getMessage());
     }
 }

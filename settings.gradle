@@ -14,6 +14,7 @@ plugins {
 rootProject.name = 'filapath'
 include(':build-config:checkstyle')
 include 'filepath-native'
+include 'filepath-test-utils'
 include 'filepath-ballerina'
 
 gradleEnterprise {

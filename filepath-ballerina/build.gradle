@@ -17,7 +17,7 @@
 
 import org.apache.tools.ant.taskdefs.condition.Os
 
-description = 'Ballerina - Time Ballerina Generator'
+description = 'Ballerina - Filepath Ballerina Generator'
 
 configurations {
     jbalTools
@@ -178,5 +178,6 @@ publishing {
 }
 
 ballerinaBuild.dependsOn ":filepath-native:build"
+ballerinaBuild.dependsOn ":filepath-test-utils:build"
 ballerinaBuild.dependsOn unpackJballerinaTools
 build.dependsOn ballerinaBuild

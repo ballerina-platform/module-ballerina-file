@@ -43,7 +43,7 @@ public class Constants {
      * Package path to path package.
      */
     public static final String PACKAGE_PATH = ORG_NAME + ORG_NAME_SEPARATOR + PACKAGE_NAME;
-    private static final String MODULE_VERSION = "0.7.0";
+    private static final String MODULE_VERSION = "0.7.1";
     static final BPackage PACKAGE_ID = new BPackage(BALLERINA_BUILTIN_PKG_PREFIX, PACKAGE_NAME, MODULE_VERSION);
 
     public static final String FILE_NOT_FOUND_ERROR = "FileNotFoundError";

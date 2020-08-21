@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
+ * Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+=======
  * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+>>>>>>> c4b79cec52b638e48caa6eb2b73401af64798ae9
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,53 +19,87 @@
  *
  */
 
-apply from: "$rootDir/gradle/balNativeLibProject.gradle"
-apply from: "$rootDir/gradle/baseNativeStdLibProject.gradle"
+plugins {
+    id "com.github.spotbugs" version "4.0.5"
+    id "com.github.johnrengelman.shadow" version "5.2.0"
+    id "de.undercouch.download" version "4.0.4"
+    id "net.researchgate.release" version "2.6.0"
+}
 
-configurations.testCompileClasspath {
-    resolutionStrategy {
-        preferProjectModules()
+ext.ballerinaLangVersion = project.ballerinaLangVersion
+ext.puppycrawlCheckstyleVersion = "8.18"
+ext.testngVersion = "6.14.3"
+ext.slf4jVersion = "1.7.30"
+
+allprojects {
+    group = 'org.ballerinalang'
+    version = project.version
+
+    apply plugin: 'jacoco'
+    apply plugin: 'maven-publish'
+
+    repositories {
+        mavenLocal()
+        maven {
+            url = 'https://maven.wso2.org/nexus/content/repositories/releases/'
+        }
+
+        maven {
+            url = 'https://maven.wso2.org/nexus/content/repositories/snapshots/'
+        }
+
+        maven {
+            url = 'https://maven.wso2.org/nexus/content/groups/wso2-public/'
+        }
+
+        maven {
+            url = 'https://maven.wso2.org/nexus/content/repositories/orgballerinalang-1614'
+        }
+
+        maven {
+            url = 'https://repo.maven.apache.org/maven2'
+        }
+
+        maven {
+            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-filepath'
+        }
     }
 }
 
-dependencies {
-    baloCreat project(':lib-creator')
-    implementation project(':ballerina-lang')
-    implementation project(':ballerina-io')
-    implementation project(':ballerina-runtime')
+subprojects {
+    apply plugin: 'java'
 
-    interopImports project(':ballerina-io')
-
-    testCompile 'org.testng:testng:6.13.1'
-    testCompile project(':ballerina-runtime-api')
-    testCompile project(':ballerina-system')
-    testCompile project(':ballerina-logging')
-    testCompile project(':ballerina-log-api')
-    testCompile project(':ballerina-reflect')
-    testCompile project(':ballerina-core')
-    testCompile project(':ballerina-file')
-    testCompile 'org.slf4j:slf4j-jdk14:1.7.22'
-    testCompile project(path: ':ballerina-test-utils', configuration: 'shadow')
-
-    baloImplementation project(path: ':ballerina-system', configuration: 'baloImplementation')
-    baloImplementation project(path: ':ballerina-time', configuration: 'baloImplementation')
-    baloImplementation project(path: ':ballerina-log-api', configuration: 'baloImplementation')
-    baloImplementation project(path: ':ballerina-io', configuration: 'baloImplementation')
-    baloImplementation project(path: ':ballerina-java', configuration: 'baloImplementation')
-    baloImplementation project(path: ':ballerina-runtime-api', configuration: 'baloImplementation')
-    baloImplementation project(path: ':ballerina-stringutils', configuration: 'baloImplementation')
-    baloImplementation project(path: ':ballerina-java', configuration: 'baloImplementation')
-
-    interopImports project(':ballerina-system')
-    interopImports project(':ballerina-io')
-    interopImports project(':ballerina-log-api')
+    release {
+        // Disable check snapshots temporarily
+        buildTasks = []
+        failOnSnapshotDependencies = false
+        failOnCommitNeeded = false
+        versionPropertyFile = 'gradle.properties'
+        tagTemplate = 'v${version}'
+        git {
+            // To release from any branch
+            requireBranch = null
+        }
+    }
 }
 
-createBalo {
-    jvmTarget = 'true'
-}
-description = 'Ballerina - File Path Implementation'
+task codeCoverageReport(type: JacocoReport) {
+    executionData fileTree(project.rootDir.absolutePath).include("**/build/coverage-reports/*.exec")
 
-configurations.all {
-    resolutionStrategy.preferProjectModules()
+    subprojects.each {
+        sourceSets it.sourceSets.main
+    }
+
+    reports {
+        xml.enabled = true
+        html.enabled = true
+        csv.enabled = true
+        xml.destination = new File("${buildDir}/reports/jacoco/report.xml")
+        html.destination = new File("${buildDir}/reports/jacoco/report.html")
+        csv.destination = new File("${buildDir}/reports/jacoco/report.csv")
+    }
+
+    onlyIf = {
+        true
+    }
 }

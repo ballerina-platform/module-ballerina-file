@@ -21,8 +21,6 @@ description = 'Ballerina - Filepath Ballerina Generator'
 
 configurations {
     jbalTools
-    filepathBallerinaBirDir
-    filepathBallerinaJar
 }
 
 dependencies {
@@ -71,15 +69,21 @@ task ballerinaBuild {
         ballerinaConfigFile.text = newConfig
 
         def distributionBinPath =  project.projectDir.absolutePath + "/build/target/extracted-distributions/jballerina-tools-zip/jballerina-tools-${ballerinaLangVersion}/bin"
+        def additionalBuildParams = ""
+
+        if (project.hasProperty("skipBallerinaTests")) {
+            additionalBuildParams = "--skip-tests"
+        }
 
         // Build and populate caches
         exec {
             workingDir project.projectDir
             environment "JAVA_OPTS", "-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
             if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                commandLine 'cmd', '/c', "$distributionBinPath/ballerina.bat build -c ${moduleName}"
+                commandLine 'cmd', '/c', "$distributionBinPath/ballerina.bat build ${additionalBuildParams} -c " +
+                        "${moduleName}"
             } else {
-                commandLine 'sh', '-c', "$distributionBinPath/ballerina build -c ${moduleName}"
+                commandLine 'sh', '-c', "$distributionBinPath/ballerina build ${additionalBuildParams} -c ${moduleName}"
             }
         }
         copy {
@@ -168,7 +172,7 @@ publishing {
     repositories {
         maven {
             name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/ballerina-platform/module-ballerina-time")
+            url = uri("https://maven.pkg.github.com/ballerina-platform/module-ballerina-filepath")
             credentials {
                 username = System.getenv("GITHUB_ACTOR")
                 password = System.getenv("GITHUB_TOKEN")

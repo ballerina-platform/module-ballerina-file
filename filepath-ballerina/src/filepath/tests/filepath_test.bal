@@ -248,7 +248,6 @@ function validateAbsolutePath(string path, string expected) {
     boolean|error isAbs = isAbsolute(path);
     if(isAbs is boolean) {
         test:assertEquals(isAbs, stringutils:toBoolean(expected));
-        test:assertEquals(isAbs, isAbsPath(java:fromString(path)));
     } else {
         test:assertFail("Error checking is-absolute!");
     }
@@ -717,11 +716,7 @@ function getMatchesSet() returns (string[][]) {
 
 function getAbsPath(handle path) returns string = @java:Method {
      class: "org.ballerinalang.stdlib.filepath.testutils.TestUtil"
- } external;
-
- function isAbsPath(handle path) returns boolean = @java:Method {
-      class: "org.ballerinalang.stdlib.filepath.testutils.TestUtil"
-  } external;
+} external;
 
 function createLink() = @java:Method {
     class: "org.ballerinalang.stdlib.filepath.testutils.TestUtil"

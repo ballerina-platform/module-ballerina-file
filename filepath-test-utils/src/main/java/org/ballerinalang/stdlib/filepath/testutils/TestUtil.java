@@ -35,11 +35,6 @@ public class TestUtil {
         return StringUtils.fromString(abs);
     }
 
-    public static boolean isAbsPath(String path) {
-        boolean isAbs = Paths.get(path).isAbsolute();
-        return isAbs;
-    }
-
     public static void createLink() {
         Path filePath = Paths.get("src", "filepath", "tests", "resources", "test.txt");
         symLinkPath = Paths.get(System.getProperty("java.io.tmpdir"), "test_link.txt");

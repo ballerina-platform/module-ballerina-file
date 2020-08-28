@@ -1,0 +1,21 @@
+[project]
+org-name = "ballerina"
+version = "@toml.version@"
+
+[platform]
+target = "java8"
+
+    [[platform.libraries]]
+    artifactId = "filepath"
+    version = "@project.version@"
+    path = "../filepath-native/build/libs/filepath-native-@project.version@.jar"
+    groupId = "ballerina"
+    modules = ["filepath"]
+
+    [[platform.libraries]]
+    artifactId = "filepath"
+    version = "@project.version@"
+    path = "../filepath-test-utils/build/libs/filepath-test-utils-@project.version@.jar"
+    groupId = "org.ballerinalang.stdlib.filepath"
+    modules = ["filepath"]
+    scope = "testOnly"

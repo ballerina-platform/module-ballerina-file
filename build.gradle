@@ -26,6 +26,9 @@ plugins {
 ext.ballerinaLangVersion = project.ballerinaLangVersion
 ext.puppycrawlCheckstyleVersion = "8.18"
 ext.slf4jVersion = "1.7.30"
+ext.stdlibStringUtilsVersion = project.stdlibStringUtilsVersion
+ext.stdlibRuntimeVersion = project.stdlibRuntimeVersion
+ext.stdlibTimeVersion = project.stdlibTimeVersion
 
 allprojects {
     group = 'org.ballerinalang'
@@ -49,7 +52,7 @@ allprojects {
         }
 
         maven {
-            url = 'https://maven.wso2.org/nexus/content/repositories/orgballerinalang-1592'
+            url = 'https://maven.wso2.org/nexus/content/repositories/orgballerinalang-1614'
         }
 
         maven {
@@ -59,11 +62,45 @@ allprojects {
         maven {
             url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-file'
         }
+
+        maven {
+            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-stringutils'
+            credentials {
+                username System.getenv("packageUser")
+                password System.getenv("packagePAT")
+            }
+        }
+
+        maven {
+            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-runtime'
+            credentials {
+                username System.getenv("packageUser")
+                password System.getenv("packagePAT")
+            }
+        }
+
+        maven {
+            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-time'
+            credentials {
+                username System.getenv("packageUser")
+                password System.getenv("packagePAT")
+            }
+        }
     }
 }
 
 subprojects {
     apply plugin: 'java'
+
+    configurations {
+        ballerinaStdLibs
+    }
+    dependencies {
+        /* Standard libraries */
+        ballerinaStdLibs "org.ballerinalang:stringutils-ballerina:${stdlibStringUtilsVersion}"
+        ballerinaStdLibs "org.ballerinalang:runtime-ballerina:${stdlibRuntimeVersion}"
+        ballerinaStdLibs "org.ballerinalang:time-ballerina:${stdlibTimeVersion}"
+    }
 
     release {
         // Disable check snapshots temporarily

@@ -76,13 +76,13 @@ function isDeleteInvoked() {
 }
 
 function createTestFile() returns error? = @java:Method {
-    class: "org.ballerinalang.stdlib.file.testutils.TestUtil"
+    'class: "org.ballerinalang.stdlib.file.testutils.TestUtil"
 } external;
 
 function modifyTestFile() returns error? = @java:Method {
-    class: "org.ballerinalang.stdlib.file.testutils.TestUtil"
+    'class: "org.ballerinalang.stdlib.file.testutils.TestUtil"
 } external;
 
 function deleteTestFile() returns error? = @java:Method {
-    class: "org.ballerinalang.stdlib.file.testutils.TestUtil"
+    'class: "org.ballerinalang.stdlib.file.testutils.TestUtil"
 } external;

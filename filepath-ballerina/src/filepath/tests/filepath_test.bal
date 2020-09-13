@@ -715,17 +715,17 @@ function getMatchesSet() returns (string[][]) {
 //Interops
 
 function getAbsPath(handle path) returns string = @java:Method {
-     class: "org.ballerinalang.stdlib.filepath.testutils.TestUtil"
+     'class: "org.ballerinalang.stdlib.filepath.testutils.TestUtil"
 } external;
 
 function createLink() = @java:Method {
-    class: "org.ballerinalang.stdlib.filepath.testutils.TestUtil"
+    'class: "org.ballerinalang.stdlib.filepath.testutils.TestUtil"
 } external;
 
 function getSymLink() returns string = @java:Method {
-    class: "org.ballerinalang.stdlib.filepath.testutils.TestUtil"
+    'class: "org.ballerinalang.stdlib.filepath.testutils.TestUtil"
 } external;
 
 function removeLink() = @java:Method {
-    class: "org.ballerinalang.stdlib.filepath.testutils.TestUtil"
+    'class: "org.ballerinalang.stdlib.filepath.testutils.TestUtil"
 } external;

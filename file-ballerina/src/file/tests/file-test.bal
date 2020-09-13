@@ -328,9 +328,9 @@ function testGetCurrentDirectory() {
 }
 
 function getTmpDir() returns string = @java:Method {
-    class: "org.ballerinalang.stdlib.file.testutils.TestUtil"
+    'class: "org.ballerinalang.stdlib.file.testutils.TestUtil"
 } external;
 
 function getUserDir() returns string = @java:Method {
-    class: "org.ballerinalang.stdlib.file.testutils.TestUtil"
+    'class: "org.ballerinalang.stdlib.file.testutils.TestUtil"
 } external;

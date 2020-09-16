@@ -17,13 +17,13 @@
  */
 package org.ballerinalang.stdlib.file.utils;
 
-import org.ballerinalang.jvm.BallerinaErrors;
-import org.ballerinalang.jvm.BallerinaValues;
-import org.ballerinalang.jvm.StringUtils;
-import org.ballerinalang.jvm.values.ErrorValue;
-import org.ballerinalang.jvm.values.MapValue;
-import org.ballerinalang.jvm.values.ObjectValue;
-import org.ballerinalang.jvm.values.api.BString;
+import org.ballerinalang.jvm.api.BErrorCreator;
+import org.ballerinalang.jvm.api.BStringUtils;
+import org.ballerinalang.jvm.api.BValueCreator;
+import org.ballerinalang.jvm.api.values.BError;
+import org.ballerinalang.jvm.api.values.BMap;
+import org.ballerinalang.jvm.api.values.BObject;
+import org.ballerinalang.jvm.api.values.BString;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,7 +54,7 @@ public class FileUtils {
      *              "Unknown Error" sets to message by default.
      * @return Ballerina error object.
      */
-    public static ErrorValue getBallerinaError(String error, Throwable ex) {
+    public static BError getBallerinaError(String error, Throwable ex) {
         String errorMsg = error != null && ex.getMessage() != null ? ex.getMessage() : UNKNOWN_MESSAGE;
         return getBallerinaError(error, errorMsg);
     }
@@ -67,19 +67,20 @@ public class FileUtils {
      * @param message Error message. "Unknown Error" is set to message by default.
      * @return Ballerina error object.
      */
-    public static ErrorValue getBallerinaError(String error, String message) {
-        return BallerinaErrors.createDistinctError(error, FILE_PACKAGE_ID, message != null ? message : UNKNOWN_MESSAGE);
+    public static BError getBallerinaError(String error, String message) {
+        return BErrorCreator.createDistinctError(error, FILE_PACKAGE_ID,
+                                                 BStringUtils.fromString(message != null ? message : UNKNOWN_MESSAGE));
     }
 
-    public static ObjectValue getFileInfo(File inputFile) throws IOException {
-        MapValue<BString, Object> lastModifiedInstance;
+    public static BObject getFileInfo(File inputFile) throws IOException {
+        BMap<BString, Object> lastModifiedInstance;
         FileTime lastModified = Files.getLastModifiedTime(inputFile.toPath());
         ZonedDateTime zonedDateTime = ZonedDateTime.parse(lastModified.toString());
         lastModifiedInstance = createTimeRecord(getTimeZoneRecord(), getTimeRecord(),
-                lastModified.toMillis(), StringUtils.fromString(zonedDateTime.getZone().toString()));
-        return BallerinaValues.createObjectValue(FILE_PACKAGE_ID, FILE_INFO_TYPE,
-                StringUtils.fromString(inputFile.getName()), inputFile.length(), lastModifiedInstance,
-                inputFile.isDirectory(), StringUtils.fromString(inputFile.getAbsolutePath()));
+                lastModified.toMillis(), BStringUtils.fromString(zonedDateTime.getZone().toString()));
+        return BValueCreator.createObjectValue(FILE_PACKAGE_ID, FILE_INFO_TYPE,
+                BStringUtils.fromString(inputFile.getName()), inputFile.length(), lastModifiedInstance,
+                inputFile.isDirectory(), BStringUtils.fromString(inputFile.getAbsolutePath()));
     }
 
 

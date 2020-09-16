@@ -18,11 +18,12 @@
 
 package org.ballerinalang.stdlib.filepath;
 
-import org.ballerinalang.jvm.values.ErrorValue;
+import org.ballerinalang.jvm.api.values.BError;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.nio.file.InvalidPathException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test utility functions in path module.
@@ -36,24 +37,24 @@ public class UtilsTest {
         InvalidPathException exp = new InvalidPathException("/User/ballerina/path\\test", "Invalid path format");
 
         // Get Path error with reason and throwable.
-        ErrorValue error1 = Utils.getPathError(Constants.INVALID_PATH_ERROR, exp.getMessage());
+        BError error1 = Utils.getPathError(Constants.INVALID_PATH_ERROR, exp.getMessage());
         assertEquals("Invalid path format: /User/ballerina/path\\test", error1.getMessage());
 
         // Get Path error without reason.
-        ErrorValue error2 = Utils.getPathError(null, exp.getMessage());
+        BError error2 = Utils.getPathError(null, exp.getMessage());
         assertEquals( "Invalid path format: /User/ballerina/path\\test", error2.getMessage());
 
         // Get Path error without throwable.
-        ErrorValue error3 = Utils.getPathError(Constants.INVALID_PATH_ERROR, null);
+        BError error3 = Utils.getPathError(Constants.INVALID_PATH_ERROR, null);
         assertEquals("Unknown Error", error3.getMessage());
 
         // Get Path error without both reason and throwable.
-        ErrorValue error4 = Utils.getPathError(null, null);
+        BError error4 = Utils.getPathError(null, null);
         assertEquals("Unknown Error", error4.getMessage());
 
         // Get Path error without throwable message.
         Exception exp2 = new Exception();
-        ErrorValue error5 = Utils.getPathError(Constants.INVALID_PATH_ERROR, exp2.getMessage());
+        BError error5 = Utils.getPathError(Constants.INVALID_PATH_ERROR, exp2.getMessage());
         assertEquals("Unknown Error", error5.getMessage());
     }
 }

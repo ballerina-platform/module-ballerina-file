@@ -18,8 +18,9 @@
 
 package org.ballerinalang.stdlib.filepath;
 
-import org.ballerinalang.jvm.BallerinaErrors;
-import org.ballerinalang.jvm.values.ErrorValue;
+import org.ballerinalang.jvm.api.BErrorCreator;
+import org.ballerinalang.jvm.api.BStringUtils;
+import org.ballerinalang.jvm.api.values.BError;
 
 
 /**
@@ -42,14 +43,14 @@ public class Utils {
      *                default.
      * @return Ballerina error object.
      */
-    public static ErrorValue getPathError(String reason, String details) {
+    public static BError getPathError(String reason, String details) {
         if (reason == null) {
             reason = Constants.GENERIC_ERROR;
         }
         if (details == null) {
             details = UNKNOWN_MESSAGE;
         }
-        return BallerinaErrors.createDistinctError(reason, Constants.PACKAGE_ID, details);
+        return BErrorCreator.createDistinctError(reason, Constants.PACKAGE_ID, BStringUtils.fromString(details));
     }
 
     private Utils() {

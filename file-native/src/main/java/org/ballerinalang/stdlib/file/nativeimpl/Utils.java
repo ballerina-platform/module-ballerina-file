@@ -18,13 +18,13 @@
 
 package org.ballerinalang.stdlib.file.nativeimpl;
 
-import org.ballerinalang.jvm.StringUtils;
+import org.ballerinalang.jvm.api.BStringUtils;
+import org.ballerinalang.jvm.api.values.BObject;
+import org.ballerinalang.jvm.api.values.BString;
 import org.ballerinalang.jvm.types.BArrayType;
 import org.ballerinalang.jvm.types.BType;
 import org.ballerinalang.jvm.util.exceptions.BallerinaException;
 import org.ballerinalang.jvm.values.ArrayValueImpl;
-import org.ballerinalang.jvm.values.ObjectValue;
-import org.ballerinalang.jvm.values.api.BString;
 import org.ballerinalang.stdlib.file.utils.FileConstants;
 import org.ballerinalang.stdlib.file.utils.FileUtils;
 import org.slf4j.Logger;
@@ -58,7 +58,7 @@ public class Utils {
     private static BType fileInfoType;
 
     public static BString getCurrentDirectory() {
-        return StringUtils.fromString(FileUtils.getSystemProperty(CURRENT_DIR_PROPERTY_KEY));
+        return BStringUtils.fromString(FileUtils.getSystemProperty(CURRENT_DIR_PROPERTY_KEY));
     }
 
     public static boolean exists(BString path) {
@@ -73,7 +73,7 @@ public class Utils {
             } else {
                 dirPath = Files.createDirectory(Paths.get(dir.getValue()));
             }
-            return StringUtils.fromString(dirPath.toAbsolutePath().toString());
+            return BStringUtils.fromString(dirPath.toAbsolutePath().toString());
         } catch (FileAlreadyExistsException e) {
             String msg = "File already exists. Failed to create the file: " + dir;
             log.error(msg, e);
@@ -116,13 +116,13 @@ public class Utils {
     }
 
     public static BString tempDir() {
-        return StringUtils.fromString(FileUtils.getSystemProperty(TEMP_DIR_PROPERTY_KEY));
+        return BStringUtils.fromString(FileUtils.getSystemProperty(TEMP_DIR_PROPERTY_KEY));
     }
 
     public static Object createFile(BString path) {
         try {
             Path filepath = Files.createFile(Paths.get(path.getValue()));
-            return StringUtils.fromString(filepath.toAbsolutePath().toString());
+            return BStringUtils.fromString(filepath.toAbsolutePath().toString());
         } catch (FileAlreadyExistsException e) {
             String msg = "File already exists. Failed to create the file: " + path;
             log.error(msg, e);
@@ -231,17 +231,17 @@ public class Utils {
     }
 
     private static Object readFileTree(File inputFile, int maxDepth) {
-        ObjectValue[] results;
+        BObject[] results;
         try (Stream<Path> walk = Files.walk(inputFile.toPath(), maxDepth)) {
             results = walk.map(x -> {
                 try {
-                    ObjectValue objectValue = FileUtils.getFileInfo(x.toFile());
+                    BObject objectValue = FileUtils.getFileInfo(x.toFile());
                     fileInfoType = objectValue.getType();
                     return objectValue;
                 } catch (IOException e) {
                     throw new BallerinaException("Error while accessing file info", e);
                 }
-            }).skip(1).toArray(ObjectValue[]::new);
+            }).skip(1).toArray(BObject[]::new);
             return new ArrayValueImpl(results, new BArrayType(fileInfoType));
         } catch (IOException | BallerinaException ex) {
             return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR, ex);

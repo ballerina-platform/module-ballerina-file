@@ -18,8 +18,8 @@
 
 package org.ballerinalang.stdlib.file.testutils;
 
-import org.ballerinalang.jvm.StringUtils;
-import org.ballerinalang.jvm.values.api.BString;
+import org.ballerinalang.jvm.api.BStringUtils;
+import org.ballerinalang.jvm.api.values.BString;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,10 +42,10 @@ public class TestUtil {
     }
 
     public static BString getTmpDir() {
-        return StringUtils.fromString(System.getProperty("java.io.tmpdir"));
+        return BStringUtils.fromString(System.getProperty("java.io.tmpdir"));
     }
 
     public static BString getUserDir() {
-        return StringUtils.fromString(System.getProperty("user.dir"));
+        return BStringUtils.fromString(System.getProperty("user.dir"));
     }
 }

@@ -22,7 +22,7 @@ import ballerina/java;
 # ```
 # 
 # + return - Current working directory or else an empty string if the current working directory cannot be determined
-public function getCurrentDirectory() returns string = @java:Method {
+public isolated function getCurrentDirectory() returns string = @java:Method {
     'class: "org.ballerinalang.stdlib.file.nativeimpl.Utils",
     name: "getCurrentDirectory"
 } external;
@@ -34,7 +34,7 @@ public function getCurrentDirectory() returns string = @java:Method {
 #
 # + path - String value of the file path
 # + return - True if the path is absolute or else false
-public function exists(@untainted string path) returns boolean = @java:Method {
+public isolated function exists(@untainted string path) returns boolean = @java:Method {
     'class: "org.ballerinalang.stdlib.file.nativeimpl.Utils",
     name: "exists"
 } external;
@@ -87,7 +87,7 @@ public function rename(@untainted string oldPath, @untainted string newPath) ret
 # ```
 #
 # + return - Temporary directory location
-public function tempDir() returns string = @java:Method {
+public isolated function tempDir() returns string = @java:Method {
     'class: "org.ballerinalang.stdlib.file.nativeimpl.Utils",
     name: "tempDir"
 } external;
@@ -112,7 +112,7 @@ public function createFile(@untainted string path) returns string|Error = @java:
 #
 # + path - String value of the file path.
 # + return - The `FileInfo` instance with the file metadata or else an `file:Error`
-public function getFileInfo(@untainted string path) returns FileInfo|Error = @java:Method {
+public isolated function getFileInfo(@untainted string path) returns FileInfo|Error = @java:Method {
     'class: "org.ballerinalang.stdlib.file.nativeimpl.Utils",
     name: "getFileInfo"
 } external;

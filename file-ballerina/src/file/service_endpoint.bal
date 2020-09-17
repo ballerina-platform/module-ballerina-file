@@ -30,7 +30,7 @@ public class Listener {
     # Creates a new Directory listener.
     # 
     # + listenerConfig - The `ListenerConfig` record with the directory details 
-    public function init(ListenerConfig listenerConfig) {
+    public isolated function init(ListenerConfig listenerConfig) {
         self.config = listenerConfig;
         var result = initEndpoint(self);
         if (result is error) {
@@ -41,21 +41,21 @@ public class Listener {
     # Starts the `file:Listener`.
     # 
     # + return - () or else error upon failure to start the listener 
-    public function __start() returns error? {
+    public isolated function __start() returns error? {
         return startEndpoint(self);
     }
 
     # Stops the `file:Listener` gracefully.
     # 
     # + return - () or else error upon failure to stop the listener 
-        public function __gracefulStop() returns error? {
+        public isolated function __gracefulStop() returns error? {
         return ();
     }
 
     # Stops the `file:Listener` forcefully.
     # 
     # + return - () or else error upon failure to stop the listener 
-    public function __immediateStop() returns error? {
+    public isolated function __immediateStop() returns error? {
         return ();
     }
 
@@ -64,7 +64,7 @@ public class Listener {
     # + s - Type descriptor of the service
     # + name - Name of the service
     # + return - () or else error upon failure to attach to the service
-    public function __attach(service s, string? name = ()) returns error? {
+    public isolated function __attach(service s, string? name = ()) returns error? {
         return register(self, s, name);
     }
 
@@ -72,7 +72,7 @@ public class Listener {
     # 
     # + s - Type descriptor of the service
     # + return - () or else error upon failure to detach to the service
-    public function __detach(service s) returns error? {
+    public isolated function __detach(service s) returns error? {
     }
 }
 
@@ -85,17 +85,17 @@ public type ListenerConfig record {|
     boolean recursive = false;
 |};
 
-function initEndpoint(Listener fileListener) returns error? = @java:Method {
+isolated function initEndpoint(Listener fileListener) returns error? = @java:Method {
     'class: "org.ballerinalang.stdlib.file.service.endpoint.InitEndpoint",
     name: "initEndpoint"
 } external;
 
-function register(Listener fileListener, service s, string? name) returns error? = @java:Method {
+isolated function register(Listener fileListener, service s, string? name) returns error? = @java:Method {
     'class: "org.ballerinalang.stdlib.file.service.endpoint.Register",
     name: "register"
 } external;
 
-function startEndpoint(Listener fileListener) returns error? = @java:Method {
+isolated function startEndpoint(Listener fileListener) returns error? = @java:Method {
     'class: "org.ballerinalang.stdlib.file.service.endpoint.Start",
     name: "start"
 } external;

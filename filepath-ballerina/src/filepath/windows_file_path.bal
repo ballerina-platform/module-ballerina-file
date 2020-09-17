@@ -18,11 +18,11 @@ import ballerina/stringutils;
 
 // ReservedNames lists reserved Windows names.
 // https://docs.microsoft.com/en-us/windows/desktop/fileio/naming-a-file for details.
-string[] WINDOWS_RESERVED_WORDS = ["CON", "PRN", "AUX", "NUL",
+final string[] & readonly WINDOWS_RESERVED_WORDS = ["CON", "PRN", "AUX", "NUL",
 	"COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
 	"LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"];
 
-function isWindowsReservedName(string path) returns boolean {
+isolated function isWindowsReservedName(string path) returns boolean {
     if (path.length() == 0) {
         return false;
     }
@@ -34,7 +34,7 @@ function isWindowsReservedName(string path) returns boolean {
     return false;
 }
 
-function buildWindowsPath(string... parts) returns string|Error {
+isolated function buildWindowsPath(string... parts) returns string|Error {
     int count = parts.length();
     if (count <= 0) {
         return "";
@@ -125,7 +125,7 @@ function buildWindowsPath(string... parts) returns string|Error {
 	return normalizedHead + pathSeparator + normalizedTail;
 }
 
-function getWindowsRoot(string input) returns [string, int]|Error {
+isolated function getWindowsRoot(string input) returns [string, int]|Error {
     int length = input.length();
     int offset = 0;
     string root = "";
@@ -178,7 +178,7 @@ function getWindowsRoot(string input) returns [string, int]|Error {
     return [root, offset];
 }
 
-function getWindowsOffsetIndex(string path) returns int[]|Error {
+isolated function getWindowsOffsetIndex(string path) returns int[]|Error {
     int[] offsetIndexes = [];
     int index = 0;
     int count = 0;
@@ -208,7 +208,7 @@ function getWindowsOffsetIndex(string path) returns int[]|Error {
     return offsetIndexes;
 }
 
-function isWindowsSlash(string c) returns boolean {
+isolated function isWindowsSlash(string c) returns boolean {
     return (c == "\\") || (c == "/");
 }
 
@@ -217,7 +217,7 @@ function isWindowsSlash(string c) returns boolean {
 #
 # + path - string path value
 # + return - windows volumn length
-function getVolumnNameLength(string path) returns int|Error {
+isolated function getVolumnNameLength(string path) returns int|Error {
     if path.length() < 2 {
         return 0;
     }
@@ -263,7 +263,7 @@ function getVolumnNameLength(string path) returns int|Error {
     return 0;
 }
 
-function parseWindowsPath(string path, int off) returns string|Error {
+isolated function parseWindowsPath(string path, int off) returns string|Error {
     string normalizedPath = "";
     int length = path.length();
     int offset = check nextNonSlashIndex(path, off, length);

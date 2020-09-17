@@ -14,7 +14,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-function buildUnixPath(string... parts) returns string|Error {
+isolated function buildUnixPath(string... parts) returns string|Error {
     int count = parts.length();
     if (count <= 0) {
         return "";
@@ -38,7 +38,7 @@ function buildUnixPath(string... parts) returns string|Error {
     return parse(finalPath);
 }
 
-function getUnixRoot(string input) returns [string, int]|Error {
+isolated function getUnixRoot(string input) returns [string, int]|Error {
     int length = input.length();
     int offset = 0;
     string root = "";
@@ -49,7 +49,7 @@ function getUnixRoot(string input) returns [string, int]|Error {
     return [root, offset];
 }
 
-function getUnixOffsetIndex(string path) returns int[]|Error {
+isolated function getUnixOffsetIndex(string path) returns int[]|Error {
     int[] offsetIndexes = [];
     int index = 0;
     int count = 0;
@@ -78,11 +78,11 @@ function getUnixOffsetIndex(string path) returns int[]|Error {
     return offsetIndexes;
 }
 
-function isPosixSlash(string|byte c) returns boolean {
+isolated function isPosixSlash(string|byte c) returns boolean {
     return c == "/";
 }
 
-function parsePosixPath(string input, int off) returns string|Error {
+isolated function parsePosixPath(string input, int off) returns string|Error {
     int n = input.length();
     while((n > 0)) {
         string cn = check charAt(input, n-1);

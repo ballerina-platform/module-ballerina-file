@@ -20,9 +20,9 @@ import ballerina/system;
 import ballerina/stringutils;
 import ballerina/java;
 
-boolean isWindows = system:getEnv("OS") != "";
-string pathSeparator = isWindows ? "\\" : "/";
-string pathListSeparator = isWindows ? ";" : ":";
+final boolean isWindows = system:getEnv("OS") != "";
+final string pathSeparator = isWindows ? "\\" : "/";
+final string pathListSeparator = isWindows ? ";" : ":";
 
 # Retrieves the absolute path from the provided location.
 # ```ballerina
@@ -42,7 +42,7 @@ public function absolute(@untainted string path) returns string|Error = @java:Me
 # ```
 #
 # + return - String value of the path separator
-public function getPathSeparator() returns string {
+public isolated function getPathSeparator() returns string {
     return pathSeparator;
 }
 
@@ -52,7 +52,7 @@ public function getPathSeparator() returns string {
 # ```
 #
 # + return - String value of the path list separator
-public function getPathListSeparator() returns string {
+public isolated function getPathListSeparator() returns string {
     return pathListSeparator;
 }
 
@@ -67,7 +67,7 @@ public function getPathListSeparator() returns string {
 # + path - String value of the file path
 # + return - `true` if path is absolute, `false` otherwise, or else an `filepath:Error`
 #            occurred if the path is invalid
-public function isAbsolute(string path) returns boolean|Error {
+public isolated function isAbsolute(string path) returns boolean|Error {
     if (path.length() <= 0) {
         return false;
     }
@@ -87,7 +87,7 @@ public function isAbsolute(string path) returns boolean|Error {
 #
 # + path - String value of file path
 # + return - The name of the file or else a `filepath:Error` if the path is invalid
-public function filename(string path) returns string|Error {
+public isolated function filename(string path) returns string|Error {
     string validatedPath = check parse(path);
     int[] offsetIndexes = check getOffsetIndexes(validatedPath);
     int count = offsetIndexes.length();
@@ -113,7 +113,7 @@ public function filename(string path) returns string|Error {
 # + path - String value of the file/directory path
 # + return - Path of the parent directory or else a `filepath:Error`
 #            if an error occurred while getting the parent directory
-public function parent(string path) returns string|Error {
+public isolated function parent(string path) returns string|Error {
     string validatedPath = check parse(path);
     int[] offsetIndexes = check getOffsetIndexes(validatedPath);
     int count = offsetIndexes.length();
@@ -143,7 +143,7 @@ public function parent(string path) returns string|Error {
 #
 # + path - String value of the file path
 # + return - Normalized file path or else a `filepath:Error` if the path is invalid
-public function normalize(string path) returns string|Error {
+public isolated function normalize(string path) returns string|Error {
     string validatedPath = check parse(path);
     int[] offsetIndexes = check getOffsetIndexes(validatedPath);
     int count = offsetIndexes.length();
@@ -229,7 +229,7 @@ public function normalize(string path) returns string|Error {
 #
 # + path - String value of the file path
 # + return - String array of the part components or else a `filepath:Error` if the path is invalid
-public function split(string path) returns string[]|Error {
+public isolated function split(string path) returns string[]|Error {
     string validatedPath = check parse(path);
     int[] offsetIndexes = check getOffsetIndexes(validatedPath);
     int count = offsetIndexes.length();
@@ -258,7 +258,7 @@ public function split(string path) returns string[]|Error {
 #
 # + parts - String values of the file path parts
 # + return - String value of the file path or else a `filepath:Error` if the parts are invalid
-public function build(string... parts) returns string|Error {
+public isolated function build(string... parts) returns string|Error {
     if (isWindows) {
         return check buildWindowsPath(...parts);
     } else {
@@ -274,7 +274,7 @@ public function build(string... parts) returns string|Error {
 #
 # + name - Filename
 # + return - True if the path is a Windows reserved name or else false otherwise
-public function isReservedName(string name) returns boolean {
+public isolated function isReservedName(string name) returns boolean {
     if (isWindows) {
         return isWindowsReservedName(name);
     }
@@ -292,7 +292,7 @@ public function isReservedName(string name) returns boolean {
 # + path - String value of the file path
 # + return - The extension of the file, an empty string if there is no extension,
 #            or else a `filepath:Error` if the path is invalid
-public function extension(string path) returns string|Error {
+public isolated function extension(string path) returns string|Error {
     if (path.endsWith(pathSeparator) || (isWindows && path.endsWith("/"))) {
       return  "";
     }
@@ -326,7 +326,7 @@ public function extension(string path) returns string|Error {
 # + target - String value of the target file path
 # + return - The extension of the file, empty string otherwise, or else an
 #            `filepath:Error` occurred if at least one path is invalid
-public function relative(string base, string target) returns string|Error {
+public isolated function relative(string base, string target) returns string|Error {
     string cleanBase = check normalize(base);
     string cleanTarget = check normalize(target);
     if (isSamePath(cleanBase, cleanTarget)) {
@@ -421,7 +421,7 @@ public function matches(string path, string pattern) returns boolean|Error = @ja
 #
 # + input - String path value
 # + return - Parsed path or else a `filepath:Error` if the given path is invalid
-function parse(string input) returns string|Error {
+isolated function parse(string input) returns string|Error {
     if (input.length() <= 0) {
         return input;
     }
@@ -449,7 +449,7 @@ function parse(string input) returns string|Error {
     }
 }
 
-function getRoot(string input) returns [string,int]|Error {
+isolated function getRoot(string input) returns [string,int]|Error {
     if (isWindows) {
         return getWindowsRoot(input);
     } else {
@@ -457,7 +457,7 @@ function getRoot(string input) returns [string,int]|Error {
     }
 }
 
-function isSlash(string c) returns boolean {
+isolated function isSlash(string c) returns boolean {
     if (isWindows) {
         return isWindowsSlash(c);
     } else {
@@ -465,7 +465,7 @@ function isSlash(string c) returns boolean {
     }
 }
 
-function nextNonSlashIndex(string path, int offset, int end) returns int|Error {
+isolated function nextNonSlashIndex(string path, int offset, int end) returns int|Error {
     int off = offset;
     while(off < end && isSlash(check charAt(path, off))) {
         off = off + 1;
@@ -473,7 +473,7 @@ function nextNonSlashIndex(string path, int offset, int end) returns int|Error {
     return off;
 }
 
-function nextSlashIndex(string path, int offset, int end) returns int|Error {
+isolated function nextSlashIndex(string path, int offset, int end) returns int|Error {
     int off = offset;
     while(off < end && !isSlash(check charAt(path, off))) {
         off = off + 1;
@@ -481,7 +481,7 @@ function nextSlashIndex(string path, int offset, int end) returns int|Error {
     return off;
 }
 
-function isLetter(string c) returns boolean {
+isolated function isLetter(string c) returns boolean {
     string regEx = "^[a-zA-Z]{1}$";
     boolean|error letter = stringutils:matches(c,regEx);
     if (letter is error) {
@@ -492,15 +492,15 @@ function isLetter(string c) returns boolean {
     }
 }
 
-function isUNC(string path) returns boolean|Error {
+isolated function isUNC(string path) returns boolean|Error {
     return check getVolumnNameLength(path) > 2;
 }
 
-function isEmpty(string path) returns boolean {
+isolated function isEmpty(string path) returns boolean {
     return path.length() == 0;
 }
 
-function getOffsetIndexes(string path) returns int[]|Error {
+isolated function getOffsetIndexes(string path) returns int[]|Error {
     if (isWindows) {
         return check getWindowsOffsetIndex(path);
     } else {
@@ -508,7 +508,7 @@ function getOffsetIndexes(string path) returns int[]|Error {
     }
 }
 
-function charAt(string input, int index) returns string|Error {
+isolated function charAt(string input, int index) returns string|Error {
     int length = input.length();
     if (index > length) {
         return GenericError(io:sprintf("Character index %d is greater then path string length %d",
@@ -517,7 +517,7 @@ function charAt(string input, int index) returns string|Error {
     return input.substring(index, index + 1);
 }
 
-function isSamePath(string base, string target) returns boolean {
+isolated function isSamePath(string base, string target) returns boolean {
     if (isWindows) {
         return stringutils:equalsIgnoreCase(base, target);
     } else {

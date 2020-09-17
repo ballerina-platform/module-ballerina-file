@@ -44,35 +44,35 @@ public class FileInfo {
     # Returns the file name.
     #
     # + return - the file name
-    public function getName() returns string {
+    public isolated function getName() returns string {
         return self.name;
     }
 
     # Returns the file size.
     #
     # + return - the file size
-    public function getSize() returns int {
+    public isolated function getSize() returns int {
         return self.size;
     }
 
     # Returns the last-modified time of the file.
     #
     # + return - Last-modified time of the file
-    public function getLastModifiedTime() returns time:Time {
+    public isolated function getLastModifiedTime() returns time:Time {
         return self.modifiedTime;
     }
 
     # Returns whether the file is a directory or not.
     #
     # + return - File is a directory or not
-    public function isDir() returns boolean {
+    public isolated function isDir() returns boolean {
         return self.dir;
     }
 
     # Returns the absolute file path.
     #
     # + return - The file path
-    public function getPath() returns string {
+    public isolated function getPath() returns string {
         return self.path;
     }
 }

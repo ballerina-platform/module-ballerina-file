@@ -17,6 +17,7 @@
 import ballerina/test;
 import ballerina/java;
 import ballerina/stringutils;
+import ballerina/io;
 
 string tmpdir = tempDir();
 string srcDir = "src/file/tests/resources/src-dir";
@@ -226,6 +227,7 @@ function testCreateExistingFile() {
 function testCreateDirWithParentDir() {
     string|error result = createDir(tmpdir + "/parent" + "/child", true);
     if (result is string) {
+        io:println("RESPONSE :" + result);
         test:assertTrue(stringutils:contains(result, tmpdir + "/parent" + "/child"), "Directory creation not successful!");
         error? removeResult = remove(tmpdir + "/parent", true);
         if (removeResult is error) {
@@ -239,6 +241,7 @@ function testCreateDirWithoutParentDir() {
     string|error result = createDir(tmpdir + "/parent" + "/child", false);
     if (result is error) {
         string expectedErrMsg = "IO error while creating the file";
+        io:println("ERROR :" + result.message());
         test:assertTrue(stringutils:contains(result.message(), expectedErrMsg));
     }
 }

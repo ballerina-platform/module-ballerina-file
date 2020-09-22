@@ -226,7 +226,7 @@ function testCreateExistingFile() {
 function testCreateDirWithParentDir() {
     string|error result = createDir(tmpdir + "/parent" + "/child", true);
     if (result is string) {
-        test:assertTrue(stringutils:contains(result, tmpdir + "/parent" + "/child"), "Directory creation not successful!");
+        test:assertTrue(stringutils:contains(result, "child"), "Directory creation not successful!");
         error? removeResult = remove(tmpdir + "/parent", true);
         if (removeResult is error) {
             test:assertFail("Error removing test resource!");

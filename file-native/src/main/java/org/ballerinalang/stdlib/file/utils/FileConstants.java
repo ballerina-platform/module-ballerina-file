@@ -41,7 +41,7 @@ public class FileConstants {
     /**
      * Package version.
      */
-    public static final String PACKAGE_VERSION = "0.5.1";
+    public static final String PACKAGE_VERSION = "0.5.2";
 
     /**
      * Package path.

@@ -44,10 +44,6 @@ allprojects {
         }
 
         maven {
-            url = 'https://maven.wso2.org/nexus/content/repositories/snapshots/'
-        }
-
-        maven {
             url = 'https://maven.wso2.org/nexus/content/groups/wso2-public/'
         }
 
@@ -61,10 +57,6 @@ allprojects {
 
         maven {
             url = 'https://repo.maven.apache.org/maven2'
-        }
-
-        maven {
-            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-file'
         }
 
         maven {

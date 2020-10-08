@@ -24,9 +24,16 @@ description = 'Ballerina - File Java Utils'
 dependencies {
     compile group: 'org.ballerinalang', name: 'ballerina-lang', version: "${ballerinaLangVersion}"
     compile group: 'org.ballerinalang', name: 'ballerina-runtime', version: "${ballerinaLangVersion}"
+    compile group: 'org.ballerinalang', name: 'time-native', version: "${stdlibTimeVersion}"
     compile group: 'org.slf4j', name: 'slf4j-jdk14', version: "${slf4jVersion}"
-    compile group: 'org.ballerinalang', name: 'ballerina-java', version: "${ballerinaLangVersion}"
-    compile group: 'org.ballerinalang', name: 'ballerina-time', version: "${ballerinaLangVersion}"
-    compile group: 'org.ballerinalang', name: 'ballerina-io', version: "${ballerinaLangVersion}"
     compile group: 'org.wso2.transport.file', name: 'org.wso2.transport.local-file-system', version: "${fileTransportVersion}"
+}
+
+compileJava {
+    doFirst {
+        options.compilerArgs = [
+                '--module-path', classpath.asPath,
+        ]
+        classpath = files()
+    }
 }

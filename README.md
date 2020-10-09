@@ -19,7 +19,7 @@ For more information go to [The Filepath Module](https://ballerina.io/swan-lake/
 1. Download and install Java SE Development Kit (JDK) version 11 (from one of the following locations).
    * [Oracle](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html)
 
-   * [OpenJDK](https://adoptopenjdk.net/l)
+   * [OpenJDK](https://adoptopenjdk.net/)
 
         > **Note:** Set the JAVA_HOME environment variable to the path name of the directory into which you installed JDK.
      

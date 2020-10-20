@@ -17,13 +17,13 @@
  */
 package org.ballerinalang.stdlib.file.utils;
 
-import org.ballerinalang.jvm.api.BErrorCreator;
-import org.ballerinalang.jvm.api.BStringUtils;
-import org.ballerinalang.jvm.api.BValueCreator;
-import org.ballerinalang.jvm.api.values.BError;
-import org.ballerinalang.jvm.api.values.BMap;
-import org.ballerinalang.jvm.api.values.BObject;
-import org.ballerinalang.jvm.api.values.BString;
+import io.ballerina.runtime.api.ErrorCreator;
+import io.ballerina.runtime.api.StringUtils;
+import io.ballerina.runtime.api.ValueCreator;
+import io.ballerina.runtime.api.values.BError;
+import io.ballerina.runtime.api.values.BMap;
+import io.ballerina.runtime.api.values.BObject;
+import io.ballerina.runtime.api.values.BString;
 
 import java.io.File;
 import java.io.IOException;
@@ -68,8 +68,8 @@ public class FileUtils {
      * @return Ballerina error object.
      */
     public static BError getBallerinaError(String error, String message) {
-        return BErrorCreator.createDistinctError(error, FILE_PACKAGE_ID,
-                                                 BStringUtils.fromString(message != null ? message : UNKNOWN_MESSAGE));
+        return ErrorCreator.createDistinctError(error, FILE_PACKAGE_ID,
+                                                 StringUtils.fromString(message != null ? message : UNKNOWN_MESSAGE));
     }
 
     public static BObject getFileInfo(File inputFile) throws IOException {
@@ -77,10 +77,10 @@ public class FileUtils {
         FileTime lastModified = Files.getLastModifiedTime(inputFile.toPath());
         ZonedDateTime zonedDateTime = ZonedDateTime.parse(lastModified.toString());
         lastModifiedInstance = createTimeRecord(getTimeZoneRecord(), getTimeRecord(),
-                lastModified.toMillis(), BStringUtils.fromString(zonedDateTime.getZone().toString()));
-        return BValueCreator.createObjectValue(FILE_PACKAGE_ID, FILE_INFO_TYPE,
-                BStringUtils.fromString(inputFile.getName()), inputFile.length(), lastModifiedInstance,
-                inputFile.isDirectory(), BStringUtils.fromString(inputFile.getAbsolutePath()));
+                lastModified.toMillis(), StringUtils.fromString(zonedDateTime.getZone().toString()));
+        return ValueCreator.createObjectValue(FILE_PACKAGE_ID, FILE_INFO_TYPE,
+                StringUtils.fromString(inputFile.getName()), inputFile.length(), lastModifiedInstance,
+                inputFile.isDirectory(), StringUtils.fromString(inputFile.getAbsolutePath()));
     }
 
 
@@ -88,13 +88,13 @@ public class FileUtils {
      * Returns the system property which corresponds to the given key.
      *
      * @param key system property key
-     * @return system property as a {@link String} or {@code BTypes.typeString.getZeroValue()} if the property does not
+     * @return system property as a {@link String} or {@code PredefinedTypes.TYPE_STRING.getZeroValue()} if the property does not
      * exist.
      */
     public static String getSystemProperty(String key) {
         String value = System.getProperty(key);
         if (value == null) {
-            return org.ballerinalang.jvm.types.BTypes.typeString.getZeroValue();
+            return io.ballerina.runtime.api.PredefinedTypes.TYPE_STRING.getZeroValue();
         }
         return value;
     }

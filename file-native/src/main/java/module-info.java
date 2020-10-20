@@ -17,7 +17,7 @@
  */
 
 module io.ballerina.stdlib.file {
-    requires io.ballerina.jvm;
+    requires io.ballerina.runtime;
     requires io.ballerina.lang;
     requires io.ballerina.stdlib.time;
     requires org.slf4j;

@@ -18,13 +18,13 @@
 
 package org.ballerinalang.stdlib.file.nativeimpl;
 
-import org.ballerinalang.jvm.api.BStringUtils;
-import org.ballerinalang.jvm.api.values.BObject;
-import org.ballerinalang.jvm.api.values.BString;
-import org.ballerinalang.jvm.types.BArrayType;
-import org.ballerinalang.jvm.types.BType;
-import org.ballerinalang.jvm.util.exceptions.BallerinaException;
-import org.ballerinalang.jvm.values.ArrayValueImpl;
+import io.ballerina.runtime.api.StringUtils;
+import io.ballerina.runtime.api.types.Type;
+import io.ballerina.runtime.api.values.BObject;
+import io.ballerina.runtime.api.values.BString;
+import io.ballerina.runtime.types.BArrayType;
+import io.ballerina.runtime.util.exceptions.BallerinaException;
+import io.ballerina.runtime.values.ArrayValueImpl;
 import org.ballerinalang.stdlib.file.utils.FileConstants;
 import org.ballerinalang.stdlib.file.utils.FileUtils;
 import org.slf4j.Logger;
@@ -55,10 +55,10 @@ public class Utils {
     private static final Logger log = LoggerFactory.getLogger(Utils.class);
     private static final String CURRENT_DIR_PROPERTY_KEY = "user.dir";
     private static final String TEMP_DIR_PROPERTY_KEY = "java.io.tmpdir";
-    private static BType fileInfoType;
+    private static Type fileInfoType;
 
     public static BString getCurrentDirectory() {
-        return BStringUtils.fromString(FileUtils.getSystemProperty(CURRENT_DIR_PROPERTY_KEY));
+        return StringUtils.fromString(FileUtils.getSystemProperty(CURRENT_DIR_PROPERTY_KEY));
     }
 
     public static boolean exists(BString path) {
@@ -73,7 +73,7 @@ public class Utils {
             } else {
                 dirPath = Files.createDirectory(Paths.get(dir.getValue()));
             }
-            return BStringUtils.fromString(dirPath.toAbsolutePath().toString());
+            return StringUtils.fromString(dirPath.toAbsolutePath().toString());
         } catch (FileAlreadyExistsException e) {
             String msg = "File already exists. Failed to create the file: " + dir;
             log.error(msg, e);
@@ -116,13 +116,13 @@ public class Utils {
     }
 
     public static BString tempDir() {
-        return BStringUtils.fromString(FileUtils.getSystemProperty(TEMP_DIR_PROPERTY_KEY));
+        return StringUtils.fromString(FileUtils.getSystemProperty(TEMP_DIR_PROPERTY_KEY));
     }
 
     public static Object createFile(BString path) {
         try {
             Path filepath = Files.createFile(Paths.get(path.getValue()));
-            return BStringUtils.fromString(filepath.toAbsolutePath().toString());
+            return StringUtils.fromString(filepath.toAbsolutePath().toString());
         } catch (FileAlreadyExistsException e) {
             String msg = "File already exists. Failed to create the file: " + path;
             log.error(msg, e);

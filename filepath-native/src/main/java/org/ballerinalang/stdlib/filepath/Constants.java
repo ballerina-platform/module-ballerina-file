@@ -18,10 +18,10 @@
 
 package org.ballerinalang.stdlib.filepath;
 
-import org.ballerinalang.jvm.types.BPackage;
+import io.ballerina.runtime.api.Module;
 
-import static org.ballerinalang.jvm.util.BLangConstants.BALLERINA_BUILTIN_PKG_PREFIX;
-import static org.ballerinalang.jvm.util.BLangConstants.ORG_NAME_SEPARATOR;
+import static io.ballerina.runtime.util.BLangConstants.BALLERINA_BUILTIN_PKG_PREFIX;
+import static io.ballerina.runtime.util.BLangConstants.ORG_NAME_SEPARATOR;
 
 /**
  * Constants for path package file functions.
@@ -44,7 +44,7 @@ public class Constants {
      */
     public static final String PACKAGE_PATH = ORG_NAME + ORG_NAME_SEPARATOR + PACKAGE_NAME;
     private static final String MODULE_VERSION = "0.7.2";
-    static final BPackage PACKAGE_ID = new BPackage(BALLERINA_BUILTIN_PKG_PREFIX, PACKAGE_NAME, MODULE_VERSION);
+    static final Module PACKAGE_ID = new Module(BALLERINA_BUILTIN_PKG_PREFIX, PACKAGE_NAME, MODULE_VERSION);
 
     public static final String FILE_NOT_FOUND_ERROR = "FileNotFoundError";
     public static final String NOT_LINK_ERROR = "NotLinkError";

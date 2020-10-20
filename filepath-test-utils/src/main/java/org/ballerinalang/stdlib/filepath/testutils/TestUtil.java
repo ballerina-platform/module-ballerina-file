@@ -18,9 +18,9 @@
 
 package org.ballerinalang.stdlib.filepath.testutils;
 
-import org.ballerinalang.jvm.api.BStringUtils;
-import org.ballerinalang.jvm.api.values.BString;
-import org.ballerinalang.jvm.util.exceptions.BallerinaException;
+import io.ballerina.runtime.api.StringUtils;
+import io.ballerina.runtime.api.values.BString;
+import io.ballerina.runtime.util.exceptions.BallerinaException;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -32,7 +32,7 @@ public class TestUtil {
 
     public static BString getAbsPath(String path) {
         String abs = Paths.get(path).toAbsolutePath().toString();
-        return BStringUtils.fromString(abs);
+        return StringUtils.fromString(abs);
     }
 
     public static void createLink() {
@@ -64,6 +64,6 @@ public class TestUtil {
         } catch (IOException e) {
             throw new BallerinaException("Error retrieving symlink!");
         }
-        return BStringUtils.fromString(link);
+        return StringUtils.fromString(link);
     }
 }

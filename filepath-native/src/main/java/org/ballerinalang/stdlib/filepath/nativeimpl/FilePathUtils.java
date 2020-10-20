@@ -18,8 +18,8 @@
 
 package org.ballerinalang.stdlib.filepath.nativeimpl;
 
-import org.ballerinalang.jvm.api.BStringUtils;
-import org.ballerinalang.jvm.api.values.BString;
+import io.ballerina.runtime.api.StringUtils;
+import io.ballerina.runtime.api.values.BString;
 import org.ballerinalang.stdlib.filepath.Constants;
 import org.ballerinalang.stdlib.filepath.Utils;
 
@@ -45,7 +45,7 @@ public class FilePathUtils {
 
     public static Object absolute(BString inputPath) {
         try {
-            return BStringUtils.fromString(
+            return StringUtils.fromString(
                     FileSystems.getDefault().getPath(inputPath.getValue()).toAbsolutePath().toString());
         } catch (InvalidPathException ex) {
             return Utils.getPathError(Constants.INVALID_PATH_ERROR, "Invalid path " + inputPath);
@@ -73,7 +73,7 @@ public class FilePathUtils {
     public static Object resolve(BString inputPath) {
         try {
             Path realPath = Files.readSymbolicLink(Paths.get(inputPath.getValue()).toAbsolutePath());
-            return BStringUtils.fromString(realPath.toString());
+            return StringUtils.fromString(realPath.toString());
         } catch (NotLinkException ex) {
             return Utils.getPathError(Constants.NOT_LINK_ERROR, "Path is not a symbolic link " + inputPath);
         } catch (NoSuchFileException ex) {

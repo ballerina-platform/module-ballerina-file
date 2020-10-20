@@ -18,9 +18,9 @@
 
 package org.ballerinalang.stdlib.filepath;
 
-import org.ballerinalang.jvm.api.BErrorCreator;
-import org.ballerinalang.jvm.api.BStringUtils;
-import org.ballerinalang.jvm.api.values.BError;
+import io.ballerina.runtime.api.ErrorCreator;
+import io.ballerina.runtime.api.StringUtils;
+import io.ballerina.runtime.api.values.BError;
 
 
 /**
@@ -50,7 +50,7 @@ public class Utils {
         if (details == null) {
             details = UNKNOWN_MESSAGE;
         }
-        return BErrorCreator.createDistinctError(reason, Constants.PACKAGE_ID, BStringUtils.fromString(details));
+        return ErrorCreator.createDistinctError(reason, Constants.PACKAGE_ID, StringUtils.fromString(details));
     }
 
     private Utils() {

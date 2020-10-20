@@ -18,7 +18,7 @@
 
 package org.ballerinalang.stdlib.filepath;
 
-import org.ballerinalang.jvm.api.values.BError;
+import io.ballerina.runtime.api.values.BError;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.InvalidPathException;

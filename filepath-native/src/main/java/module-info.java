@@ -17,7 +17,7 @@
  */
 
 module io.ballerina.stdlib.file {
-    requires io.ballerina.jvm;
+    requires io.ballerina.runtime;
     exports org.ballerinalang.stdlib.filepath;
     exports org.ballerinalang.stdlib.filepath.nativeimpl;
 }

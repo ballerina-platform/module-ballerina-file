@@ -17,6 +17,6 @@
  */
 
 module io.ballerina.stdlib.file.testutils {
-    requires io.ballerina.jvm;
+    requires io.ballerina.runtime;
     exports org.ballerinalang.stdlib.filepath.testutils;
 }

@@ -28,7 +28,7 @@ import org.wso2.transport.localfilesystem.server.util.Constants;
 public class DirectoryListenerConstants {
 
     public static final String MODULE_NAME = "file";
-    public static final String MODULE_VERSION = "0.5.2";
+    public static final String MODULE_VERSION = "0.5.3";
 
     //Annotation
     public static final BString ANNOTATION_PATH = StringUtils.fromString("path");

@@ -20,7 +20,9 @@ package org.ballerinalang.stdlib.file.testutils;
 
 import io.ballerina.runtime.api.StringUtils;
 import io.ballerina.runtime.api.values.BString;
+import io.ballerina.runtime.util.exceptions.BallerinaException;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,9 +30,10 @@ import java.nio.file.attribute.FileTime;
 
 public class TestUtil {
     public static Path file;
+    private static Path symLinkPath;
 
     public static void createTestFile() throws Exception {
-        file = Files.createFile(Paths.get("src", "file", "tests", "resources", "test.txt"));
+        file = Files.createFile(Paths.get("src", "file", "tests", "resources", "test1.txt"));
     }
 
     public static void modifyTestFile() throws Exception {
@@ -47,5 +50,42 @@ public class TestUtil {
 
     public static BString getUserDir() {
         return StringUtils.fromString(System.getProperty("user.dir"));
+    }
+
+    public static BString getAbsPath(String path) {
+        String abs = Paths.get(path).toAbsolutePath().toString();
+        return StringUtils.fromString(abs);
+    }
+
+    public static void createLink() {
+        Path filePath = Paths.get("src", "file", "tests", "resources", "test.txt");
+        symLinkPath = Paths.get(System.getProperty("java.io.tmpdir"), "test_link.txt");
+        try {
+            Files.deleteIfExists(symLinkPath);
+            Files.createSymbolicLink(symLinkPath, filePath);
+        } catch (IOException e) {
+            throw new BallerinaException("Error creating symlink!");
+        }
+    }
+
+    public static void removeLink() {
+        if (symLinkPath != null) {
+            try {
+                Files.deleteIfExists(symLinkPath);
+            } catch (IOException e) {
+                throw new BallerinaException("Error removing symlink!");
+            }
+        }
+    }
+
+    public static BString getSymLink() {
+
+        String link = null;
+        try {
+            link = Files.readSymbolicLink(symLinkPath).toString();
+        } catch (IOException e) {
+            throw new BallerinaException("Error retrieving symlink!");
+        }
+        return StringUtils.fromString(link);
     }
 }

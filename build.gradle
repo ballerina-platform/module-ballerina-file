@@ -28,6 +28,11 @@ ext.puppycrawlCheckstyleVersion = "8.18"
 ext.slf4jVersion = "1.7.30"
 ext.stdlibStringUtilsVersion = project.stdlibStringUtilsVersion
 ext.stdlibRuntimeVersion = project.stdlibRuntimeVersion
+ext.testngVersion = "6.14.3"
+ext.stdlibStringUtilsVersion = project.stdlibStringUtilsVersion
+ext.stdlibIOVersion = project.stdlibIOVersion
+ext.stdlibLogVersion = project.stdlibLogVersion
+ext.stdlibSystemVersion = project.stdlibSystemVersion
 ext.stdlibTimeVersion = project.stdlibTimeVersion
 
 allprojects {
@@ -82,6 +87,30 @@ allprojects {
                 password System.getenv("packagePAT")
             }
         }
+
+        maven {
+            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-io'
+            credentials {
+                username System.getenv("packageUser")
+                password System.getenv("packagePAT")
+            }
+        }
+
+        maven {
+            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-log'
+            credentials {
+                username System.getenv("packageUser")
+                password System.getenv("packagePAT")
+            }
+        }
+
+        maven {
+            url = 'https://maven.pkg.github.com/ballerina-platform/module-ballerina-system'
+            credentials {
+                username System.getenv("packageUser")
+                password System.getenv("packagePAT")
+            }
+        }
     }
 }
 
@@ -95,6 +124,9 @@ subprojects {
         /* Standard libraries */
         ballerinaStdLibs "org.ballerinalang:stringutils-ballerina:${stdlibStringUtilsVersion}"
         ballerinaStdLibs "org.ballerinalang:runtime-ballerina:${stdlibRuntimeVersion}"
+        ballerinaStdLibs "org.ballerinalang:io-ballerina:${stdlibIOVersion}"
+        ballerinaStdLibs "org.ballerinalang:log-ballerina:${stdlibLogVersion}"
+        ballerinaStdLibs "org.ballerinalang:system-ballerina:${stdlibSystemVersion}"
         ballerinaStdLibs "org.ballerinalang:time-ballerina:${stdlibTimeVersion}"
     }
 }

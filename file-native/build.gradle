@@ -27,6 +27,13 @@ dependencies {
     compile group: 'org.ballerinalang', name: 'time-native', version: "${stdlibTimeVersion}"
     compile group: 'org.slf4j', name: 'slf4j-jdk14', version: "${slf4jVersion}"
     compile group: 'org.wso2.transport.file', name: 'org.wso2.transport.local-file-system', version: "${fileTransportVersion}"
+
+    testImplementation('org.junit.jupiter:junit-jupiter-api:5.4.2')
+    testRuntime('org.junit.jupiter:junit-jupiter-engine:5.4.2')
+}
+
+test {
+    useJUnitPlatform()
 }
 
 compileJava {

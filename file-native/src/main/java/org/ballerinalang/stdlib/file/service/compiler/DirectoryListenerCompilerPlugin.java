@@ -18,6 +18,7 @@
 
 package org.ballerinalang.stdlib.file.service.compiler;
 
+import io.ballerina.tools.diagnostics.DiagnosticSeverity;
 import org.ballerinalang.compiler.plugins.AbstractCompilerPlugin;
 import org.ballerinalang.compiler.plugins.SupportedResourceParamTypes;
 import org.ballerinalang.model.tree.AnnotationAttachmentNode;
@@ -35,7 +36,6 @@ import static org.ballerinalang.stdlib.file.service.DirectoryListenerConstants.F
 import static org.ballerinalang.stdlib.file.service.DirectoryListenerConstants.RESOURCE_NAME_ON_CREATE;
 import static org.ballerinalang.stdlib.file.service.DirectoryListenerConstants.RESOURCE_NAME_ON_DELETE;
 import static org.ballerinalang.stdlib.file.service.DirectoryListenerConstants.RESOURCE_NAME_ON_MODIFY;
-import static org.ballerinalang.util.diagnostic.Diagnostic.Kind.ERROR;
 
 /**
  * Compiler plugin for validating Directory Listener.
@@ -71,7 +71,7 @@ public class DirectoryListenerCompilerPlugin extends AbstractCompilerPlugin {
                         + "The parameter should be a file:FileEvent with no returns.";
                 msg = String.format(msg, resource.getName().getValue(), serviceName);
                 if (parameters.size() != 1) {
-                    dlog.logDiagnostic(ERROR, resource.getPosition(), msg);
+                    dlog.logDiagnostic(DiagnosticSeverity.ERROR, resource.getPosition(), msg);
                     return;
                 }
                 BType fileEvent = parameters.get(0).getTypeNode().type;
@@ -80,14 +80,14 @@ public class DirectoryListenerCompilerPlugin extends AbstractCompilerPlugin {
                         BStructureType event = (BStructureType) fileEvent;
                         if (!"file".equals(event.tsymbol.pkgID.name.value) || !FILE_SYSTEM_EVENT
                                 .equals(event.tsymbol.name.value)) {
-                            dlog.logDiagnostic(ERROR, resource.getPosition(), msg);
+                            dlog.logDiagnostic(DiagnosticSeverity.ERROR, resource.getPosition(), msg);
                             return;
                         }
                     }
                 }
                 break;
             default:
-                dlog.logDiagnostic(ERROR, resource.getPosition(),
+                dlog.logDiagnostic(DiagnosticSeverity.ERROR, resource.getPosition(),
                         "Invalid resource name " + resource.getName().getValue() + " in service " + serviceName);
         }
     }

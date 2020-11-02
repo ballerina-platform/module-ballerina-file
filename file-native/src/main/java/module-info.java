@@ -19,6 +19,7 @@
 module io.ballerina.stdlib.file {
     requires io.ballerina.runtime;
     requires io.ballerina.lang;
+    requires io.ballerina.tools.api;
     requires io.ballerina.stdlib.time;
     requires org.slf4j;
     requires org.wso2.transport.local.file.system;

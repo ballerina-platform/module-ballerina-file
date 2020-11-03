@@ -34,3 +34,17 @@ public enum DirOption {
     RECURSIVE,
     NON_RECURSIVE
 }
+
+public enum TestOption {
+    EXISTS,
+    IS_DIR,
+    IS_SYMLINK,
+    READABLE,
+    WRITABLE
+}
+
+public enum CopyOption {
+    REPLACE_EXISTING,
+    COPY_ATTRIBUTES,
+    NO_FOLLOW_LINKS
+}

@@ -18,7 +18,7 @@ import ballerina/test;
 import ballerina/java;
 import ballerina/stringutils;
 
-string tmpdir = tempDir();
+string tmpdir = getTmpDir();
 string srcDir = "src/file/tests/resources/src-dir";
 string rdDir = "src/file/tests/resources/read-dir";
 string emptyDir = "src/file/tests/resources/empty-dir";
@@ -35,14 +35,8 @@ int srcFileLength = 0;
 int srcModifiedFileLength = 0;
 
 @test:Config {}
-function checkTmpDir() {
-    string tmpdirJava = getTmpDir();
-    test:assertEquals(tmpdir, tmpdirJava, "Temp directory mismatch!");
-}
-
-@test:Config {}
 function testRename() {
-    error? copyResult = copy(srcFile, tmpdir + srcFileRaw, true);
+    error? copyResult = copy(srcFile, tmpdir + srcFileRaw, REPLACE_EXISTING);
     if (copyResult is error) {
         test:assertFail("File not copied!");
     }
@@ -55,7 +49,7 @@ function testRename() {
 
 @test:Config {dependsOn: ["testRename"]}
 function testRenameExisting() {
-    error? copyResult = copy(srcFile, tmpdir + srcFileRaw, true);
+    error? copyResult = copy(srcFile, tmpdir + srcFileRaw, REPLACE_EXISTING);
     if (copyResult is error) {
         test:assertFail("File not copied!");
     }
@@ -85,7 +79,7 @@ function testCopyDir() {
 
 @test:Config {dependsOn: ["testCopyDir"]}
 function testRemoverecursivefalse() {
-    error? removeResult = remove(tmpdir + "/src-dir", false);
+    error? removeResult = remove(tmpdir + "/src-dir");
     if (removeResult is error) {
         string expectedErrMsg = "Error while deleting";
         test:assertTrue(stringutils:contains(removeResult.message(), expectedErrMsg));
@@ -94,7 +88,7 @@ function testRemoverecursivefalse() {
 
 @test:Config {dependsOn: ["testRemoverecursivefalse"]}
 function testRemoverecursiveTrue() {
-    error? removeResult = remove(tmpdir + "/src-dir", true);
+    error? removeResult = remove(tmpdir + "/src-dir", RECURSIVE);
     if (removeResult is error) {
         test:assertFail("File not removed!");
     }
@@ -110,11 +104,11 @@ function testRemoveNonExistingFile() {
 }
 
 @test:Config {dependsOn: ["testRenameExisting"]}
-function testFileInfo() {
-    FileInfo|error fileInfo = getFileInfo(tmpdir + srcFileRaw);
-    if (fileInfo is FileInfo) {
-        test:assertEquals(fileInfo.getName(), "src-file.txt", "Incorrect file name!");
-        test:assertFalse(fileInfo.isDir(), "Incorrect file info!");
+function testMetadata() {
+    MetaData|error metadata = getMetaData(tmpdir + srcFileRaw);
+    if (metadata is MetaData) {
+        //test:assertEquals(metadata.getName(), "src-file.txt", "Incorrect file name!");
+        test:assertFalse(metadata.dir, "Incorrect file info!");
         error? removeResult = remove(tmpdir + srcFileRaw);
         if (removeResult is error) {
             test:assertFail("Error removing test resource!");
@@ -125,50 +119,34 @@ function testFileInfo() {
 }
 
 @test:Config {}
-function testFileInfoNonExisting() {
-    FileInfo|error fileInfo = getFileInfo(tmpdir + noFile);
-    if (fileInfo is error) {
+function testMetadataNonExisting() {
+    MetaData|error metadata = getMetaData(tmpdir + noFile);
+    if (metadata is error) {
         string expectedErrMsg = "File not found";
-        test:assertTrue(stringutils:contains(fileInfo.message(), expectedErrMsg));
+        test:assertTrue(stringutils:contains(metadata.message(), expectedErrMsg));
     }
 }
 
 @test:Config {}
 function testReadDir() {
-    FileInfo[]|error fileInfo = readDir(srcDir);
-    if (fileInfo is error) {
+    MetaData[]|error metadata = readDir(srcDir);
+    if (metadata is error) {
         test:assertFail("Read directory failed!");
     }
 }
 
 @test:Config {}
-function testReadDirWithMaxLength() {
-    FileInfo[]|error fileInfo = readDir(srcDir, 0);
-    if (fileInfo is FileInfo[]) {
-        test:assertEquals(fileInfo.length(), 0, "Invalid file info!");
-    }
-}
-
-@test:Config {}
-function testReadDirWithMaxLength1() {
-    FileInfo[]|error fileInfo = readDir(rdDir, 1);
-    if (fileInfo is FileInfo[]) {
-        test:assertEquals(fileInfo.length(), 2, "Invalid file info!");
-    }
-}
-
-@test:Config {}
 function testReadNonExistingDir() {
-    FileInfo[]|error fileInfo = readDir(noDir);
-    if (fileInfo is error) {
+    MetaData[]|error metadata = readDir(noDir);
+    if (metadata is error) {
         string expectedErrMsg = "File not found";
-        test:assertTrue(stringutils:contains(fileInfo.message(), expectedErrMsg));
+        test:assertTrue(stringutils:contains(metadata.message(), expectedErrMsg));
     }
 }
 
 @test:Config {}
 function testCreateDir() {
-    string|error crResult = createDir(emptyDir);
+    error? crResult = createDir(emptyDir, NON_RECURSIVE);
     if (crResult is error) {
         test:assertFail("Error creating directory!");
     }
@@ -176,37 +154,45 @@ function testCreateDir() {
 
 @test:Config {dependsOn: ["testCreateDir"]}
 function testReadEmptyDir() {
-    FileInfo[]|error fileInfo = readDir(emptyDir);
-    if (fileInfo is FileInfo[]) {
-        test:assertEquals(fileInfo.length(), 0, "Invalid file info!");
+    MetaData[]|error metadata = readDir(emptyDir);
+    if (metadata is MetaData[]) {
+        test:assertEquals(metadata.length(), 0, "Invalid file info!");
         error? removeResult = remove(emptyDir);
     }
 }
 
 @test:Config {}
 function testReadFileWithReadDir() {
-    FileInfo[]|error fileInfo = readDir(srcFile);
-    if (fileInfo is error) {
+    MetaData[]|error metadata = readDir(srcFile);
+    if (metadata is error) {
         string expectedErrMsg = "not a directory";
-        test:assertTrue(stringutils:contains(fileInfo.message(), expectedErrMsg));
+        test:assertTrue(stringutils:contains(metadata.message(), expectedErrMsg));
     }
 }
 
 @test:Config {}
 function testFileExists() {
-    boolean result = exists(srcFile);
-    test:assertTrue(result, "File doesn't exist!");
+    boolean|error result = test(srcFile, EXISTS);
+    if (result is boolean) {
+        test:assertTrue(result, "File doesn't exist!");
+    } else {
+        test:assertFail("Error testing file!");
+    }
 }
 
 @test:Config {}
 function testFileExistsNonExistingFile() {
-    boolean result = exists("src/file/tests/resources/no-file.txt");
-    test:assertFalse(result, "File exists!");
+    boolean|error result = test("src/file/tests/resources/no-file.txt", EXISTS);
+    if (result is boolean) {
+            test:assertFalse(result, "File exists!");
+    } else {
+        test:assertFail("Error testing file!");
+    }
 }
 
 @test:Config {}
 function testCreateNonExistingPathFile() {
-    string|error crResult = createFile(noDir + noFile);
+    error? crResult = create(noDir + noFile);
     if (crResult is error) {
         string expectedErrMsg = "The file does not exist in path";
         test:assertTrue(stringutils:contains(crResult.message(), expectedErrMsg));
@@ -215,7 +201,7 @@ function testCreateNonExistingPathFile() {
 
 @test:Config {}
 function testCreateExistingFile() {
-    string|error crResult = createFile(srcFile);
+    error? crResult = create(srcFile);
     if (crResult is error) {
         string expectedErrMsg = "File already exists. Failed to create the file";
         test:assertTrue(stringutils:contains(crResult.message(), expectedErrMsg));
@@ -224,10 +210,11 @@ function testCreateExistingFile() {
 
 @test:Config {}
 function testCreateDirWithParentDir() {
-    string|error result = createDir(tmpdir + "/parent" + "/child", true);
-    if (result is string) {
-        test:assertTrue(stringutils:contains(result, "child"), "Directory creation not successful!");
-        error? removeResult = remove(tmpdir + "/parent", true);
+    error? result = createDir(tmpdir + "/parent" + "/child", RECURSIVE);
+    if (result is error) {
+        test:assertFail("Directory creation not successful!");
+    } else {
+        error? removeResult = remove(tmpdir + "/parent", RECURSIVE);
         if (removeResult is error) {
             test:assertFail("Error removing test resource!");
         }
@@ -236,7 +223,7 @@ function testCreateDirWithParentDir() {
 
 @test:Config {}
 function testCreateDirWithoutParentDir() {
-    string|error result = createDir(tmpdir + "/parent" + "/child", false);
+    error? result = createDir(tmpdir + "/parent" + "/child", NON_RECURSIVE);
     if (result is error) {
         string expectedErrMsg = "IO error while creating the file";
         test:assertTrue(stringutils:contains(result.message(), expectedErrMsg));
@@ -245,20 +232,20 @@ function testCreateDirWithoutParentDir() {
 
 @test:Config {}
 function testCopyFile() {
-    FileInfo|error srcfileinfo = getFileInfo(srcFile);
-    if (srcfileinfo is FileInfo) {
-        srcFileLength = srcfileinfo.getSize();
+    MetaData|error srcmetadata = getMetaData(srcFile);
+    if (srcmetadata is MetaData) {
+        srcFileLength = srcmetadata.size;
     } else {
         test:assertFail("Error retrieving source file size!");
     }
 
-    error? copyResult = copy(srcFile, tmpdir + copyFile, false);
+    error? copyResult = copy(srcFile, tmpdir + copyFile);
     if (copyResult is error) {
         test:assertFail("File not copied!");
     } else {
-        FileInfo|error fileinfo = getFileInfo(tmpdir + copyFile);
-        if (fileinfo is FileInfo) {
-            int destFileLength = fileinfo.getSize();
+        MetaData|error metadata = getMetaData(tmpdir + copyFile);
+        if (metadata is MetaData) {
+            int destFileLength = metadata.size;
             test:assertEquals(destFileLength, srcFileLength, "File size mismatch!");
         } else {
             test:assertFail("Error retrieving destination file size!");
@@ -268,20 +255,20 @@ function testCopyFile() {
 
 @test:Config {dependsOn: ["testCopyFile"]}
 function testCopyFileReplaceFalse() {
-    FileInfo|error srcMfileinfo = getFileInfo(srcModifiedFile);
-    if (srcMfileinfo is FileInfo) {
-        srcModifiedFileLength = srcMfileinfo.getSize();
+    MetaData|error srcMmetadata = getMetaData(srcModifiedFile);
+    if (srcMmetadata is MetaData) {
+        srcModifiedFileLength = srcMmetadata.size;
     } else {
         test:assertFail("Error retrieving source file size!");
     }
 
-    error? copyResult = copy(srcModifiedFile, tmpdir + copyFile, false);
+    error? copyResult = copy(srcModifiedFile, tmpdir + copyFile);
     if (copyResult is error) {
         test:assertFail("File not copied!");
     } else {
-        FileInfo|error fileinfo = getFileInfo(tmpdir + copyFile);
-        if (fileinfo is FileInfo) {
-            int destFileLength = fileinfo.getSize();
+        MetaData|error metadata = getMetaData(tmpdir + copyFile);
+        if (metadata is MetaData) {
+            int destFileLength = metadata.size;
             test:assertEquals(destFileLength, srcFileLength, "File size mismatch!");
             test:assertNotEquals(destFileLength, srcModifiedFileLength);
         } else {
@@ -292,13 +279,13 @@ function testCopyFileReplaceFalse() {
 
 @test:Config {dependsOn: ["testCopyFileReplaceFalse"]}
 function testCopyFileReplaceTrue() {
-    error? copyResult = copy(srcModifiedFile, tmpdir + copyFile, true);
+    error? copyResult = copy(srcModifiedFile, tmpdir + copyFile, REPLACE_EXISTING);
     if (copyResult is error) {
         test:assertFail("File not copied!");
     } else {
-        FileInfo|error fileinfo = getFileInfo(tmpdir + copyFile);
-        if (fileinfo is FileInfo) {
-            int destFileLength = fileinfo.getSize();
+        MetaData|error metadata = getMetaData(tmpdir + copyFile);
+        if (metadata is MetaData) {
+            int destFileLength = metadata.size;
             test:assertEquals(destFileLength, srcModifiedFileLength, "File size mismatch!");
             test:assertNotEquals(destFileLength, srcFileLength);
             error? removeResult = remove(tmpdir + copyFile);
@@ -322,7 +309,7 @@ function testCopyFileNonExistSource() {
 
 @test:Config {}
 function testGetCurrentDirectory() {
-    string currentDir = getCurrentDirectory();
+    string currentDir = getCurrentDir();
     string usrDir = getUserDir();
     test:assertEquals(currentDir, usrDir, "Incorrect current directory!");
 }

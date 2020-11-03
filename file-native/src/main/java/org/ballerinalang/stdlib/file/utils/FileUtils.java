@@ -30,8 +30,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.FileTime;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
-import static org.ballerinalang.stdlib.file.utils.FileConstants.FILE_INFO_TYPE;
+import static org.ballerinalang.stdlib.file.utils.FileConstants.METADATA;
 import static org.ballerinalang.stdlib.file.utils.FileConstants.FILE_PACKAGE_ID;
 import static org.ballerinalang.stdlib.time.util.TimeUtils.createTimeRecord;
 import static org.ballerinalang.stdlib.time.util.TimeUtils.getTimeRecord;
@@ -72,15 +74,20 @@ public class FileUtils {
                                                  StringUtils.fromString(message != null ? message : UNKNOWN_MESSAGE));
     }
 
-    public static BObject getFileInfo(File inputFile) throws IOException {
+    public static Object getMetaData(File inputFile) throws IOException {
         BMap<BString, Object> lastModifiedInstance;
         FileTime lastModified = Files.getLastModifiedTime(inputFile.toPath());
         ZonedDateTime zonedDateTime = ZonedDateTime.parse(lastModified.toString());
         lastModifiedInstance = createTimeRecord(getTimeZoneRecord(), getTimeRecord(),
                 lastModified.toMillis(), StringUtils.fromString(zonedDateTime.getZone().toString()));
-        return ValueCreator.createObjectValue(FILE_PACKAGE_ID, FILE_INFO_TYPE,
-                StringUtils.fromString(inputFile.getName()), inputFile.length(), lastModifiedInstance,
-                inputFile.isDirectory(), StringUtils.fromString(inputFile.getAbsolutePath()));
+        Map<String, Object> metadataRecord = new HashMap<>();
+        metadataRecord.put("absPath", inputFile.getAbsolutePath());
+        metadataRecord.put("size", inputFile.length());
+        metadataRecord.put("modifiedTime", lastModifiedInstance);
+        metadataRecord.put("dir", inputFile.isDirectory());
+        metadataRecord.put("readable", Files.isReadable(inputFile.toPath()));
+        metadataRecord.put("writable", Files.isWritable(inputFile.toPath()));
+        return ValueCreator.createRecordValue(FILE_PACKAGE_ID, METADATA, metadataRecord);
     }
 
 

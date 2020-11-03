@@ -48,7 +48,7 @@ public class FileConstants {
      */
     public static final Module FILE_PACKAGE_ID = new Module(BALLERINA_BUILTIN_PKG_PREFIX, PACKAGE_NAME,
                                                                 PACKAGE_VERSION);
-    static final String FILE_INFO_TYPE = "FileInfo";
+    static final String METADATA = "MetaData";
 
     // File error type IDs
     public static final String INVALID_OPERATION_ERROR = "InvalidOperationError";
@@ -59,7 +59,7 @@ public class FileConstants {
     static final String ERROR_MESSAGE = "message";
 
     // System constant fields
-    public static final int DEFAULT_MAX_DEPTH = -1;
+    public static final int MAX_DEPTH = 1;
 
     // FileEvent struct field names
     public static final String FILE_EVENT_NAME = "name";

@@ -157,7 +157,7 @@ function testResolvePath() {
         if (pathCreated is error) {
             test:assertFail("Error creating symlink!");
         } else {
-            string path = tempDir() + "/test_link.txt";
+            string path = getTmpDir() + "/test_link.txt";
             string|error resPath = normalizePath(path, SYMLINK);
             if(resPath is string) {
                 string|error expected = getSymLink();

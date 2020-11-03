@@ -26,48 +26,28 @@ final string pathListSeparator = isWindows ? ";" : ":";
 
 # Retrieves the absolute path from the provided location.
 # ```ballerina
-#  string|filepath:Error absolutePath = filepath:absolute(<@untainted> "test.txt");
+#  string|file:Error absolutePath = file:getAbsolutePath(<@untainted> "test.txt");
 # ```
 #
 # + path - String value of the file path free from potential malicious codes
-# + return - The absolute path reference or else a `filepath:Error` if the path cannot be derived
-public function absolute(@untainted string path) returns string|Error = @java:Method {
+# + return - The absolute path reference or else a `file:Error` if the path cannot be derived
+public function getAbsolutePath(@untainted string path) returns string|Error = @java:Method {
     name: "absolute",
     'class: "org.ballerinalang.stdlib.file.nativeimpl.FilePathUtils"
 } external;
-
-# Returns the path separator of the underlying operating system.
-# ```ballerina
-#  string pathSeparator = filepath:getPathSeparator();
-# ```
-#
-# + return - String value of the path separator
-public isolated function getPathSeparator() returns string {
-    return pathSeparator;
-}
-
-# Returns the path variable's separating character for paths of the underlying operating system.
-# ```ballerina
-#  string pathListSeparator = filepath:getPathListSeparator();
-# ```
-#
-# + return - String value of the path list separator
-public isolated function getPathListSeparator() returns string {
-    return pathListSeparator;
-}
 
 # Reports whether the path is absolute.
 # A path is absolute if it is independent of the current directory.
 # On Unix, a path is absolute if it starts with the root.
 # On Windows, a path is absolute if it has a prefix and starts with the root: c:\windows.
 # ```ballerina
-#  boolean|filepath:Error isAbsolute = filepath:isAbsolute("/A/B/C");
+#  boolean|file:Error isAbsolute = file:isAbsolutePath("/A/B/C");
 # ```
 #
 # + path - String value of the file path
-# + return - `true` if path is absolute, `false` otherwise, or else an `filepath:Error`
+# + return - `true` if path is absolute, `false` otherwise, or else an `file:Error`
 #            occurred if the path is invalid
-public isolated function isAbsolute(string path) returns boolean|Error {
+public isolated function isAbsolutePath(string path) returns boolean|Error {
     if (path.length() <= 0) {
         return false;
     }
@@ -82,12 +62,12 @@ public isolated function isAbsolute(string path) returns boolean|Error {
 # which is the last element of the path.
 # Trailing path separators are removed before extracting the last element.
 # ```ballerina
-#  string|filepath:Error name = filepath:filename("/A/B/C.txt");
+#  string|file:Error name = file:basename("/A/B/C.txt");
 # ```
 #
 # + path - String value of file path
-# + return - The name of the file or else a `filepath:Error` if the path is invalid
-public isolated function filename(string path) returns string|Error {
+# + return - The name of the file or else a `file:Error` if the path is invalid
+public isolated function basename(string path) returns string|Error {
     string validatedPath = check parse(path);
     int[] offsetIndexes = check getOffsetIndexes(validatedPath);
     int count = offsetIndexes.length();
@@ -95,7 +75,7 @@ public isolated function filename(string path) returns string|Error {
         return "";
     }
     if (count == 1 && validatedPath.length() > 0) {
-        if !(check isAbsolute(validatedPath)) {
+        if !(check isAbsolutePath(validatedPath)) {
             return validatedPath;
         }
     }
@@ -107,13 +87,13 @@ public isolated function filename(string path) returns string|Error {
 # If the path is empty, parent returns ".".
 # The returned path does not end in a separator unless it is the root directory.
 # ```ballerina
-#  string|filepath:Error parentPath = filepath:parent("/A/B/C.txt");
+#  string|file:Error parentPath = file:parentPath("/A/B/C.txt");
 # ```
 #
 # + path - String value of the file/directory path
-# + return - Path of the parent directory or else a `filepath:Error`
+# + return - Path of the parent directory or else a `file:Error`
 #            if an error occurred while getting the parent directory
-public isolated function parent(string path) returns string|Error {
+public isolated function parentPath(string path) returns string|Error {
     string validatedPath = check parse(path);
     int[] offsetIndexes = check getOffsetIndexes(validatedPath);
     int count = offsetIndexes.length();
@@ -138,98 +118,121 @@ public isolated function parent(string path) returns string|Error {
 # Eliminate each "." path name element (the current directory).
 # Eliminate each inner ".." path name element (the parent directory).
 # ```ballerina
-#  string|filepath:Error normalizedPath = filepath:normalize("foo/../bar");
+#  string|file:Error normalizedPath = file:normalizePath("foo/../bar", file:CLEAN);
 # ```
 #
 # + path - String value of the file path
-# + return - Normalized file path or else a `filepath:Error` if the path is invalid
-public isolated function normalize(string path) returns string|Error {
-    string validatedPath = check parse(path);
-    int[] offsetIndexes = check getOffsetIndexes(validatedPath);
-    int count = offsetIndexes.length();
-    if (count == 0 || isEmpty(validatedPath)) {
-        return validatedPath;
-    }
+# + option - Normalization option
+# + return - Normalized file path or else a `file:Error` if the path is invalid
+public function normalizePath(string path, NormOption option) returns string|Error {
+    match option {
 
-    string root;
-    int offset;
-    [root, offset] = check getRoot(validatedPath);
-    string c0 = check charAt(path, 0);
-
-    int i = 0;
-    string[] parts = [];
-    boolean[] ignore = [];
-    boolean[] parentRef = [];
-    int remaining = count;
-    while(i < count) {
-        int begin = offsetIndexes[i];
-        int length;
-        ignore[i] = false;
-        parentRef[i] = false;
-        if (i == (count - 1)) {
-            length = validatedPath.length() - begin;
-            parts[i] = validatedPath.substring(begin, validatedPath.length());
-        } else {
-            length = offsetIndexes[i + 1] - begin - 1;
-            parts[i] = validatedPath.substring(begin, offsetIndexes[i + 1] - 1);
-        }
-        if (check charAt(validatedPath, begin) == ".") {
-            if (length == 1) {
-                ignore[i] = true;
-                remaining = remaining - 1;
-            } else if (length == 2 && check charAt(validatedPath, begin + 1) == ".") {
-                parentRef[i] = true;
-                int j = i - 1;
-                boolean hasPrevious = false;
-                while (j >= 0) {
-                    // A/B/<ignore>/..
-                    if (ignore.length() > 0 && !parentRef[j] && !ignore[j]) {
-                        ignore[j] = true;
-                        remaining = remaining - 1;
-                        hasPrevious = true;
-                        break;
-                    }
-                    j = j - 1;
-                }
-                if (hasPrevious || (offset > 0) || isSlash(c0)) {
-                    ignore[i] = true;
-                    remaining = remaining - 1;
-                }
+        CLEAN => {
+            string validatedPath = check parse(path);
+            int[] offsetIndexes = check getOffsetIndexes(validatedPath);
+            int count = offsetIndexes.length();
+            if (count == 0 || isEmpty(validatedPath)) {
+                return validatedPath;
             }
+
+            string root;
+            int offset;
+            [root, offset] = check getRoot(validatedPath);
+            string c0 = check charAt(path, 0);
+
+            int i = 0;
+            string[] parts = [];
+            boolean[] ignore = [];
+            boolean[] parentRef = [];
+            int remaining = count;
+            while (i < count) {
+                int begin = offsetIndexes[i];
+                int length;
+                ignore[i] = false;
+                parentRef[i] = false;
+                if (i == (count - 1)) {
+                    length = validatedPath.length() - begin;
+                    parts[i] = validatedPath.substring(begin, validatedPath.length());
+                } else {
+                    length = offsetIndexes[i + 1] - begin - 1;
+                    parts[i] = validatedPath.substring(begin, offsetIndexes[i + 1] - 1);
+                }
+                if (check charAt(validatedPath, begin) == ".") {
+                    if (length == 1) {
+                        ignore[i] = true;
+                        remaining = remaining - 1;
+                    } else if (length == 2 && check charAt(validatedPath, begin + 1) == ".") {
+                        parentRef[i] = true;
+                        int j = i - 1;
+                        boolean hasPrevious = false;
+                        while (j >= 0) {
+                            // A/B/<ignore>/..
+                            if (ignore.length() > 0 && !parentRef[j] && !ignore[j]) {
+                                ignore[j] = true;
+                                remaining = remaining - 1;
+                                hasPrevious = true;
+                                break;
+                            }
+                            j = j - 1;
+                        }
+                        if (hasPrevious || (offset > 0) || isSlash(c0)) {
+                            ignore[i] = true;
+                            remaining = remaining - 1;
+                        }
+                    }
+                }
+                i = i + 1;
+            }
+
+            if (remaining == count) {
+                return validatedPath;
+            }
+
+            if (remaining == 0) {
+                return root;
+            }
+
+            string normalizedPath = "";
+            if (root != "") {
+                normalizedPath = normalizedPath + root;
+            }
+            i = 0;
+            while (i < count) {
+                if (!ignore[i] && (offset <= offsetIndexes[i])) {
+                    normalizedPath = normalizedPath + parts[i] + pathSeparator;
+                }
+                i = i + 1;
+            }
+            return parse(normalizedPath);
         }
-        i = i + 1;
-    }
 
-    if (remaining == count) {
-        return validatedPath;
-    }
-
-    if (remaining == 0) {
-        return root;
-    }
-
-    string normalizedPath = "";
-    if (root != "") {
-        normalizedPath = normalizedPath + root;
-    }
-    i = 0;
-    while (i < count) {
-        if (!ignore[i] && (offset <= offsetIndexes[i])) {
-            normalizedPath = normalizedPath + parts[i] + pathSeparator;
+        SYMLINK => {
+            return resolve(path);
         }
-        i = i + 1;
+
+        NORMCASE => {
+            if (isWindows) {
+                string lowerCasePath = path.toLowerAscii();
+                lowerCasePath = stringutils:replace(lowerCasePath, "/", "\\");
+                return lowerCasePath;
+            }
+            return path;
+        }
+        
+        _ => {
+            return InvalidOperationError("Unsupported normalization option!");
+        }
     }
-    return parse(normalizedPath);
 }
 
 # Splits a list of paths joined by the OS-specific path separator.
 # ```ballerina
-#  string[]|filepath:Error parts = filepath:split("/A/B/C");
+#  string[]|file:Error parts = file:splitPath("/A/B/C");
 # ```
 #
 # + path - String value of the file path
-# + return - String array of the part components or else a `filepath:Error` if the path is invalid
-public isolated function split(string path) returns string[]|Error {
+# + return - String array of the part components or else a `file:Error` if the path is invalid
+public isolated function splitPath(string path) returns string[]|Error {
     string validatedPath = check parse(path);
     int[] offsetIndexes = check getOffsetIndexes(validatedPath);
     int count = offsetIndexes.length();
@@ -253,12 +256,12 @@ public isolated function split(string path) returns string[]|Error {
 
 # Joins any number of path elements into a single path.
 # ```ballerina
-#  string|filepath:Error path = filepath:build("/", "foo", "bar");
+#  string|file:Error path = file:joinPath("/", "foo", "bar");
 # ```
 #
 # + parts - String values of the file path parts
-# + return - String value of the file path or else a `filepath:Error` if the parts are invalid
-public isolated function build(string... parts) returns string|Error {
+# + return - String value of the file path or else a `file:Error` if the parts are invalid
+public function joinPath(string... parts) returns string|Error {
     if (isWindows) {
         return check buildWindowsPath(...parts);
     } else {
@@ -266,69 +269,20 @@ public isolated function build(string... parts) returns string|Error {
     }
 }
 
-# Reports whether the filename is reserved.
-# Reserved words only exist in Windows.
-# ```ballerina
-#  boolean|filepath:Error path = filepath:isReservedName("abc.txt");
-# ```
-#
-# + name - Filename
-# + return - True if the path is a Windows reserved name or else false otherwise
-public isolated function isReservedName(string name) returns boolean {
-    if (isWindows) {
-        return isWindowsReservedName(name);
-    }
-    // unix system doesn't have any reserved names.
-    return false;
-}
-
-# Retrieves the extension of the file path.
-# The extension is the suffix beginning at the final dot in the final element of the path.
-# It is empty if there is no dot.
-# ```ballerina
-#  string|filepath:Error extension = filepath:extension("path.bal");
-# ```
-#
-# + path - String value of the file path
-# + return - The extension of the file, an empty string if there is no extension,
-#            or else a `filepath:Error` if the path is invalid
-public isolated function extension(string path) returns string|Error {
-    if (path.endsWith(pathSeparator) || (isWindows && path.endsWith("/"))) {
-      return  "";
-    }
-    string validatedPath = check parse(path);
-    int count = validatedPath.length();
-    if (count == 0) {
-        return validatedPath;
-    }
-    int i = count - 1;
-    while (i >= 0) {
-        string char = check charAt(validatedPath, i);
-        if (char == pathSeparator) {
-            break;
-        }
-        if (char == ".") {
-            return validatedPath.substring(i + 1, count);
-        }
-        i = i - 1;
-    }
-    return "";
-}
-
 # Returns a relative path, which is logically equivalent to the target path when joined to the base path with an
 # intervening separator.
 # An error is returned if the target path cannot be made relative to the base path.
 # ```ballerina
-#  string|filepath:Error relativePath = filepath:relative("a/b/c", "a/c/d");
+#  string|file:Error relative = file:relativePath("a/b/e", "a/c/d");
 # ```
 #
 # + base - String value of the base file path
 # + target - String value of the target file path
-# + return - The extension of the file, empty string otherwise, or else an
-#            `filepath:Error` occurred if at least one path is invalid
-public isolated function relative(string base, string target) returns string|Error {
-    string cleanBase = check normalize(base);
-    string cleanTarget = check normalize(target);
+# + return - The target path relative to the base path, or else an
+#            `file:Error` if target path cannot be made relative to the base path
+public function relativePath(string base, string target) returns string|Error {
+    string cleanBase = check normalizePath(base, CLEAN);
+    string cleanTarget = check normalizePath(target, CLEAN);
     if (isSamePath(cleanBase, cleanTarget)) {
         return ".";
     }
@@ -391,36 +345,18 @@ public isolated function relative(string base, string target) returns string|Err
 # If the path is relative, the result will be relative to the current directory
 # unless one of the components is an absolute symbolic link.
 # Resolves normalising the calls on the result.
-# ```ballerina
-#  string|filepath:Error resolvedPath = filepath:resolve("a/b/c");
-# ```
 #
 # + path - Security-validated string value of the file path
-# + return - Resolved file path or else a `filepath:Error` if the path is invalid
-public function resolve(@untainted string path) returns string|Error = @java:Method {
+# + return - Resolved file path or else a `file:Error` if the path is invalid
+function resolve(@untainted string path) returns string|Error = @java:Method {
     name: "resolve",
-    'class: "org.ballerinalang.stdlib.file.nativeimpl.FilePathUtils"
-} external;
-
-# Reports whether the complete filename (not just a substring of it) matches the provided Glob pattern.
-# An error is returned if the pattern is malformed.
-# ```ballerina
-#  boolean|filepath:Error matches = filepath:matches("a/b/c.java", "glob:*.{java,class}");
-# ```
-#
-# + path - String value of the file path
-# + pattern - String value of the target file path
-# + return - `true` if the filename of the path matches with the pattern, `false` otherwise,
-#            or else an `filepath:Error` if the path or pattern is invalid
-public function matches(string path, string pattern) returns boolean|Error = @java:Method {
-    name: "matches",
     'class: "org.ballerinalang.stdlib.file.nativeimpl.FilePathUtils"
 } external;
 
 # Parses the give path and remove redundent slashes.
 #
 # + input - String path value
-# + return - Parsed path or else a `filepath:Error` if the given path is invalid
+# + return - Parsed path or else a `file:Error` if the given path is invalid
 isolated function parse(string input) returns string|Error {
     if (input.length() <= 0) {
         return input;

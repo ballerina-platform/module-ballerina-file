@@ -22,3 +22,15 @@ public type FileEvent record {|
     string name;
     string operation;
 |};
+
+
+public enum NormOption {
+    CLEAN,
+    SYMLINK,
+    NORMCASE
+}
+
+public enum DirOption {
+    RECURSIVE,
+    NON_RECURSIVE
+}

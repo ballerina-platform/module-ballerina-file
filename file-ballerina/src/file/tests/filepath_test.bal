@@ -22,29 +22,9 @@ import ballerina/stringutils;
 boolean isWin = system:getEnv("OS") != "";
 
 @test:Config {}
-function testPathSeparator() {
-    string sep = getPathSeparator();
-    if (isWin) {
-        test:assertEquals(sep, "\\");
-    } else {
-        test:assertEquals(sep, "/");
-    }
-}
-
-@test:Config {}
-function testPathListSeparator() {
-    string sep = getPathListSeparator();
-    if (isWin) {
-        test:assertEquals(sep, ";");
-    } else {
-        test:assertEquals(sep, ":");
-    }
-}
-
-@test:Config {}
 function testGetAbsolutePath() {
     string absPathFrmUtil = getAbsPath(java:fromString("test.txt"));
-    string|error absPath = absolute("test.txt");
+    string|error absPath = getAbsolutePath("test.txt");
     if (absPath is string) {
         test:assertEquals(absPath, absPathFrmUtil);
     } else {
@@ -55,7 +35,7 @@ function testGetAbsolutePath() {
 @test:Config {}
 function testAbsolutePath() {
     string absPathFrmUtil = getAbsPath(java:fromString("/test.txt"));
-    string|error absPath = absolute("/test.txt");
+    string|error absPath = getAbsolutePath("/test.txt");
     if (absPath is string) {
         test:assertEquals(absPath, absPathFrmUtil);
     } else {
@@ -67,7 +47,7 @@ function testAbsolutePath() {
 function testIllegalWindowsPath() {
     string illegal = "/C:/Users/Desktop/workspaces/dk/ballerina/stdlib-path/target/test-classes/absolute" +
                 "\\swagger.json";
-    string|error absPath = absolute(illegal);
+    string|error absPath = getAbsolutePath(illegal);
     if (isWin) {
         test:assertTrue(absPath is error);
         if(absPath is error) {
@@ -138,35 +118,24 @@ function testSplitPath(string path, string posixOutput, string windowsOutput){
 @test:Config {
     dataProvider: "getPosixFileParts"
 }
-function testPosixBuildPath([string[], string] params){
+function testPosixjoinPath([string[], string] params){
     string[] a;
     string b;
     [a, b] = params;
     if (!isWin) {
-        validateBuildPath(a, b);
+        validatejoinPath(a, b);
     }
 }
 
 @test:Config {
     dataProvider: "getWindowsFileParts"
 }
-function testBuildPath([string[], string] params){
+function testjoinPath([string[], string] params){
     string[] a;
     string b;
     [a, b] = params;
     if (isWin) {
-        validateBuildPath(a, b);
-    }
-}
-
-@test:Config {
-    dataProvider: "getExtensionsSet"
-}
-function testPathExtension(string path, string posixOutput, string windowsOutput) {
-    if(isWin) {
-        validateFileExtension(path, windowsOutput);
-    } else {
-        validateFileExtension(path, posixOutput);
+        validatejoinPath(a, b);
     }
 }
 
@@ -181,17 +150,6 @@ function testRelativePath(string path, string targetPath, string posixOutput, st
     }
 }
 
-@test:Config {
-    dataProvider: "getMatchesSet"
-}
-function testPathMatch(string pattern, string path, string posixOutput, string windowsOutput) {
-    if(isWin) {
-        validatePathMatch(pattern, path, windowsOutput);
-    } else {
-        validatePathMatch(pattern, path, posixOutput);
-    }
-}
-
 @test:Config {}
 function testResolvePath() {
     if (!isWin) {
@@ -200,7 +158,7 @@ function testResolvePath() {
             test:assertFail("Error creating symlink!");
         } else {
             string path = tempDir() + "/test_link.txt";
-            string|error resPath = resolve(path);
+            string|error resPath = normalizePath(path, SYMLINK);
             if(resPath is string) {
                 string|error expected = getSymLink();
                 if(expected is string) {
@@ -222,7 +180,7 @@ function testResolvePath() {
 @test:Config {}
 function testResolveNotLinkPath() {
     string path = "src/file/tests/resources/test.txt";
-    string|error resPath = resolve(path);
+    string|error resPath = normalizePath(path, SYMLINK);
     if(resPath is error) {
         test:assertTrue(stringutils:contains(resPath.message(), "Path is not a symbolic link"));
     } else {
@@ -233,7 +191,7 @@ function testResolveNotLinkPath() {
 @test:Config {}
 function testResolveNonExistencePath() {
     string path = "src/file/tests/resources/test_non_existent.txt";
-    string|error resPath = resolve(path);
+    string|error resPath = normalizePath(path, SYMLINK);
     if(resPath is error) {
         test:assertTrue(stringutils:contains(resPath.message(), "File does not exist"));
     } else {
@@ -244,7 +202,7 @@ function testResolveNonExistencePath() {
 //Util functions
 
 function validateAbsolutePath(string path, string expected) {
-    boolean|error isAbs = isAbsolute(path);
+    boolean|error isAbs = isAbsolutePath(path);
     if(isAbs is boolean) {
         test:assertEquals(isAbs, stringutils:toBoolean(expected));
     } else {
@@ -253,7 +211,7 @@ function validateAbsolutePath(string path, string expected) {
 }
 
 function validateFilename(string path, string expected) {
-    string|error fname = filename(path);
+    string|error fname = basename(path);
     if(expected=="error") {
         test:assertTrue(fname is error);
         if (fname is error) {
@@ -268,7 +226,7 @@ function validateFilename(string path, string expected) {
 }
 
 function validateParent(string input, string expected) {
-    string|error parentName = parent(input);
+    string|error parentName = parentPath(input);
     if(expected=="error") {
         test:assertTrue(parentName is error);
         if (parentName is error) {
@@ -283,7 +241,7 @@ function validateParent(string input, string expected) {
 }
 
 function validateNormalizePath(string input, string expected) {
-    string|error normPath = normalize(input);
+    string|error normPath = normalizePath(input, CLEAN);
     if(expected=="error") {
         test:assertTrue(normPath is error);
         if (normPath is error) {
@@ -298,28 +256,28 @@ function validateNormalizePath(string input, string expected) {
 }
 
 function validateSplitPath(string input, string expected) {
-    string[]|error splitPath = split(input);
+    string[]|error path = splitPath(input);
     if(expected=="error") {
-        test:assertTrue(splitPath is error);
-        if (splitPath is error) {
-            test:assertTrue(stringutils:contains(splitPath.message(), "UNC path"));
+        test:assertTrue(path is error);
+        if (path is error) {
+            test:assertTrue(stringutils:contains(path.message(), "UNC path"));
         }
     } else {
-        test:assertTrue(splitPath is string[]);
-        if(splitPath is string[]) {
+        test:assertTrue(path is string[]);
+        if(path is string[]) {
             string[] exvalues = stringutils:split(expected, ",");
             int i = 0;
-            int arrSize = splitPath.length();
+            int arrSize = path.length();
             while (i < arrSize) {
-                 test:assertEquals(splitPath[i], exvalues[i]);
+                 test:assertEquals(path[i], exvalues[i]);
                  i = i + 1;
             }
         }
     }
 }
 
-function validateBuildPath(string[] parts, string expected) {
-    string|error bpath = build(...parts);
+function validatejoinPath(string[] parts, string expected) {
+    string|error bpath = joinPath(...parts);
     if(expected=="error") {
         test:assertTrue(bpath is error);
         if (bpath is error) {
@@ -333,17 +291,8 @@ function validateBuildPath(string[] parts, string expected) {
     }
 }
 
-function validateFileExtension(string input, string expected) {
-    string|error extName = extension(input);
-    if(extName is string) {
-        test:assertEquals(extName, expected);
-    } else {
-        test:assertFail("Error retrieving extension!");
-    }
-}
-
 function validateRelativePath(string basePath, string targetPath, string expected) {
-    string|error relPath = relative(basePath, targetPath);
+    string|error relPath = relativePath(basePath, targetPath);
     if(expected=="error") {
         test:assertTrue(relPath is error);
         if (relPath is error) {
@@ -357,20 +306,6 @@ function validateRelativePath(string basePath, string targetPath, string expecte
     }
 }
 
-function validatePathMatch(string pattern, string path, string expected) {
-    boolean|error matchFound = matches(path, pattern);
-    if(expected=="error") {
-        test:assertTrue(matchFound is error);
-        if (matchFound is error) {
-            test:assertTrue(stringutils:contains(matchFound.message(), "Invalid pattern"));
-        }
-    } else {
-        test:assertTrue(matchFound is boolean);
-        if(matchFound is boolean) {
-            test:assertEquals(matchFound, stringutils:toBoolean(expected));
-        }
-    }
-}
 
 //Data providers
 
@@ -610,18 +545,6 @@ function getWindowsFileParts() returns ([string[], string][][]) {
     ];
 }
 
-function getExtensionsSet() returns (string[][]) {
-    return [
-        ["path.bal", "bal", "bal"],
-        ["path.pb.bal", "bal", "bal"],
-        ["a.pb.bal/b", "", ""],
-        ["a.toml/b.bal", "bal", "bal"],
-        ["a.pb.bal/", "", ""],
-        ["\\..\\A\\B.foo", "foo", "foo"],
-        ["C:\\foo\\..\\bar", "\\bar", ""]
-    ];
-}
-
 function getRelativeSet() returns (string[][]) {
     return [
         ["a/b", "a/b", ".", "."],
@@ -669,45 +592,6 @@ function getRelativeSet() returns (string[][]) {
         ["C:\\Projects", "c:\\projects\\src", "../c:\\projects\\src", "src"],
         ["C:\\Projects", "c:\\projects", "../c:\\projects", "."],
         ["C:\\Projects\\a\\..", "c:\\projects", "../c:\\projects", "."]
-    ];
-}
-
-function getMatchesSet() returns (string[][]) {
-    return [
-        ["abc", "abc", "true", "true"],
-        ["*", "abc", "true", "true"],
-        ["*c", "abc", "true", "true"],
-        ["a*", "a", "true", "true"],
-        ["a*", "abc", "true", "true"],
-        ["a*", "ab/c", "false", "false"],
-        ["a*/b", "abc/b", "true", "true"],
-        ["a*/b", "a/c/b", "false", "false"],
-        ["A*B*C*D*E*/f", "AxBxCxDxE/f", "true", "true"],
-        ["a*b*c*d*e*/f", "axbxcxdxexxx/f", "true", "true"],
-        ["a*b*c*d*e*/f", "axbxcxdxe/xxx/f", "false", "false"],
-        ["a*b*c*d*e*/f", "axbxcxdxexxx/fff", "false", "false"],
-        ["a*b?c*x", "abxbbxdbxebxczzx", "true", "true"],
-        ["a*b?c*x", "abxbbxdbxebxczzy", "false", "false"],
-        ["ab[c]", "abc", "true", "true"],
-        ["ab[b-d]", "abc", "true", "true"],
-        ["ab[e-g]", "abc", "false", "false"],
-        ["[a-b-c]", "a", "error", "error"],
-        ["[", "a", "error", "error"],
-        ["a[", "a", "error", "error"],
-        ["[-]", "-", "true", "true"],
-        ["[x-]", "x", "true", "true"],
-        ["[]a]", "a", "error", "error"],
-        ["[\\-x]", "x", "true", "error"],
-        ["a?b", "a/b", "false", "false"],
-        ["a*b", "a/b", "false", "false"],
-        ["[\\-]", "-", "true", "error"],
-        ["[x\\-]", "x", "true", "error"],
-        ["[x\\-]", "-", "true", "error"],
-        ["[x\\-]", "z", "false", "error"],
-        ["[\\-x]", "x", "true", "error"],
-        ["[\\-x]", "z", "false", "error"],
-        ["[\\-x]", "-", "false", "error"],
-        ["[\\-x]", "a", "true", "error"]
     ];
 }
 

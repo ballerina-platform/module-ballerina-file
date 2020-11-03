@@ -16,25 +16,7 @@
 
 import ballerina/stringutils;
 
-// ReservedNames lists reserved Windows names.
-// https://docs.microsoft.com/en-us/windows/desktop/fileio/naming-a-file for details.
-final string[] & readonly WINDOWS_RESERVED_WORDS = ["CON", "PRN", "AUX", "NUL",
-	"COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
-	"LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"];
-
-isolated function isWindowsReservedName(string path) returns boolean {
-    if (path.length() == 0) {
-        return false;
-    }
-    foreach string word in WINDOWS_RESERVED_WORDS {
-        if (stringutils:equalsIgnoreCase(word, path)) {
-            return true;
-        }
-    }
-    return false;
-}
-
-isolated function buildWindowsPath(string... parts) returns string|Error {
+function buildWindowsPath(string... parts) returns string|Error {
     int count = parts.length();
     if (count <= 0) {
         return "";
@@ -68,7 +50,7 @@ isolated function buildWindowsPath(string... parts) returns string|Error {
                 tail = parts[i];
                 i = i + 1;
             } else {
-                return normalize(firstNonEmptyPart);
+                return normalizePath(firstNonEmptyPart, CLEAN);
             }
 
             while(i < count) {
@@ -77,7 +59,7 @@ isolated function buildWindowsPath(string... parts) returns string|Error {
                 }
                 i = i + 1;
             }
-            return firstNonEmptyPart + check normalize(tail);
+            return firstNonEmptyPart + check normalizePath(tail, CLEAN);
         }
     }
 
@@ -90,7 +72,7 @@ isolated function buildWindowsPath(string... parts) returns string|Error {
             finalPath = finalPath + "\\" + parts[i];
             i = i + 1;
         }
-        return normalize(finalPath);
+        return normalizePath(finalPath, CLEAN);
     }
 
     i = i + 1;
@@ -99,7 +81,7 @@ isolated function buildWindowsPath(string... parts) returns string|Error {
         tail = parts[i];
         i = i + 1;
     } else {
-        return normalize(firstNonEmptyPart);
+        return normalizePath(firstNonEmptyPart, CLEAN);
     }
 
     while(i < count) {
@@ -108,8 +90,8 @@ isolated function buildWindowsPath(string... parts) returns string|Error {
         }
         i = i + 1;
     }
-    string normalizedHead = check normalize(head);
-    string normalizedTail = check normalize(tail);
+    string normalizedHead = check normalizePath(head, CLEAN);
+    string normalizedTail = check normalizePath(tail, CLEAN);
 
     if (tail == "") {
         return normalizedHead;

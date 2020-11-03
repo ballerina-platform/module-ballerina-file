@@ -24,16 +24,13 @@ import org.ballerinalang.stdlib.file.utils.Constants;
 import org.ballerinalang.stdlib.file.utils.Utils;
 
 import java.io.IOException;
-import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.NotLinkException;
 import java.nio.file.Path;
-import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
-import java.util.regex.PatternSyntaxException;
 
 /**
  * Native function implementations for the filepath module APIs.
@@ -41,7 +38,6 @@ import java.util.regex.PatternSyntaxException;
  * @since 1.0.5
  */
 public class FilePathUtils {
-    private static final String GLOB_SYNTAX_FLAVOR = "glob:";
 
     public static Object absolute(BString inputPath) {
         try {
@@ -50,24 +46,6 @@ public class FilePathUtils {
         } catch (InvalidPathException ex) {
             return Utils.getPathError(Constants.INVALID_PATH_ERROR, "Invalid path " + inputPath);
         }
-    }
-
-    public static Object matches(BString inputPath, BString pattern) {
-        FileSystem fs = FileSystems.getDefault();
-        PathMatcher matcher;
-        try {
-            if (!pattern.getValue().startsWith(GLOB_SYNTAX_FLAVOR)) {
-                matcher = fs.getPathMatcher(GLOB_SYNTAX_FLAVOR + pattern);
-            } else {
-                matcher = fs.getPathMatcher(pattern.getValue());
-            }
-        } catch (PatternSyntaxException ex) {
-            return Utils.getPathError(Constants.INVALID_PATTERN_ERROR, "Invalid pattern " + pattern);
-        }
-        if (inputPath == null) {
-            return false;
-        }
-        return matcher.matches(Paths.get(inputPath.getValue()));
     }
 
     public static Object resolve(BString inputPath) {

@@ -18,7 +18,7 @@
 
 package org.ballerinalang.stdlib.file.testutils;
 
-import io.ballerina.runtime.api.StringUtils;
+import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.values.BString;
 
 import java.nio.file.Files;

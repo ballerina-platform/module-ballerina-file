@@ -18,9 +18,9 @@
 
 package org.ballerinalang.stdlib.filepath.testutils;
 
-import io.ballerina.runtime.api.StringUtils;
+import io.ballerina.runtime.api.creators.ErrorCreator;
+import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.values.BString;
-import io.ballerina.runtime.util.exceptions.BallerinaException;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -42,7 +42,7 @@ public class TestUtil {
             Files.deleteIfExists(symLinkPath);
             Files.createSymbolicLink(symLinkPath, filePath);
         } catch (IOException e) {
-            throw new BallerinaException("Error creating symlink!");
+            ErrorCreator.createError(StringUtils.fromString("Error creating symlink!"), e);
         }
     }
 
@@ -51,7 +51,7 @@ public class TestUtil {
             try {
                 Files.deleteIfExists(symLinkPath);
             } catch (IOException e) {
-                throw new BallerinaException("Error removing symlink!");
+                ErrorCreator.createError(StringUtils.fromString("Error removing symlink!"), e);
             }
         }
     }
@@ -62,7 +62,7 @@ public class TestUtil {
         try {
             link = Files.readSymbolicLink(symLinkPath).toString();
         } catch (IOException e) {
-            throw new BallerinaException("Error retrieving symlink!");
+            ErrorCreator.createError(StringUtils.fromString("Error retrieving symlink!"), e);
         }
         return StringUtils.fromString(link);
     }

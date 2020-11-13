@@ -28,7 +28,6 @@ hs_err_pid*
 
 # Ignore Gradle build output directory
 build
-
 target
 # IDEA Files
 .idea/

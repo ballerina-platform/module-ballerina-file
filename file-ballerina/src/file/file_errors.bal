@@ -26,5 +26,30 @@ public type FileSystemError distinct error;
 # Represents an error that occurs when the file/directory does not exist at the given filepath.
 public type FileNotFoundError distinct error;
 
+# Represents error occur when the file at the given filepath is not a symbolic link.
+public type NotLinkError distinct error;
+
+# Represents IO error occur when trying to access the file at the given filepath.
+public type IOError distinct error;
+
+# Represents security error occur when trying to access the file at the given filepath.
+public type SecurityError distinct error;
+
+# Represents error occur when the given file path is invalid.
+public type InvalidPathError distinct error;
+
+# Represent error occur when the given pattern is not a valid filepath pattern.
+public type InvalidPatternError distinct error;
+
+# Represents an error that occurs when the given target filepath cannot be derived relative to the base filepath.
+public type RelativePathError distinct error;
+
+# Represents error occur in the UNC path.
+public type UNCPathError distinct error;
+
+# Represents generic error for filepath
+public type GenericError distinct error;
+
 # Represents file system related errors.
-public type Error InvalidOperationError|PermissionError|FileSystemError|FileNotFoundError;
+public type Error InvalidOperationError | PermissionError | FileSystemError | FileNotFoundError| NotLinkError |
+IOError | SecurityError | InvalidPathError | InvalidPatternError | RelativePathError | UNCPathError | GenericError;

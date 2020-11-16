@@ -35,12 +35,12 @@ import java.util.Map;
 
 import static io.ballerina.runtime.api.constants.RuntimeConstants.BALLERINA_BUILTIN_PKG_PREFIX;
 import static org.ballerinalang.stdlib.file.service.DirectoryListenerConstants.FILE_SYSTEM_EVENT;
-import static org.ballerinalang.stdlib.file.service.DirectoryListenerConstants.MODULE_NAME;
-import static org.ballerinalang.stdlib.file.service.DirectoryListenerConstants.MODULE_VERSION;
 import static org.ballerinalang.stdlib.file.service.DirectoryListenerConstants.RESOURCE_NAME_ON_MESSAGE;
 import static org.ballerinalang.stdlib.file.utils.FileConstants.FILE_EVENT_NAME;
 import static org.ballerinalang.stdlib.file.utils.FileConstants.FILE_EVENT_OPERATION;
 import static org.ballerinalang.stdlib.file.utils.FileConstants.FILE_PACKAGE_ID;
+import static org.ballerinalang.stdlib.file.utils.FileConstants.PACKAGE_NAME;
+import static org.ballerinalang.stdlib.file.utils.FileConstants.PACKAGE_VERSION;
 
 /**
  * File System connector listener for Ballerina.
@@ -52,8 +52,7 @@ public class FSListener implements LocalFileSystemListener {
     private BObject service;
     private Map<String, AttachedFunctionType> attachedFunctionRegistry;
     private static final StrandMetadata ON_MESSAGE_METADATA = new StrandMetadata(BALLERINA_BUILTIN_PKG_PREFIX,
-                                                                                 MODULE_NAME, MODULE_VERSION,
-                                                                                 RESOURCE_NAME_ON_MESSAGE);
+            PACKAGE_NAME, PACKAGE_VERSION, RESOURCE_NAME_ON_MESSAGE);
 
     public FSListener(Runtime runtime, BObject service, Map<String, AttachedFunctionType> resourceRegistry) {
         this.runtime = runtime;

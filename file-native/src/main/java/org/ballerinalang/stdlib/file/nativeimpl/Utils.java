@@ -21,14 +21,10 @@ package org.ballerinalang.stdlib.file.nativeimpl;
 import io.ballerina.runtime.api.creators.ErrorCreator;
 import io.ballerina.runtime.api.creators.TypeCreator;
 import io.ballerina.runtime.api.creators.ValueCreator;
-import io.ballerina.runtime.api.types.Type;
 import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.values.BError;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
-import io.ballerina.runtime.api.types.ArrayType;
-import io.ballerina.runtime.api.values.BError;
-import io.ballerina.runtime.api.values.BArray;
 import org.ballerinalang.stdlib.file.utils.FileConstants;
 import org.ballerinalang.stdlib.file.utils.FileUtils;
 import org.slf4j.Logger;
@@ -49,10 +45,20 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.ballerinalang.stdlib.file.utils.FileConstants.FILE_PACKAGE_ID;
+import static org.ballerinalang.stdlib.file.utils.FileConstants.METADATA;
+import static org.ballerinalang.stdlib.file.utils.FileConstants.RECURSIVE;
+import static org.ballerinalang.stdlib.file.utils.FileConstants.REPLACE_EXISTING;
+import static org.ballerinalang.stdlib.file.utils.FileConstants.COPY_ATTRIBUTES;
+import static org.ballerinalang.stdlib.file.utils.FileConstants.NO_FOLLOW_LINKS;
+import static org.ballerinalang.stdlib.file.utils.FileConstants.EXISTS;
+import static org.ballerinalang.stdlib.file.utils.FileConstants.IS_DIR;
+import static org.ballerinalang.stdlib.file.utils.FileConstants.IS_SYMLINK;
+import static org.ballerinalang.stdlib.file.utils.FileConstants.READABLE;
+import static org.ballerinalang.stdlib.file.utils.FileConstants.WRITABLE;
 
 import static java.nio.file.FileVisitResult.CONTINUE;
 import static java.nio.file.FileVisitResult.SKIP_SUBTREE;
@@ -66,9 +72,6 @@ public class Utils {
     private static final Logger log = LoggerFactory.getLogger(Utils.class);
     private static final String CURRENT_DIR_PROPERTY_KEY = "user.dir";
     private static final String TEMP_DIR_PROPERTY_KEY = "java.io.tmpdir";
-    private static final String RECURSIVE = "RECURSIVE";
-    private static final String CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefhgijklmnopqrstuvwxyz0123456789";
-    private static final Random rnd = new Random();
 
     public static BString getCurrentDirectory() {
         return StringUtils.fromString(FileUtils.getSystemProperty(CURRENT_DIR_PROPERTY_KEY));
@@ -239,7 +242,7 @@ public class Utils {
                 }
             }).skip(1).toArray(Object[]::new);
             return ValueCreator.createArrayValue(results,
-                    TypeCreator.createArrayType(TypeCreator.createRecordType("MetaData", FILE_PACKAGE_ID, 0, true, 0)));
+                    TypeCreator.createArrayType(TypeCreator.createRecordType(METADATA, FILE_PACKAGE_ID, 0, true, 0)));
         } catch (IOException | BError ex) {
             return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR, ex);
         } catch (SecurityException ex) {
@@ -253,13 +256,13 @@ public class Utils {
         List<CopyOption> options = new ArrayList<>();
         if(copyOptions.length > 0) {
             for (BString op:copyOptions) {
-                if (op.getValue().equals("REPLACE_EXISTING")) {
+                if (REPLACE_EXISTING.equals(op.getValue())) {
                     options.add(StandardCopyOption.REPLACE_EXISTING);
                 }
-                else if (op.getValue().equals("COPY_ATTRIBUTES")) {
+                else if (COPY_ATTRIBUTES.equals(op.getValue())) {
                     options.add(StandardCopyOption.COPY_ATTRIBUTES);
                 }
-                else if (op.getValue().equals("NO_FOLLOW_LINKS")) {
+                else if (NO_FOLLOW_LINKS.equals(op.getValue())) {
                     options.add(LinkOption.NOFOLLOW_LINKS);
                 }
                 else {
@@ -318,15 +321,27 @@ public class Utils {
         }
     }
 
-    public static Object createTemp(BString suffix, BString prefix, BString dir) {
-        String filename = prefix.getValue() + generateName() + suffix.getValue();
+    public static Object createTemp(Object suffix, Object prefix, Object dir) {
+        String s = "";
+        String p = "";
+        String d = "";
+        if(suffix != null) {
+            s = ((BString) suffix).getValue().trim();
+        }
+        if(prefix != null) {
+            p = ((BString) prefix).getValue().trim();
+        }
+        if(dir != null) {
+            d = ((BString) dir).getValue().trim();
+        }
+        String filename = p + UUID.randomUUID().toString() + s;
         try {
             Path path;
-            if (dir.getValue().equals("")) {
+            if (d.equals("")) {
                 String tmpDir = System.getProperty(TEMP_DIR_PROPERTY_KEY);
                 path = Files.createFile(Paths.get(tmpDir, filename));
             } else {
-                path = Files.createFile(Paths.get(dir.getValue(), filename));
+                path = Files.createFile(Paths.get(d, filename));
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     File rmFile = path.toAbsolutePath().toFile();
                     rmFile.delete();
@@ -334,21 +349,33 @@ public class Utils {
             }
             return StringUtils.fromString(path.toString());
         } catch (Exception e) {
-            String msg = "Error occurred while creating temporary file";
+            String msg = "Error occurred while creating temporary file. ";
             log.error(msg, e);
-            return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR, msg);
+            return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR, msg + e.getMessage());
         }
     }
 
-    public static Object createTempDir(BString suffix, BString prefix, BString dir) {
-        String filename = prefix.getValue() + generateName() + suffix.getValue();
+    public static Object createTempDir(Object suffix, Object prefix, Object dir) {
+        String s = "";
+        String p = "";
+        String d = "";
+        if(suffix != null) {
+            s = ((BString) suffix).getValue().trim();
+        }
+        if(prefix != null) {
+            p = ((BString) prefix).getValue().trim();
+        }
+        if(dir != null) {
+            d = ((BString) dir).getValue().trim();
+        }
+        String filename = p + UUID.randomUUID().toString() + s;
         try {
             Path path;
-            if (dir.getValue().equals("")) {
+            if (d.equals("")) {
                 String tmpDir = System.getProperty(TEMP_DIR_PROPERTY_KEY);
                 path = Files.createDirectory(Paths.get(tmpDir, filename));
             } else {
-                path = Files.createDirectory(Paths.get(dir.getValue(), filename));
+                path = Files.createDirectory(Paths.get(d, filename));
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     File rmFile = path.toAbsolutePath().toFile();
                     rmFile.delete();
@@ -356,18 +383,10 @@ public class Utils {
             }
             return StringUtils.fromString(path.toString());
         } catch (Exception e) {
-            String msg = "Error occurred while creating temporary file";
+            String msg = "Error occurred while creating temporary directory. ";
             log.error(msg, e);
-            return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR, msg);
+            return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR, msg + e.getMessage());
         }
-    }
-
-    private static String generateName() {
-        char[] filename = new char[10];
-        char[] symbols = CHARS.toCharArray();
-        for (int idx = 0; idx < filename.length; ++idx)
-            filename[idx] = symbols[rnd.nextInt(symbols.length)];
-        return new String(filename);
     }
 
     public static Object test(BString path, BString testOption) {
@@ -375,24 +394,24 @@ public class Utils {
         Path strPath = Paths.get(path.getValue());
         try {
             switch(op) {
-                case "EXISTS":
+                case EXISTS:
                     return Files.exists(strPath);
-                case "IS_DIR":
+                case IS_DIR:
                     return Files.isDirectory(strPath);
-                case "IS_SYMLINK":
+                case IS_SYMLINK:
                     return Files.isSymbolicLink(strPath);
-                case "READABLE":
+                case READABLE:
                     return Files.isReadable(strPath);
-                case "WRITABLE":
+                case WRITABLE:
                     return Files.isWritable(strPath);
                 default:
                     return FileUtils.getBallerinaError(FileConstants.INVALID_OPERATION_ERROR, "Unsupported test " +
                             "option.");
             }
         } catch (Exception e) {
-            String msg = "Error occurred while testing file path.";
+            String msg = "Error occurred while testing file path. ";
             log.error(msg, e);
-            return FileUtils.getBallerinaError(FileConstants.PERMISSION_ERROR, msg);
+            return FileUtils.getBallerinaError(FileConstants.PERMISSION_ERROR, msg + e.getMessage());
         }
     }
 }

@@ -33,8 +33,14 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.ballerinalang.stdlib.file.utils.FileConstants.ABS_PATH;
+import static org.ballerinalang.stdlib.file.utils.FileConstants.DIR;
 import static org.ballerinalang.stdlib.file.utils.FileConstants.METADATA;
 import static org.ballerinalang.stdlib.file.utils.FileConstants.FILE_PACKAGE_ID;
+import static org.ballerinalang.stdlib.file.utils.FileConstants.MODIFIED_TIME;
+import static org.ballerinalang.stdlib.file.utils.FileConstants.READABLE;
+import static org.ballerinalang.stdlib.file.utils.FileConstants.SIZE;
+import static org.ballerinalang.stdlib.file.utils.FileConstants.WRITABLE;
 import static org.ballerinalang.stdlib.time.util.TimeUtils.createTimeRecord;
 import static org.ballerinalang.stdlib.time.util.TimeUtils.getTimeRecord;
 import static org.ballerinalang.stdlib.time.util.TimeUtils.getTimeZoneRecord;
@@ -81,12 +87,12 @@ public class FileUtils {
         lastModifiedInstance = createTimeRecord(getTimeZoneRecord(), getTimeRecord(),
                 lastModified.toMillis(), StringUtils.fromString(zonedDateTime.getZone().toString()));
         Map<String, Object> metadataRecord = new HashMap<>();
-        metadataRecord.put("absPath", inputFile.getAbsolutePath());
-        metadataRecord.put("size", inputFile.length());
-        metadataRecord.put("modifiedTime", lastModifiedInstance);
-        metadataRecord.put("dir", inputFile.isDirectory());
-        metadataRecord.put("readable", Files.isReadable(inputFile.toPath()));
-        metadataRecord.put("writable", Files.isWritable(inputFile.toPath()));
+        metadataRecord.put(ABS_PATH, inputFile.getAbsolutePath());
+        metadataRecord.put(SIZE, inputFile.length());
+        metadataRecord.put(MODIFIED_TIME, lastModifiedInstance);
+        metadataRecord.put(DIR, inputFile.isDirectory());
+        metadataRecord.put(READABLE, Files.isReadable(inputFile.toPath()));
+        metadataRecord.put(WRITABLE, Files.isWritable(inputFile.toPath()));
         return ValueCreator.createRecordValue(FILE_PACKAGE_ID, METADATA, metadataRecord);
     }
 
@@ -104,6 +110,26 @@ public class FileUtils {
             return io.ballerina.runtime.api.PredefinedTypes.TYPE_STRING.getZeroValue();
         }
         return value;
+    }
+
+    /**
+     * Returns error record for input reason and details. This utility to construct error struct from the reason and
+     * message description.
+     *
+     * @param reason  Valid error reason. If the reason is null, "{ballerina/filepath}GenericError" is set as the reason
+     *                by default
+     * @param details Description of the error message. If the message is null, "Unknown Error" is set to message by
+     *                default.
+     * @return Ballerina error object.
+     */
+    public static BError getPathError(String reason, String details) {
+        if (reason == null) {
+            reason = FileConstants.GENERIC_ERROR;
+        }
+        if (details == null) {
+            details = UNKNOWN_MESSAGE;
+        }
+        return ErrorCreator.createDistinctError(reason, FileConstants.FILE_PACKAGE_ID, StringUtils.fromString(details));
     }
 
     private FileUtils() {

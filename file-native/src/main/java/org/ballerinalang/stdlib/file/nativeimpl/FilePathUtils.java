@@ -20,8 +20,8 @@ package org.ballerinalang.stdlib.file.nativeimpl;
 
 import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.values.BString;
-import org.ballerinalang.stdlib.file.utils.Constants;
-import org.ballerinalang.stdlib.file.utils.Utils;
+import org.ballerinalang.stdlib.file.utils.FileConstants;
+import org.ballerinalang.stdlib.file.utils.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -44,7 +44,7 @@ public class FilePathUtils {
             return StringUtils.fromString(
                     FileSystems.getDefault().getPath(inputPath.getValue()).toAbsolutePath().toString());
         } catch (InvalidPathException ex) {
-            return Utils.getPathError(Constants.INVALID_PATH_ERROR, "Invalid path " + inputPath);
+            return FileUtils.getPathError(FileConstants.INVALID_PATH_ERROR, "Invalid path " + inputPath);
         }
     }
 
@@ -53,13 +53,13 @@ public class FilePathUtils {
             Path realPath = Files.readSymbolicLink(Paths.get(inputPath.getValue()).toAbsolutePath());
             return StringUtils.fromString(realPath.toString());
         } catch (NotLinkException ex) {
-            return Utils.getPathError(Constants.NOT_LINK_ERROR, "Path is not a symbolic link " + inputPath);
+            return FileUtils.getPathError(FileConstants.NOT_LINK_ERROR, "Path is not a symbolic link " + inputPath);
         } catch (NoSuchFileException ex) {
-            return Utils.getPathError(Constants.FILE_NOT_FOUND_ERROR, "File does not exist at " + inputPath);
+            return FileUtils.getPathError(FileConstants.FILE_NOT_FOUND_ERROR, "File does not exist at " + inputPath);
         } catch (IOException ex) {
-            return Utils.getPathError(Constants.IO_ERROR, "IO error for " + inputPath);
+            return FileUtils.getPathError(FileConstants.IO_ERROR, "IO error for " + inputPath);
         } catch (SecurityException ex) {
-            return Utils.getPathError(Constants.SECURITY_ERROR, "Security error for " + inputPath);
+            return FileUtils.getPathError(FileConstants.SECURITY_ERROR, "Security error for " + inputPath);
         }
     }
 }

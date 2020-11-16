@@ -122,7 +122,11 @@ public isolated function parentPath(string path) returns string|Error {
 # ```
 #
 # + path - String value of the file path
-# + option - Normalization option
+# + option - Normalization option. Supported options are,
+#  CLEAN - Get the shortest path name equivalent to the given path by eliminating multiple separators, '.', and '..',
+#  SYMLINK - Evaluate a symlink,
+#  NORMCASE - Normalize the case of a pathname. On windows, all the characters are converted to lowercase and "/" is
+# converted to "\".
 # + return - Normalized file path or else a `file:Error` if the path is invalid
 public function normalizePath(string path, NormOption option) returns string|Error {
     match option {

@@ -23,18 +23,34 @@ public type FileEvent record {|
     string operation;
 |};
 
-
+# Represents the options that can be passed to normalizePath function.
+#
+# + CLEAN - Get the shortest path name equivalent to the given path by eliminating multiple separators, '.', and '..'
+# + SYMLINK - Evaluate a symlink
+# + NORMCASE - Normalize the case of a pathname. On windows, all the characters are converted to lowercase and "/" is
+# converted to "\".
 public enum NormOption {
     CLEAN,
     SYMLINK,
     NORMCASE
 }
 
+# Represents options that can be used when creating or removing directories.
+#
+# + RECURSIVE - Create non-existing parent directories or remove all the files inside the given directory
+# + NON_RECURSIVE - Create/remove only the given directory
 public enum DirOption {
     RECURSIVE,
     NON_RECURSIVE
 }
 
+# Represents the options that can be passed to test function.
+#
+# + EXISTS - Test whether a file path exists
+# + IS_DIR - Test whether a file path is a directory
+# + IS_SYMLINK - Test whether a file path is a symlink
+# + READABLE - Test whether a file path is readable
+# + WRITABLE - Test whether a file path is writable
 public enum TestOption {
     EXISTS,
     IS_DIR,
@@ -43,6 +59,11 @@ public enum TestOption {
     WRITABLE
 }
 
+# Represents options that can be used when copying files/directories
+#
+# + REPLACE_EXISTING - Replace the target path if it already exists
+# + COPY_ATTRIBUTES - Copy the file attributes as well to the target
+# + NO_FOLLOW_LINKS - If source is a symlink, only the link is copied, not the target of the link
 public enum CopyOption {
     REPLACE_EXISTING,
     COPY_ATTRIBUTES,

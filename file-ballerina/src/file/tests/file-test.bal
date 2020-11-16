@@ -314,6 +314,21 @@ function testGetCurrentDirectory() {
     test:assertEquals(currentDir, usrDir, "Incorrect current directory!");
 }
 
+@test:Config {}
+function testCreateTempFile() {
+    string|error result = createTemp();
+    if (result is string) {
+        boolean|error ss = test(result, EXISTS);
+        if (ss is boolean) {
+            test:assertTrue(ss);
+        } else {
+            test:assertFail("Error testing file existance!");
+        }
+    } else {
+        test:assertFail("Error creating temporary file!");
+    }
+}
+
 function getTmpDir() returns string = @java:Method {
     'class: "org.ballerinalang.stdlib.file.testutils.TestUtil"
 } external;

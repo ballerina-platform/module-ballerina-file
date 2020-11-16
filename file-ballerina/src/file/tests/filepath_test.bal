@@ -199,6 +199,19 @@ function testResolveNonExistencePath() {
     }
 }
 
+@test:Config {}
+function testNormcase() {
+    if (isWin) {
+        string path = "/hoMe/UseR/";
+        string|error normpath = normalizePath(path, NORMCASE);
+        if (normpath is string) {
+            test:assertEquals(normpath, "\\home\\user\\");
+        } else {
+            test:assertFail("Error normalizing case!");
+        }
+    }
+}
+
 //Util functions
 
 function validateAbsolutePath(string path, string expected) {

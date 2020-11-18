@@ -113,20 +113,17 @@ public isolated function parentPath(string path) returns string|Error {
     return validatedPath.substring(0, len);
 }
 
-# Returns the shortest path name equivalent to the given path.
-# Replace the multiple separator elements with a single one.
-# Eliminate each "." path name element (the current directory).
-# Eliminate each inner ".." path name element (the parent directory).
+# Normalizes a path value.
 # ```ballerina
 #  string|file:Error normalizedPath = file:normalizePath("foo/../bar", file:CLEAN);
 # ```
 #
 # + path - String value of the file path
 # + option - Normalization option. Supported options are,
-#  CLEAN - Get the shortest path name equivalent to the given path by eliminating multiple separators, '.', and '..',
-#  SYMLINK - Evaluate a symlink,
-#  NORMCASE - Normalize the case of a pathname. On windows, all the characters are converted to lowercase and "/" is
-# converted to "\".
+#  `CLEAN` - Get the shortest path name equivalent to the given path by eliminating multiple separators, '.', and '..',
+#  `SYMLINK` - Evaluate a symlink,
+#  `NORMCASE` - Normalize the case of a pathname. On windows, all the characters are converted to lowercase and "/" is
+# converted to "\\".
 # + return - Normalized file path or else a `file:Error` if the path is invalid
 public function normalizePath(string path, NormOption option) returns string|Error {
     match option {

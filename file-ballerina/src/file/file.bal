@@ -27,23 +27,21 @@ public isolated function getCurrentDir() returns string = @java:Method {
     name: "getCurrentDirectory"
 } external;
 
-# Creates a new directory with the specified file name.
-# If the `parentDirs` flag is true, it creates a directory in the specified path with any necessary parents.
+# Creates a new directory with the specified name.
 # ```ballerina
-# string | error results = file:createDir("foo/bar");
+# file:Error? results = file:createDir("foo/bar");
 # ```
 #
 # + dir - Directory name
 # + option - Indicates whether the `createDir` should create non-existing parent directories. The default is only to
 # create the given current directory.
-# + return - Absolute path value of the created directory or else an `file:Error` if failed
+# + return - A `file:Error` if the directory creation failed
 public function createDir(@untainted string dir, DirOption option = NON_RECURSIVE) returns Error? = @java:Method {
     'class: "org.ballerinalang.stdlib.file.nativeimpl.Utils",
     name: "createDir"
 } external;
 
 # Removes the specified file or directory.
-# If the recursive flag is true, it removes the path and any children it contains.
 # ```ballerina
 # file:Error? results = file:remove("foo/bar.txt");
 # ```
@@ -59,7 +57,7 @@ public function remove(@untainted string path, DirOption option = NON_RECURSIVE)
 # Renames(Moves) the old path with the new path.
 # If the new path already exists and it is not a directory, this replaces the file.
 # ```ballerina
-# file:error? results = file:rename("/A/B/C", "/A/B/D");
+# file:Error? results = file:rename("/A/B/C", "/A/B/D");
 # ```
 #
 # + oldPath - String value of the old file path
@@ -73,11 +71,11 @@ public function rename(@untainted string oldPath, @untainted string newPath) ret
 # Creates a file in the specified file path.
 # Truncates if the file already exists in the given path.
 # ```ballerina
-# string | error results = file:create("bar.txt");
+# file:Error? results = file:create("bar.txt");
 # ```
 #
 # + path - String value of the file path
-# + return - Absolute path value of the created file or else an `file:Error` if failed
+# + return - A `file:Error` if file creation failed
 public function create(@untainted string path) returns Error? = @java:Method {
     'class: "org.ballerinalang.stdlib.file.nativeimpl.Utils",
     name: "createFile"
@@ -116,7 +114,7 @@ function readDirRaw(@untainted string path) returns MetaData[]|Error = @java:Met
 # ```
 #
 # + path - String value of the directory path.
-# + return - The `MetaData` array or else an `file:Error` if there is an error while changing the mode.
+# + return - The `MetaData` array or else an `file:Error` if there is an error
 public function readDir(@untainted string path) returns (MetaData[] & readonly)|Error {
     var result = readDirRaw(path);
     if (result is MetaData[]) {
@@ -127,7 +125,6 @@ public function readDir(@untainted string path) returns (MetaData[] & readonly)|
 }
 
 # Copy the file/directory in the old path to the new path.
-# If a file already exists in the new path, this replaces that file.
 # ```ballerina
 # file:Error? results = file:copy("/A/B/C", "/A/B/D", true);
 # ```
@@ -135,9 +132,9 @@ public function readDir(@untainted string path) returns (MetaData[] & readonly)|
 # + sourcePath - String value of the old file path
 # + destinationPath - String value of the new file path
 # + options - Parameter to denote how the copy operation should be done. Supported options are,
-#  REPLACE_EXISTING - Replace the target path if it already exists,
-#  COPY_ATTRIBUTES - Copy the file attributes as well to the target,
-#  NO_FOLLOW_LINKS - If source is a symlink, only the link is copied, not the target of the link.
+#  `REPLACE_EXISTING` - Replace the target path if it already exists,
+#  `COPY_ATTRIBUTES` - Copy the file attributes as well to the target,
+#  `NO_FOLLOW_LINKS` - If source is a symlink, only the link is copied, not the target of the link.
 # + return - An `file:Error` if failed to copy
 public function copy(@untainted string sourcePath, @untainted string destinationPath,
                      CopyOption... options) returns Error? = @java:Method {
@@ -182,11 +179,11 @@ public function createTempDir(string? suffix = (), string? prefix = (), string? 
 #
 # + path - String value of the file path
 # + testOption - The option to be tested upon the path. Supported options are,
-#  EXISTS - Test whether a file path exists,
-#  IS_DIR - Test whether a file path is a directory,
-#  IS_SYMLINK - Test whether a file path is a symlink,
-#  READABLE - Test whether a file path is readable,
-#  WRITABLE - Test whether a file path is writable.
+#  `EXISTS` - Test whether a file path exists,
+#  `IS_DIR` - Test whether a file path is a directory,
+#  `IS_SYMLINK` - Test whether a file path is a symlink,
+#  `READABLE` - Test whether a file path is readable,
+#  `WRITABLE` - Test whether a file path is writable.
 # + return - True/false depending on the option to be tested, or else an error if one occurs
 public function test(@untainted string path, TestOption testOption) returns boolean|Error = @java:Method {
     'class: "org.ballerinalang.stdlib.file.nativeimpl.Utils",

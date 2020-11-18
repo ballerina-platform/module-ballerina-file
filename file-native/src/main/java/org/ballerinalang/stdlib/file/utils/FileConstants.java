@@ -41,25 +41,49 @@ public class FileConstants {
     /**
      * Package version.
      */
-    public static final String PACKAGE_VERSION = "0.5.3";
+    public static final String PACKAGE_VERSION = "0.6.0";
 
     /**
      * Package path.
      */
     public static final Module FILE_PACKAGE_ID = new Module(BALLERINA_BUILTIN_PKG_PREFIX, PACKAGE_NAME,
                                                                 PACKAGE_VERSION);
-    static final String FILE_INFO_TYPE = "FileInfo";
+    public static final String METADATA = "MetaData";
 
     // File error type IDs
     public static final String INVALID_OPERATION_ERROR = "InvalidOperationError";
     public static final String PERMISSION_ERROR = "PermissionError";
     public static final String FILE_SYSTEM_ERROR = "FileSystemError";
     public static final String FILE_NOT_FOUND_ERROR = "FileNotFoundError";
+    public static final String NOT_LINK_ERROR = "NotLinkError";
+    public static final String IO_ERROR = "IOError";
+    public static final String SECURITY_ERROR = "SecurityError";
+    public static final String INVALID_PATH_ERROR = "InvalidPathError";
+    public static final String GENERIC_ERROR = "GenericError";
     static final String ERROR_DETAILS = "Detail";
     static final String ERROR_MESSAGE = "message";
 
     // System constant fields
-    public static final int DEFAULT_MAX_DEPTH = -1;
+    public static final int MAX_DEPTH = 1;
+
+    // Enum constants
+
+    public static final String REPLACE_EXISTING = "REPLACE_EXISTING";
+    public static final String COPY_ATTRIBUTES = "COPY_ATTRIBUTES";
+    public static final String NO_FOLLOW_LINKS = "NO_FOLLOW_LINKS";
+    public static final String EXISTS = "EXISTS";
+    public static final String IS_DIR = "IS_DIR";
+    public static final String IS_SYMLINK = "IS_SYMLINK";
+    public static final String READABLE = "READABLE";
+    public static final String WRITABLE = "WRITABLE";
+    public static final String RECURSIVE = "RECURSIVE";
+
+    // Metadata fields
+
+    public static final String ABS_PATH = "absPath";
+    public static final String SIZE = "size";
+    public static final String MODIFIED_TIME = "modifiedTime";
+    public static final String DIR = "dir";
 
     // FileEvent struct field names
     public static final String FILE_EVENT_NAME = "name";

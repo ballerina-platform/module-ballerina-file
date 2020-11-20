@@ -19,7 +19,7 @@ import ballerina/runtime;
 import ballerina/java;
 
 listener Listener localFolder = new ({
-    path: "src/file/tests/resources",
+    path: "tests/resources",
     recursive: false
 });
 

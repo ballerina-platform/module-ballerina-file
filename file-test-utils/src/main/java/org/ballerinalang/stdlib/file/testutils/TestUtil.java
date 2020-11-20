@@ -33,7 +33,7 @@ public class TestUtil {
     private static Path symLinkPath;
 
     public static void createTestFile() throws Exception {
-        file = Files.createFile(Paths.get("src", "file", "tests", "resources", "test1.txt"));
+        file = Files.createFile(Paths.get("tests", "resources", "test1.txt"));
     }
 
     public static void modifyTestFile() throws Exception {
@@ -58,7 +58,7 @@ public class TestUtil {
     }
 
     public static void createLink() {
-        Path filePath = Paths.get("src", "file", "tests", "resources", "test.txt");
+        Path filePath = Paths.get("tests", "resources", "test.txt");
         symLinkPath = Paths.get(System.getProperty("java.io.tmpdir"), "test_link.txt");
         try {
             Files.deleteIfExists(symLinkPath);

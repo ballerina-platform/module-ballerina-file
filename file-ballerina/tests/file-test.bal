@@ -19,13 +19,13 @@ import ballerina/java;
 import ballerina/stringutils;
 
 string tmpdir = getTmpDir();
-string srcDir = "src/file/tests/resources/src-dir";
-string rdDir = "src/file/tests/resources/read-dir";
-string emptyDir = "src/file/tests/resources/empty-dir";
-string noDir = "src/file/tests/resources/no-dir";
+string srcDir = "tests/resources/src-dir";
+string rdDir = "tests/resources/read-dir";
+string emptyDir = "tests/resources/empty-dir";
+string noDir = "tests/resources/no-dir";
 
-string srcFile = "src/file/tests/resources/src-file.txt";
-string srcModifiedFile = "src/file/tests/resources/src-file-modified.txt";
+string srcFile = "tests/resources/src-file.txt";
+string srcModifiedFile = "tests/resources/src-file-modified.txt";
 string noFile = "/no-file.txt";
 string srcFileRaw = "/src-file.txt";
 string destFile = "/dest-file.txt";
@@ -182,7 +182,7 @@ function testFileExists() {
 
 @test:Config {}
 function testFileExistsNonExistingFile() {
-    boolean|error result = test("src/file/tests/resources/no-file.txt", EXISTS);
+    boolean|error result = test("tests/resources/no-file.txt", EXISTS);
     if (result is boolean) {
             test:assertFalse(result, "File exists!");
     } else {
@@ -300,7 +300,7 @@ function testCopyFileReplaceTrue() {
 
 @test:Config {}
 function testCopyFileNonExistSource() {
-    error? copyResult = copy("src/file/tests/resources/no-file.txt", tmpdir + noFile);
+    error? copyResult = copy("tests/resources/no-file.txt", tmpdir + noFile);
     if (copyResult is error) {
         string expectedErrMsg = "File not found";
         test:assertTrue(stringutils:contains(copyResult.message(), expectedErrMsg));

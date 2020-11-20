@@ -179,7 +179,7 @@ function testResolvePath() {
 
 @test:Config {}
 function testResolveNotLinkPath() {
-    string path = "src/file/tests/resources/test.txt";
+    string path = "tests/resources/test.txt";
     string|error resPath = normalizePath(path, SYMLINK);
     if(resPath is error) {
         test:assertTrue(stringutils:contains(resPath.message(), "Path is not a symbolic link"));
@@ -190,7 +190,7 @@ function testResolveNotLinkPath() {
 
 @test:Config {}
 function testResolveNonExistencePath() {
-    string path = "src/file/tests/resources/test_non_existent.txt";
+    string path = "tests/resources/test_non_existent.txt";
     string|error resPath = normalizePath(path, SYMLINK);
     if(resPath is error) {
         test:assertTrue(stringutils:contains(resPath.message(), "File does not exist"));

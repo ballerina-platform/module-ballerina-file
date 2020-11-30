@@ -14,7 +14,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/lang.'object as lang;
 import ballerina/java;
 
 ///////////////////////////////////
@@ -24,8 +23,6 @@ import ballerina/java;
 # Represents the directory listener endpoint, which is used to listen to a directory in the local file system.
 public class Listener {
     private ListenerConfig config;
-
-    *lang:Listener;
 
     # Creates a new Directory listener.
     # 
@@ -41,21 +38,21 @@ public class Listener {
     # Starts the `file:Listener`.
     # 
     # + return - () or else error upon failure to start the listener 
-    public isolated function __start() returns error? {
+    public isolated function 'start() returns error? {
         return startEndpoint(self);
     }
 
     # Stops the `file:Listener` gracefully.
     # 
     # + return - () or else error upon failure to stop the listener 
-        public isolated function __gracefulStop() returns error? {
+        public isolated function gracefulStop() returns error? {
         return ();
     }
 
     # Stops the `file:Listener` forcefully.
     # 
     # + return - () or else error upon failure to stop the listener 
-    public isolated function __immediateStop() returns error? {
+    public isolated function immediateStop() returns error? {
         return ();
     }
 
@@ -64,7 +61,7 @@ public class Listener {
     # + s - Type descriptor of the service
     # + name - Name of the service
     # + return - () or else error upon failure to attach to the service
-    public isolated function __attach(service s, string? name = ()) returns error? {
+    public isolated function attach(service object {} s, string[]|string? name = ()) returns error? {
         return register(self, s, name);
     }
 
@@ -72,7 +69,7 @@ public class Listener {
     # 
     # + s - Type descriptor of the service
     # + return - () or else error upon failure to detach to the service
-    public isolated function __detach(service s) returns error? {
+    public isolated function detach(service object {} s) returns error? {
     }
 }
 
@@ -90,7 +87,7 @@ isolated function initEndpoint(Listener fileListener) returns error? = @java:Met
     name: "initEndpoint"
 } external;
 
-isolated function register(Listener fileListener, service s, string? name) returns error? = @java:Method {
+isolated function register(Listener fileListener, service object {} s, string[]|string? name) returns error? = @java:Method {
     'class: "org.ballerinalang.stdlib.file.service.endpoint.Register",
     name: "register"
 } external;

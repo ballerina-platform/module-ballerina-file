@@ -45,7 +45,7 @@ import static org.ballerinalang.stdlib.file.service.DirectoryListenerConstants.F
 
 public class Register {
 
-    public static Object register(BObject listener, BObject service, Object name) {
+    public static Object register(BObject listener, BObject service) {
         BMap serviceEndpointConfig = listener.getMapValue(DirectoryListenerConstants.SERVICE_ENDPOINT_CONFIG);
         try {
             final Map<String, MemberFunctionType> resourceRegistry = getResourceRegistry(service);

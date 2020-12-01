@@ -62,7 +62,7 @@ public class Listener {
     # + name - Name of the service
     # + return - () or else error upon failure to attach to the service
     public isolated function attach(service object {} s, string[]|string? name = ()) returns error? {
-        return register(self, s, name);
+        return register(self, s);
     }
 
     # Stops listening to the directory and detaches the service from the `file:Listener`.
@@ -87,7 +87,7 @@ isolated function initEndpoint(Listener fileListener) returns error? = @java:Met
     name: "initEndpoint"
 } external;
 
-isolated function register(Listener fileListener, service object {} s, string[]|string? name) returns error? = @java:Method {
+isolated function register(Listener fileListener, service object {} s) returns error? = @java:Method {
     'class: "org.ballerinalang.stdlib.file.service.endpoint.Register",
     name: "register"
 } external;

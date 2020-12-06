@@ -27,17 +27,17 @@ boolean createInvoke = false;
 boolean modifyInvoke = false;
 boolean deleteInvoke = false;
 
-service fileSystem on localFolder {
+service "filesystem" on localFolder {
 
-    resource function onCreate(FileEvent m) {
+    remote function onCreate(FileEvent m) {
         createInvoke = true;
     }
 
-    resource function onModify(FileEvent m) {
+    remote function onModify(FileEvent m) {
         modifyInvoke = true;
     }
 
-    resource function onDelete(FileEvent m) {
+    remote function onDelete(FileEvent m) {
         deleteInvoke = true;
     }
 }

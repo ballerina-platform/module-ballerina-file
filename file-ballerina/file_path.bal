@@ -422,7 +422,7 @@ isolated function isLetter(string c) returns boolean {
     string regEx = "^[a-zA-Z]{1}$";
     boolean|error letter = stringutils:matches(c,regEx);
     if (letter is error) {
-        log:printError("Error while checking input character is string", letter);
+        log:printError("Error while checking input character is string", err = letter);
         return false;
     } else {
         return letter;

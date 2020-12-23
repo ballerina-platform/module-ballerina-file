@@ -27,6 +27,7 @@ import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
 import org.ballerinalang.stdlib.file.utils.FileConstants;
 import org.ballerinalang.stdlib.file.utils.FileUtils;
+import org.ballerinalang.stdlib.file.utils.ModuleUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +49,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static org.ballerinalang.stdlib.file.utils.FileConstants.FILE_PACKAGE_ID;
 import static org.ballerinalang.stdlib.file.utils.FileConstants.METADATA;
 import static org.ballerinalang.stdlib.file.utils.FileConstants.RECURSIVE;
 import static org.ballerinalang.stdlib.file.utils.FileConstants.REPLACE_EXISTING;
@@ -242,7 +242,8 @@ public class Utils {
                 }
             }).skip(1).toArray(Object[]::new);
             return ValueCreator.createArrayValue(results,
-                    TypeCreator.createArrayType(TypeCreator.createRecordType(METADATA, FILE_PACKAGE_ID, 0, true, 0)));
+                    TypeCreator.createArrayType(TypeCreator.createRecordType(METADATA, ModuleUtils.getModule(), 0,
+                            true, 0)));
         } catch (IOException | BError ex) {
             return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR, ex);
         } catch (SecurityException ex) {

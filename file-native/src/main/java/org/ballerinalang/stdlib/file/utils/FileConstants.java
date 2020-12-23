@@ -28,26 +28,6 @@ import static io.ballerina.runtime.api.constants.RuntimeConstants.BALLERINA_BUIL
  * @since 0.995.0
  */
 public class FileConstants {
-    /**
-     * Organization name.
-     */
-    public static final String ORG_NAME = "ballerina";
-
-    /**
-     * Package name.
-     */
-    public static final String PACKAGE_NAME = "file";
-
-    /**
-     * Package version.
-     */
-    public static final String PACKAGE_VERSION = "0.6.3";
-
-    /**
-     * Package path.
-     */
-    public static final Module FILE_PACKAGE_ID = new Module(BALLERINA_BUILTIN_PKG_PREFIX, PACKAGE_NAME,
-                                                                PACKAGE_VERSION);
     public static final String METADATA = "MetaData";
 
     // File error type IDs

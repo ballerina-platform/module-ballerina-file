@@ -16,11 +16,11 @@
 
 import ballerina/io;
 import ballerina/log;
-import ballerina/system;
+import ballerina/os;
 import ballerina/stringutils;
 import ballerina/java;
 
-final boolean isWindows = system:getEnv("OS") != "";
+final boolean isWindows = os:getEnv("OS") != "";
 final string pathSeparator = isWindows ? "\\" : "/";
 final string pathListSeparator = isWindows ? ";" : ":";
 

@@ -15,11 +15,11 @@
 // under the License.
 
 import ballerina/test;
-import ballerina/system;
+import ballerina/os;
 import ballerina/java;
 import ballerina/stringutils;
 
-boolean isWin = system:getEnv("OS") != "";
+boolean isWin = os:getEnv("OS") != "";
 
 @test:Config {}
 function testGetAbsolutePath() {

@@ -25,8 +25,8 @@ version = "@stdlib.log.version@"
 
 [[dependency]]
 org = "ballerina"
-name = "system"
-version = "@stdlib.system.version@"
+name = "os"
+version = "@stdlib.os.version@"
 
 [[dependency]]
 org = "ballerina"

@@ -221,7 +221,7 @@ public function normalizePath(string path, NormOption option) returns string|Err
         }
         
         _ => {
-            return InvalidOperationError("Unsupported normalization option!");
+            return error InvalidOperationError("Unsupported normalization option!");
         }
     }
 }
@@ -294,7 +294,7 @@ public function relativePath(string base, string target) returns string|Error {
     int targetOffset;
     [targetRoot, targetOffset] = check getRoot(cleanTarget);
     if (!isSamePath(baseRoot, targetRoot)) {
-        return RelativePathError("Can't make: " + target + " relative to " + base);
+        return error RelativePathError("Can't make: " + target + " relative to " + base);
     }
     int b0 = baseOffset;
     int bi = baseOffset;
@@ -322,7 +322,7 @@ public function relativePath(string base, string target) returns string|Error {
         t0 = ti;
     }
     if (cleanBase.substring(b0, bi) == "..") {
-        return RelativePathError("Can't make: " + target + " relative to " + base);
+        return error RelativePathError("Can't make: " + target + " relative to " + base);
     }
     if (b0 != bl) {
         string remainder = cleanBase.substring(b0, bl);
@@ -448,7 +448,7 @@ isolated function getOffsetIndexes(string path) returns int[]|Error {
 isolated function charAt(string input, int index) returns string|Error {
     int length = input.length();
     if (index > length) {
-        return GenericError(io:sprintf("Character index %d is greater then path string length %d",
+        return error GenericError(io:sprintf("Character index %d is greater then path string length %d",
         index, length));
     }
     return input.substring(index, index + 1);

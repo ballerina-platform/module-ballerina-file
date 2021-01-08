@@ -22,7 +22,7 @@ import io.ballerina.runtime.api.Runtime;
 import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.creators.ValueCreator;
 import io.ballerina.runtime.api.async.StrandMetadata;
-import io.ballerina.runtime.api.types.MemberFunctionType;
+import io.ballerina.runtime.api.types.MethodType;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
@@ -47,11 +47,11 @@ public class FSListener implements LocalFileSystemListener {
     private static final Logger log = LoggerFactory.getLogger(FSListener.class);
     private Runtime runtime;
     private BObject service;
-    private Map<String, MemberFunctionType> attachedFunctionRegistry;
+    private Map<String, MethodType> attachedFunctionRegistry;
     private static final StrandMetadata ON_MESSAGE_METADATA = new StrandMetadata(ModuleUtils.getModule().getOrg(),
             ModuleUtils.getModule().getName(), ModuleUtils.getModule().getVersion(), RESOURCE_NAME_ON_MESSAGE);
 
-    public FSListener(Runtime runtime, BObject service, Map<String, MemberFunctionType> resourceRegistry) {
+    public FSListener(Runtime runtime, BObject service, Map<String, MethodType> resourceRegistry) {
         this.runtime = runtime;
         this.service = service;
         this.attachedFunctionRegistry = resourceRegistry;
@@ -60,7 +60,7 @@ public class FSListener implements LocalFileSystemListener {
     @Override
     public void onMessage(LocalFileSystemEvent fileEvent) {
         Object[] parameters = getJvmSignatureParameters(fileEvent);
-        MemberFunctionType resource = getMemberFunctionType(fileEvent.getEvent());
+        MethodType resource = getMethodType(fileEvent.getEvent());
         if (resource != null) {
             runtime.invokeMethodAsync(service, resource.getName(), null, ON_MESSAGE_METADATA, new DirectoryCallback(),
                                       parameters);
@@ -77,7 +77,7 @@ public class FSListener implements LocalFileSystemListener {
         return new Object[] { eventStruct, true };
     }
 
-    private MemberFunctionType getMemberFunctionType(String event) {
+    private MethodType getMethodType(String event) {
         return attachedFunctionRegistry.get(event);
     }
 }

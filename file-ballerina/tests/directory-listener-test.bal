@@ -15,7 +15,7 @@
 // under the License.
 
 import ballerina/test;
-import ballerina/runtime;
+import ballerina/lang.runtime;
 import ballerina/java;
 
 listener Listener localFolder = new ({
@@ -48,7 +48,7 @@ function isCreateInvoked() {
     if (fileResult is error) {
         test:assertFail("File not opened!");
     } else {
-        runtime:sleep(2000);
+        runtime:sleep(2);
         test:assertTrue(createInvoke, "File creation event not captured!");
     }
 }
@@ -59,7 +59,7 @@ function isModifyInvoked() {
     if (fileResult is error) {
         test:assertFail("File not modified!");
     } else {
-        runtime:sleep(2000);
+        runtime:sleep(2);
         test:assertTrue(modifyInvoke, "File modification event not captured!");
     }
 }
@@ -70,7 +70,7 @@ function isDeleteInvoked() {
     if (fileResult is error) {
         test:assertFail("File not deleted!");
     } else {
-        runtime:sleep(2000);
+        runtime:sleep(2);
         test:assertTrue(deleteInvoke, "File deletion event not captured!");
     }
 }

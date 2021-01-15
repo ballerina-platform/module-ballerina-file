@@ -53,7 +53,7 @@ function isCreateInvoked() {
     }
 }
 
-@test:Config { dependsOn: ["isCreateInvoked"]}
+@test:Config { dependsOn: [isCreateInvoked]}
 function isModifyInvoked() {
      error? fileResult = modifyTestFile();
     if (fileResult is error) {
@@ -64,7 +64,7 @@ function isModifyInvoked() {
     }
 }
 
-@test:Config { dependsOn: ["isCreateInvoked", "isModifyInvoked"]}
+@test:Config { dependsOn: [isCreateInvoked, isModifyInvoked]}
 function isDeleteInvoked() {
     error? fileResult = deleteTestFile();
     if (fileResult is error) {

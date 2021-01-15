@@ -61,7 +61,7 @@ function testIllegalWindowsPath() {
 }
 
 @test:Config {
-    dataProvider: "testIsAbsPathDataProvider"
+    dataProvider: testIsAbsPathDataProvider
 }
 function testIsAbsolutePath(string path, string posixOutput, string windowsOutput) {
     if(isWin) {
@@ -72,7 +72,7 @@ function testIsAbsolutePath(string path, string posixOutput, string windowsOutpu
 }
 
 @test:Config {
-    dataProvider: "getFileNameDataset"
+    dataProvider: getFileNameDataset
 }
 function testGetFileName(string path, string posixOutput, string windowsOutput){
     if(isWin) {
@@ -83,7 +83,7 @@ function testGetFileName(string path, string posixOutput, string windowsOutput){
 }
 
 @test:Config {
-    dataProvider: "getParentDataset"
+    dataProvider: getParentDataset
 }
 function testGetParent(string path, string posixOutput, string windowsOutput){
     if(isWin) {
@@ -94,7 +94,7 @@ function testGetParent(string path, string posixOutput, string windowsOutput){
 }
 
 @test:Config {
-    dataProvider: "getNormalizedDataset"
+    dataProvider: getNormalizedDataset
 }
 function testPosixNormalizePath(string path, string posixOutput, string windowsOutput){
     if(isWin) {
@@ -105,7 +105,7 @@ function testPosixNormalizePath(string path, string posixOutput, string windowsO
 }
 
 @test:Config {
-    dataProvider: "getSplitDataset"
+    dataProvider: getSplitDataset
 }
 function testSplitPath(string path, string posixOutput, string windowsOutput){
     if(isWin) {
@@ -116,7 +116,7 @@ function testSplitPath(string path, string posixOutput, string windowsOutput){
 }
 
 @test:Config {
-    dataProvider: "getPosixFileParts"
+    dataProvider: getPosixFileParts
 }
 function testPosixjoinPath([string[], string] params){
     string[] a;
@@ -128,7 +128,7 @@ function testPosixjoinPath([string[], string] params){
 }
 
 @test:Config {
-    dataProvider: "getWindowsFileParts"
+    dataProvider: getWindowsFileParts
 }
 function testjoinPath([string[], string] params){
     string[] a;
@@ -140,7 +140,7 @@ function testjoinPath([string[], string] params){
 }
 
 @test:Config {
-    dataProvider: "getRelativeSet"
+    dataProvider: getRelativeSet
 }
 function testRelativePath(string path, string targetPath, string posixOutput, string windowsOutput) {
     if(isWin) {

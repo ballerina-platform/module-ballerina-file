@@ -15,7 +15,7 @@
 // under the License.
 
 import ballerina/test;
-import ballerina/lang.runtime;
+import ballerina/lang.runtime as runtime;
 import ballerina/java;
 
 listener Listener localFolder = new ({

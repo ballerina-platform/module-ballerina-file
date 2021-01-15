@@ -47,7 +47,7 @@ function testRename() {
     }
 }
 
-@test:Config {dependsOn: ["testRename"]}
+@test:Config {dependsOn: [testRename]}
 function testRenameExisting() {
     error? copyResult = copy(srcFile, tmpdir + srcFileRaw, REPLACE_EXISTING);
     if (copyResult is error) {
@@ -61,7 +61,7 @@ function testRenameExisting() {
     }
 }
 
-@test:Config {dependsOn: ["testRenameExisting"]}
+@test:Config {dependsOn: [testRenameExisting]}
 function testRemove() {
     error? removeResult = remove(tmpdir + destFile);
     if (removeResult is error) {
@@ -77,7 +77,7 @@ function testCopyDir() {
     }
 }
 
-@test:Config {dependsOn: ["testCopyDir"]}
+@test:Config {dependsOn: [testCopyDir]}
 function testRemoverecursivefalse() {
     error? removeResult = remove(tmpdir + "/src-dir");
     if (removeResult is error) {
@@ -86,7 +86,7 @@ function testRemoverecursivefalse() {
     }
 }
 
-@test:Config {dependsOn: ["testRemoverecursivefalse"]}
+@test:Config {dependsOn: [testRemoverecursivefalse]}
 function testRemoverecursiveTrue() {
     error? removeResult = remove(tmpdir + "/src-dir", RECURSIVE);
     if (removeResult is error) {
@@ -103,7 +103,7 @@ function testRemoveNonExistingFile() {
     }
 }
 
-@test:Config {dependsOn: ["testRenameExisting"]}
+@test:Config {dependsOn: [testRenameExisting]}
 function testMetadata() {
     MetaData|error metadata = getMetaData(tmpdir + srcFileRaw);
     if (metadata is MetaData) {
@@ -152,7 +152,7 @@ function testCreateDir() {
     }
 }
 
-@test:Config {dependsOn: ["testCreateDir"]}
+@test:Config {dependsOn: [testCreateDir]}
 function testReadEmptyDir() {
     MetaData[]|error metadata = readDir(emptyDir);
     if (metadata is MetaData[]) {
@@ -253,7 +253,7 @@ function testCopyFile() {
     }
 }
 
-@test:Config {dependsOn: ["testCopyFile"]}
+@test:Config {dependsOn: [testCopyFile]}
 function testCopyFileReplaceFalse() {
     MetaData|error srcMmetadata = getMetaData(srcModifiedFile);
     if (srcMmetadata is MetaData) {
@@ -277,7 +277,7 @@ function testCopyFileReplaceFalse() {
     }
 }
 
-@test:Config {dependsOn: ["testCopyFileReplaceFalse"]}
+@test:Config {dependsOn: [testCopyFileReplaceFalse]}
 function testCopyFileReplaceTrue() {
     error? copyResult = copy(srcModifiedFile, tmpdir + copyFile, REPLACE_EXISTING);
     if (copyResult is error) {

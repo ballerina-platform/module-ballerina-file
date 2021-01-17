@@ -16,7 +16,6 @@
 
 import ballerina/test;
 import ballerina/java;
-import ballerina/stringutils;
 
 string tmpdir = getTmpDir();
 string srcDir = "tests/resources/src-dir";
@@ -57,7 +56,7 @@ function testRenameExisting() {
     error? renameResult = rename(tmpdir + srcFileRaw, tmpdir + destFile);
     if (renameResult is error) {
         string expectedErrMsg = "File already exists in the new path ";
-        test:assertTrue(stringutils:contains(renameResult.message(), expectedErrMsg));
+        test:assertTrue(renameResult.message().includes(expectedErrMsg));
     }
 }
 
@@ -82,7 +81,7 @@ function testRemoverecursivefalse() {
     error? removeResult = remove(tmpdir + "/src-dir");
     if (removeResult is error) {
         string expectedErrMsg = "Error while deleting";
-        test:assertTrue(stringutils:contains(removeResult.message(), expectedErrMsg));
+        test:assertTrue(removeResult.message().includes(expectedErrMsg));
     }
 }
 
@@ -99,7 +98,7 @@ function testRemoveNonExistingFile() {
     error? removeResult = remove(tmpdir + noFile);
     if (removeResult is error) {
         string expectedErrMsg = "File not found";
-        test:assertTrue(stringutils:contains(removeResult.message(), expectedErrMsg));
+        test:assertTrue(removeResult.message().includes(expectedErrMsg));
     }
 }
 
@@ -123,7 +122,7 @@ function testMetadataNonExisting() {
     MetaData|error metadata = getMetaData(tmpdir + noFile);
     if (metadata is error) {
         string expectedErrMsg = "File not found";
-        test:assertTrue(stringutils:contains(metadata.message(), expectedErrMsg));
+        test:assertTrue(metadata.message().includes(expectedErrMsg));
     }
 }
 
@@ -140,7 +139,7 @@ function testReadNonExistingDir() {
     MetaData[]|error metadata = readDir(noDir);
     if (metadata is error) {
         string expectedErrMsg = "File not found";
-        test:assertTrue(stringutils:contains(metadata.message(), expectedErrMsg));
+        test:assertTrue(metadata.message().includes(expectedErrMsg));
     }
 }
 
@@ -166,7 +165,7 @@ function testReadFileWithReadDir() {
     MetaData[]|error metadata = readDir(srcFile);
     if (metadata is error) {
         string expectedErrMsg = "not a directory";
-        test:assertTrue(stringutils:contains(metadata.message(), expectedErrMsg));
+        test:assertTrue(metadata.message().includes(expectedErrMsg));
     }
 }
 
@@ -195,7 +194,7 @@ function testCreateNonExistingPathFile() {
     error? crResult = create(noDir + noFile);
     if (crResult is error) {
         string expectedErrMsg = "The file does not exist in path";
-        test:assertTrue(stringutils:contains(crResult.message(), expectedErrMsg));
+        test:assertTrue(crResult.message().includes(expectedErrMsg));
     }
 }
 
@@ -204,7 +203,7 @@ function testCreateExistingFile() {
     error? crResult = create(srcFile);
     if (crResult is error) {
         string expectedErrMsg = "File already exists. Failed to create the file";
-        test:assertTrue(stringutils:contains(crResult.message(), expectedErrMsg));
+        test:assertTrue(crResult.message().includes(expectedErrMsg));
     }
 }
 
@@ -226,7 +225,7 @@ function testCreateDirWithoutParentDir() {
     error? result = createDir(tmpdir + "/parent" + "/child", NON_RECURSIVE);
     if (result is error) {
         string expectedErrMsg = "IO error while creating the file";
-        test:assertTrue(stringutils:contains(result.message(), expectedErrMsg));
+        test:assertTrue(result.message().includes(expectedErrMsg));
     }
 }
 
@@ -303,7 +302,7 @@ function testCopyFileNonExistSource() {
     error? copyResult = copy("tests/resources/no-file.txt", tmpdir + noFile);
     if (copyResult is error) {
         string expectedErrMsg = "File not found";
-        test:assertTrue(stringutils:contains(copyResult.message(), expectedErrMsg));
+        test:assertTrue(copyResult.message().includes(expectedErrMsg));
     }
 }
 

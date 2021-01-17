@@ -17,7 +17,7 @@
 import ballerina/io;
 import ballerina/log;
 import ballerina/os;
-import ballerina/stringutils;
+import ballerina/regex;
 import ballerina/java;
 
 final boolean isWindows = os:getEnv("OS") != "";
@@ -214,7 +214,7 @@ public function normalizePath(string path, NormOption option) returns string|Err
         NORMCASE => {
             if (isWindows) {
                 string lowerCasePath = path.toLowerAscii();
-                lowerCasePath = stringutils:replace(lowerCasePath, "/", "\\");
+                lowerCasePath = regex:replaceAll(lowerCasePath, "/", "\\\\");
                 return lowerCasePath;
             }
             return path;
@@ -420,7 +420,7 @@ isolated function nextSlashIndex(string path, int offset, int end) returns int|E
 
 isolated function isLetter(string c) returns boolean {
     string regEx = "^[a-zA-Z]{1}$";
-    boolean|error letter = stringutils:matches(c,regEx);
+    boolean|error letter = regex:matches(c,regEx);
     if (letter is error) {
         log:printError("Error while checking input character is string", err = letter);
         return false;
@@ -456,7 +456,7 @@ isolated function charAt(string input, int index) returns string|Error {
 
 isolated function isSamePath(string base, string target) returns boolean {
     if (isWindows) {
-        return stringutils:equalsIgnoreCase(base, target);
+        return base.equalsIgnoreCaseAscii(target);
     } else {
         return base == target;
     }

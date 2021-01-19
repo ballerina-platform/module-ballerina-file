@@ -18,11 +18,10 @@
 package org.ballerinalang.stdlib.file.utils;
 
 import io.ballerina.runtime.api.creators.ErrorCreator;
-import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.creators.ValueCreator;
+import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.values.BError;
 import io.ballerina.runtime.api.values.BMap;
-import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
 
 import java.io.File;
@@ -100,8 +99,8 @@ public class FileUtils {
      * Returns the system property which corresponds to the given key.
      *
      * @param key system property key
-     * @return system property as a {@link String} or {@code PredefinedTypes.TYPE_STRING.getZeroValue()} if the property does not
-     * exist.
+     * @return system property as a {@link String} or {@code PredefinedTypes.TYPE_STRING.getZeroValue()} if
+     * the property does not exist.
      */
     public static String getSystemProperty(String key) {
         String value = System.getProperty(key);

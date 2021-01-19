@@ -23,7 +23,6 @@ import io.ballerina.runtime.api.creators.TypeCreator;
 import io.ballerina.runtime.api.creators.ValueCreator;
 import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.values.BError;
-import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
 import org.ballerinalang.stdlib.file.utils.FileConstants;
 import org.ballerinalang.stdlib.file.utils.FileUtils;
@@ -49,19 +48,18 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static org.ballerinalang.stdlib.file.utils.FileConstants.METADATA;
-import static org.ballerinalang.stdlib.file.utils.FileConstants.RECURSIVE;
-import static org.ballerinalang.stdlib.file.utils.FileConstants.REPLACE_EXISTING;
+import static java.nio.file.FileVisitResult.CONTINUE;
+import static java.nio.file.FileVisitResult.SKIP_SUBTREE;
 import static org.ballerinalang.stdlib.file.utils.FileConstants.COPY_ATTRIBUTES;
-import static org.ballerinalang.stdlib.file.utils.FileConstants.NO_FOLLOW_LINKS;
 import static org.ballerinalang.stdlib.file.utils.FileConstants.EXISTS;
 import static org.ballerinalang.stdlib.file.utils.FileConstants.IS_DIR;
 import static org.ballerinalang.stdlib.file.utils.FileConstants.IS_SYMLINK;
+import static org.ballerinalang.stdlib.file.utils.FileConstants.METADATA;
+import static org.ballerinalang.stdlib.file.utils.FileConstants.NO_FOLLOW_LINKS;
 import static org.ballerinalang.stdlib.file.utils.FileConstants.READABLE;
+import static org.ballerinalang.stdlib.file.utils.FileConstants.RECURSIVE;
+import static org.ballerinalang.stdlib.file.utils.FileConstants.REPLACE_EXISTING;
 import static org.ballerinalang.stdlib.file.utils.FileConstants.WRITABLE;
-
-import static java.nio.file.FileVisitResult.CONTINUE;
-import static java.nio.file.FileVisitResult.SKIP_SUBTREE;
 
 /**
  * Native function implementations of the file module.
@@ -235,8 +233,7 @@ public class Utils {
         try (Stream<Path> walk = Files.walk(inputFile.toPath(), FileConstants.MAX_DEPTH)) {
             results = walk.map(x -> {
                 try {
-                    Object objectValue = FileUtils.getMetaData(x.toFile());
-                    return objectValue;
+                    return FileUtils.getMetaData(x.toFile());
                 } catch (IOException e) {
                     throw ErrorCreator.createError(StringUtils.fromString("Error while accessing file info"), e);
                 }
@@ -255,18 +252,15 @@ public class Utils {
         Path srcPath = Paths.get(sourcePath.getValue());
         Path destPath = Paths.get(destinationPath.getValue());
         List<CopyOption> options = new ArrayList<>();
-        if(copyOptions.length > 0) {
+        if (copyOptions.length > 0) {
             for (BString op:copyOptions) {
                 if (REPLACE_EXISTING.equals(op.getValue())) {
                     options.add(StandardCopyOption.REPLACE_EXISTING);
-                }
-                else if (COPY_ATTRIBUTES.equals(op.getValue())) {
+                } else if (COPY_ATTRIBUTES.equals(op.getValue())) {
                     options.add(StandardCopyOption.COPY_ATTRIBUTES);
-                }
-                else if (NO_FOLLOW_LINKS.equals(op.getValue())) {
+                } else if (NO_FOLLOW_LINKS.equals(op.getValue())) {
                     options.add(LinkOption.NOFOLLOW_LINKS);
-                }
-                else {
+                } else {
                     return FileUtils.getBallerinaError(FileConstants.INVALID_OPERATION_ERROR, "Invalid copy option.");
                 }
             }
@@ -326,13 +320,13 @@ public class Utils {
         String s = "";
         String p = "";
         String d = "";
-        if(suffix != null) {
+        if (suffix != null) {
             s = ((BString) suffix).getValue().trim();
         }
-        if(prefix != null) {
+        if (prefix != null) {
             p = ((BString) prefix).getValue().trim();
         }
-        if(dir != null) {
+        if (dir != null) {
             d = ((BString) dir).getValue().trim();
         }
         String filename = p + UUID.randomUUID().toString() + s;
@@ -345,7 +339,10 @@ public class Utils {
                 path = Files.createFile(Paths.get(d, filename));
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     File rmFile = path.toAbsolutePath().toFile();
-                    rmFile.delete();
+                    boolean result = rmFile.delete();
+                    if (!result) {
+                        log.error("Error deleting temporary file.");
+                    }
                 }));
             }
             return StringUtils.fromString(path.toString());
@@ -360,13 +357,13 @@ public class Utils {
         String s = "";
         String p = "";
         String d = "";
-        if(suffix != null) {
+        if (suffix != null) {
             s = ((BString) suffix).getValue().trim();
         }
-        if(prefix != null) {
+        if (prefix != null) {
             p = ((BString) prefix).getValue().trim();
         }
-        if(dir != null) {
+        if (dir != null) {
             d = ((BString) dir).getValue().trim();
         }
         String filename = p + UUID.randomUUID().toString() + s;
@@ -379,7 +376,10 @@ public class Utils {
                 path = Files.createDirectory(Paths.get(d, filename));
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     File rmFile = path.toAbsolutePath().toFile();
-                    rmFile.delete();
+                    boolean result = rmFile.delete();
+                    if (!result) {
+                        log.error("Error deleting temporary directory.");
+                    }
                 }));
             }
             return StringUtils.fromString(path.toString());

@@ -23,6 +23,7 @@ import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.values.BError;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BString;
+import org.ballerinalang.stdlib.time.util.TimeUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,9 +40,6 @@ import static org.ballerinalang.stdlib.file.utils.FileConstants.MODIFIED_TIME;
 import static org.ballerinalang.stdlib.file.utils.FileConstants.READABLE;
 import static org.ballerinalang.stdlib.file.utils.FileConstants.SIZE;
 import static org.ballerinalang.stdlib.file.utils.FileConstants.WRITABLE;
-import static org.ballerinalang.stdlib.time.util.TimeUtils.createTimeRecord;
-import static org.ballerinalang.stdlib.time.util.TimeUtils.getTimeRecord;
-import static org.ballerinalang.stdlib.time.util.TimeUtils.getTimeZoneRecord;
 
 /**
  * @since 0.94.1
@@ -82,8 +80,8 @@ public class FileUtils {
         BMap<BString, Object> lastModifiedInstance;
         FileTime lastModified = Files.getLastModifiedTime(inputFile.toPath());
         ZonedDateTime zonedDateTime = ZonedDateTime.parse(lastModified.toString());
-        lastModifiedInstance = createTimeRecord(getTimeZoneRecord(), getTimeRecord(),
-                lastModified.toMillis(), StringUtils.fromString(zonedDateTime.getZone().toString()));
+        lastModifiedInstance = TimeUtils.createTimeRecord(lastModified.toMillis(),
+                StringUtils.fromString(zonedDateTime.getZone().toString()));
         Map<String, Object> metadataRecord = new HashMap<>();
         metadataRecord.put(ABS_PATH, inputFile.getAbsolutePath());
         metadataRecord.put(SIZE, inputFile.length());

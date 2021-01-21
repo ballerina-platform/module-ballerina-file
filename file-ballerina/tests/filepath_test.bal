@@ -16,7 +16,7 @@
 
 import ballerina/test;
 import ballerina/os;
-import ballerina/java;
+import ballerina/jballerina.java;
 import ballerina/regex;
 import ballerina/lang.'boolean as booleans;
 

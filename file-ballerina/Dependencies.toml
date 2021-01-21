@@ -1,0 +1,24 @@
+[[dependency]]
+org = "ballerina"
+name = "io"
+version = "@stdlib.io.version@"
+
+[[dependency]]
+org = "ballerina"
+name = "time"
+version = "@stdlib.time.version@"
+
+[[dependency]]
+org = "ballerina"
+name = "log"
+version = "@stdlib.log.version@"
+
+[[dependency]]
+org = "ballerina"
+name = "os"
+version = "@stdlib.os.version@"
+
+[[dependency]]
+org = "ballerina"
+name = "regex"
+version = "@stdlib.regex.version@"

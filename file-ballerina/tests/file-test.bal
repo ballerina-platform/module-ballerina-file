@@ -15,7 +15,7 @@
 // under the License.
 
 import ballerina/test;
-import ballerina/java;
+import ballerina/jballerina.java;
 
 string tmpdir = getTmpDir();
 string srcDir = "tests/resources/src-dir";

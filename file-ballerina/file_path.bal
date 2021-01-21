@@ -18,7 +18,7 @@ import ballerina/io;
 import ballerina/log;
 import ballerina/os;
 import ballerina/regex;
-import ballerina/java;
+import ballerina/jballerina.java;
 
 final boolean isWindows = os:getEnv("OS") != "";
 final string pathSeparator = isWindows ? "\\" : "/";

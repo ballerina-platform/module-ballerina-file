@@ -3,31 +3,6 @@ org = "ballerina"
 name = "file"
 version = "@toml.version@"
 
-[[dependency]]
-org = "ballerina"
-name = "io"
-version = "@stdlib.io.version@"
-
-[[dependency]]
-org = "ballerina"
-name = "time"
-version = "@stdlib.time.version@"
-
-[[dependency]]
-org = "ballerina"
-name = "log"
-version = "@stdlib.log.version@"
-
-[[dependency]]
-org = "ballerina"
-name = "os"
-version = "@stdlib.os.version@"
-
-[[dependency]]
-org = "ballerina"
-name = "regex"
-version = "@stdlib.regex.version@"
-
 [[platform.java11.dependency]]
 path = "../file-native/build/libs/file-native-@project.version@.jar"
 groupId = "ballerina"

@@ -26,11 +26,6 @@ plugins {
 ext.ballerinaLangVersion = project.ballerinaLangVersion
 ext.puppycrawlCheckstyleVersion = project.puppycrawlCheckstyleVersion
 ext.slf4jVersion = "1.7.30"
-ext.stdlibRegexVersion = project.stdlibRegexVersion
-ext.stdlibIOVersion = project.stdlibIOVersion
-ext.stdlibLogVersion = project.stdlibLogVersion
-ext.stdlibOsVersion = project.stdlibOsVersion
-ext.stdlibTimeVersion = project.stdlibTimeVersion
 
 allprojects {
     group = 'org.ballerinalang'
@@ -112,7 +107,7 @@ subprojects {
     dependencies {
         /* Standard libraries */
         ballerinaStdLibs "org.ballerinalang:regex-ballerina:${stdlibRegexVersion}"
-        ballerinaStdLibs "org.ballerinalang:io-ballerina:${stdlibIOVersion}"
+        ballerinaStdLibs "org.ballerinalang:io-ballerina:${stdlibIoVersion}"
         ballerinaStdLibs "org.ballerinalang:log-ballerina:${stdlibLogVersion}"
         ballerinaStdLibs "org.ballerinalang:os-ballerina:${stdlibOsVersion}"
         ballerinaStdLibs "org.ballerinalang:time-ballerina:${stdlibTimeVersion}"

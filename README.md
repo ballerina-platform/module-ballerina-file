@@ -51,6 +51,10 @@ Execute the commands below to build from source.
 4. To debug the tests:
 
         ./gradlew clean build -Pdebug=<port>
+        
+5. To debug the module with Ballerina language:
+   
+        ./gradlew clean build -PbalJavaDebug=<port>        
 
 ## Contributing to Ballerina
 

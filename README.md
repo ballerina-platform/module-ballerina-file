@@ -11,9 +11,9 @@ The File library is one of the standard library modules of the<a target="_blank"
 
 This module contains functions to perform file system based operations such as create, delete, rename the file/directory, and retrieve metadata of the file.
 
-For more information go to [The File Module](https://ballerina.io/swan-lake/learn/api-docs/ballerina/file/).
+For more information go to [The File Module](https://ballerina.io/learn/api-docs/ballerina/file/).
 
-For example demonstrations of the usage, go to [Ballerina By Examples](https://ballerina.io/swan-lake/learn/by-example/file.html).
+For example demonstrations of the usage, go to [Ballerina By Examples](https://ballerina.io/learn/by-example/file.html).
 
 ## Issues and Projects
 

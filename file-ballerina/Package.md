@@ -1,6 +1,6 @@
-## Module Overview
+## Package Overview
 
-This module contains functions to perform file system based operations such as create, delete, rename the
+This package contains functions to perform file system based operations such as create, delete, rename the
 file/directory, and retrieve metadata of the file.
 
 For an example on the usage of the operations, see the [File Example](https://ballerina.io/learn/by-example/file.html).

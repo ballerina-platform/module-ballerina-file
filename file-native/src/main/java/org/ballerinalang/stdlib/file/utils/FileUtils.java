@@ -36,10 +36,10 @@ import java.util.Map;
 import static org.ballerinalang.stdlib.file.utils.FileConstants.ABS_PATH;
 import static org.ballerinalang.stdlib.file.utils.FileConstants.DIR;
 import static org.ballerinalang.stdlib.file.utils.FileConstants.METADATA;
+import static org.ballerinalang.stdlib.file.utils.FileConstants.META_DATA_READABLE;
+import static org.ballerinalang.stdlib.file.utils.FileConstants.META_DATA_WRITABLE;
 import static org.ballerinalang.stdlib.file.utils.FileConstants.MODIFIED_TIME;
-import static org.ballerinalang.stdlib.file.utils.FileConstants.READABLE;
 import static org.ballerinalang.stdlib.file.utils.FileConstants.SIZE;
-import static org.ballerinalang.stdlib.file.utils.FileConstants.WRITABLE;
 
 /**
  * @since 0.94.1
@@ -87,8 +87,8 @@ public class FileUtils {
         metadataRecord.put(SIZE, inputFile.length());
         metadataRecord.put(MODIFIED_TIME, lastModifiedInstance);
         metadataRecord.put(DIR, inputFile.isDirectory());
-        metadataRecord.put(READABLE, Files.isReadable(inputFile.toPath()));
-        metadataRecord.put(WRITABLE, Files.isWritable(inputFile.toPath()));
+        metadataRecord.put(META_DATA_READABLE, Files.isReadable(inputFile.toPath()));
+        metadataRecord.put(META_DATA_WRITABLE, Files.isWritable(inputFile.toPath()));
         return ValueCreator.createRecordValue(ModuleUtils.getModule(), METADATA, metadataRecord);
     }
 

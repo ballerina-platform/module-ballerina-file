@@ -18,9 +18,6 @@
 
 package org.ballerinalang.stdlib.file.utils;
 
-import io.ballerina.runtime.api.Module;
-
-import static io.ballerina.runtime.api.constants.RuntimeConstants.BALLERINA_BUILTIN_PKG_PREFIX;
 
 /**
  * Constants for file package functions.
@@ -64,6 +61,8 @@ public class FileConstants {
     public static final String SIZE = "size";
     public static final String MODIFIED_TIME = "modifiedTime";
     public static final String DIR = "dir";
+    public static final String META_DATA_READABLE = "readable";
+    public static final String META_DATA_WRITABLE = "writable";
 
     // FileEvent struct field names
     public static final String FILE_EVENT_NAME = "name";

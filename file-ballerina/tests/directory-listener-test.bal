@@ -16,7 +16,7 @@
 
 import ballerina/test;
 import ballerina/lang.runtime as runtime;
-import ballerina/java;
+import ballerina/jballerina.java;
 
 listener Listener localFolder = new ({
     path: "tests/resources",

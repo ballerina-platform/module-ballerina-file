@@ -16,8 +16,9 @@
 
 import ballerina/test;
 import ballerina/os;
-import ballerina/java;
-import ballerina/stringutils;
+import ballerina/jballerina.java;
+import ballerina/regex;
+import ballerina/lang.'boolean as booleans;
 
 boolean isWin = os:getEnv("OS") != "";
 
@@ -51,7 +52,7 @@ function testIllegalWindowsPath() {
     if (isWin) {
         test:assertTrue(absPath is error);
         if(absPath is error) {
-            test:assertTrue(stringutils:contains(absPath.message(), "Invalid path"));
+            test:assertTrue(absPath.message().includes("Invalid path"));
         }
     } else {
         if(absPath is string) {
@@ -182,7 +183,7 @@ function testResolveNotLinkPath() {
     string path = "tests/resources/test.txt";
     string|error resPath = normalizePath(path, SYMLINK);
     if(resPath is error) {
-        test:assertTrue(stringutils:contains(resPath.message(), "Path is not a symbolic link"));
+        test:assertTrue(resPath.message().includes("Path is not a symbolic link"));
     } else {
         test:assertFail("Error resolving path!");
     }
@@ -193,7 +194,7 @@ function testResolveNonExistencePath() {
     string path = "tests/resources/test_non_existent.txt";
     string|error resPath = normalizePath(path, SYMLINK);
     if(resPath is error) {
-        test:assertTrue(stringutils:contains(resPath.message(), "File does not exist"));
+        test:assertTrue(resPath.message().includes("File does not exist"));
     } else {
         test:assertFail("Error resolving path!");
     }
@@ -217,7 +218,7 @@ function testNormcase() {
 function validateAbsolutePath(string path, string expected) {
     boolean|error isAbs = isAbsolutePath(path);
     if(isAbs is boolean) {
-        test:assertEquals(isAbs, stringutils:toBoolean(expected));
+        test:assertEquals(isAbs, booleans:fromString(expected));
     } else {
         test:assertFail("Error checking is-absolute!");
     }
@@ -228,7 +229,7 @@ function validateFilename(string path, string expected) {
     if(expected=="error") {
         test:assertTrue(fname is error);
         if (fname is error) {
-            test:assertTrue(stringutils:contains(fname.message(), "UNC path"));
+            test:assertTrue(fname.message().includes("UNC path"));
         }
     } else {
         test:assertTrue(fname is string);
@@ -243,7 +244,7 @@ function validateParent(string input, string expected) {
     if(expected=="error") {
         test:assertTrue(parentName is error);
         if (parentName is error) {
-            test:assertTrue(stringutils:contains(parentName.message(), "UNC path"));
+            test:assertTrue(parentName.message().includes("UNC path"));
         }
     } else {
         test:assertTrue(parentName is string);
@@ -258,7 +259,7 @@ function validateNormalizePath(string input, string expected) {
     if(expected=="error") {
         test:assertTrue(normPath is error);
         if (normPath is error) {
-            test:assertTrue(stringutils:contains(normPath.message(), "UNC path"));
+            test:assertTrue(normPath.message().includes("UNC path"));
         }
     } else {
         test:assertTrue(normPath is string);
@@ -273,12 +274,12 @@ function validateSplitPath(string input, string expected) {
     if(expected=="error") {
         test:assertTrue(path is error);
         if (path is error) {
-            test:assertTrue(stringutils:contains(path.message(), "UNC path"));
+            test:assertTrue(path.message().includes("UNC path"));
         }
     } else {
         test:assertTrue(path is string[]);
         if(path is string[]) {
-            string[] exvalues = stringutils:split(expected, ",");
+            string[] exvalues = regex:split(expected, ",");
             int i = 0;
             int arrSize = path.length();
             while (i < arrSize) {
@@ -294,7 +295,7 @@ function validatejoinPath(string[] parts, string expected) {
     if(expected=="error") {
         test:assertTrue(bpath is error);
         if (bpath is error) {
-            test:assertTrue(stringutils:contains(bpath.message(), "UNC path"));
+            test:assertTrue(bpath.message().includes("UNC path"));
         }
     } else {
         test:assertTrue(bpath is string);
@@ -309,7 +310,7 @@ function validateRelativePath(string basePath, string targetPath, string expecte
     if(expected=="error") {
         test:assertTrue(relPath is error);
         if (relPath is error) {
-            test:assertTrue(stringutils:contains(relPath.message(), "Can't make: " + targetPath + " relative to " + basePath));
+            test:assertTrue(relPath.message().includes("Can't make: " + targetPath + " relative to " + basePath));
         }
     } else {
         test:assertTrue(relPath is string);

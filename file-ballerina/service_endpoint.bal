@@ -14,7 +14,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/java;
+import ballerina/jballerina.java;
 
 ///////////////////////////////////
 /// Direcotry Listener Endpoint ///
@@ -27,11 +27,11 @@ public class Listener {
     # Creates a new Directory listener.
     # 
     # + listenerConfig - The `ListenerConfig` record with the directory details 
-    public isolated function init(ListenerConfig listenerConfig) {
+    public isolated function init(ListenerConfig listenerConfig) returns error? {
         self.config = listenerConfig;
         var result = initEndpoint(self);
         if (result is error) {
-            panic result;
+            return result;
         }
     }
 

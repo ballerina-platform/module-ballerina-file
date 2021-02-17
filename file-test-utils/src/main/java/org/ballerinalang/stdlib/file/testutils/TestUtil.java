@@ -28,8 +28,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 
+/**
+ * Utils needed for Ballerina tests.
+ */
 public class TestUtil {
-    public static Path file;
+    private static Path file;
     private static Path symLinkPath;
 
     public static void createTestFile() throws Exception {

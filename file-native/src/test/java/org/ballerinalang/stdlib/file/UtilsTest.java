@@ -44,7 +44,7 @@ public class UtilsTest {
 
         // Get Path error without reason.
         BError error2 = FileUtils.getPathError(null, exp.getMessage());
-        assertEquals( "Invalid path format: /User/ballerina/path\\test", error2.getMessage());
+        assertEquals("Invalid path format: /User/ballerina/path\\test", error2.getMessage());
 
         // Get Path error without throwable.
         BError error3 = FileUtils.getPathError(FileConstants.INVALID_PATH_ERROR, null);

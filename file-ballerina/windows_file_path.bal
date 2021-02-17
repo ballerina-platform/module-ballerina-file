@@ -14,7 +14,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/stringutils;
 
 function buildWindowsPath(string... parts) returns string|Error {
     int count = parts.length();
@@ -36,7 +35,7 @@ function buildWindowsPath(string... parts) returns string|Error {
     if (firstNonEmptyPart.length() == 2) {
         string c0 = check charAt(firstNonEmptyPart, 0);
         string c1 = check charAt(firstNonEmptyPart, 1);
-        if (isLetter(c0) && stringutils:equalsIgnoreCase(c1, ":")) {
+        if (isLetter(c0) && c1.equalsIgnoreCaseAscii(":")) {
             // First element is driver letter without terminating slash.
             i = i + 1;
             while (i < count) {
@@ -138,7 +137,7 @@ isolated function getWindowsRoot(string input) returns [string, int]|Error {
             root = "\\";
             offset = 1;
         } else {
-            if (isLetter(c0) && stringutils:equalsIgnoreCase(c1, ":")) {
+            if (isLetter(c0) && c1.equalsIgnoreCaseAscii(":")) {
                 if (input.length() > 2 && isSlash(check charAt(input, 2))) {
                     string c2 = check charAt(input, 2);
                     if (c2 == "\\") {

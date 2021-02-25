@@ -64,11 +64,11 @@ function testIllegalWindowsPath() {
 @test:Config {
     dataProvider: testIsAbsPathDataProvider
 }
-function testIsAbsolutePath(string path, string posixOutput, string windowsOutput) {
+function testIsAbsolutePath(string path, string posixOutput, string windowsOutput) returns error? {
     if(isWin) {
-        validateAbsolutePath(path, windowsOutput);
+       check validateAbsolutePath(path, windowsOutput);
     } else {
-        validateAbsolutePath(path, posixOutput);
+        check validateAbsolutePath(path, posixOutput);
     }
 }
 
@@ -215,10 +215,10 @@ function testNormcase() {
 
 //Util functions
 
-function validateAbsolutePath(string path, string expected) {
+function validateAbsolutePath(string path, string expected) returns error? {
     boolean|error isAbs = isAbsolutePath(path);
     if(isAbs is boolean) {
-        test:assertEquals(isAbs, booleans:fromString(expected));
+        test:assertEquals(isAbs, check booleans:fromString(expected));
     } else {
         test:assertFail("Error checking is-absolute!");
     }

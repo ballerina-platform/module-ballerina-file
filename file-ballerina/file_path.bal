@@ -31,7 +31,7 @@ final string pathListSeparator = isWindows ? ";" : ":";
 #
 # + path - String value of the file path free from potential malicious codes
 # + return - The absolute path reference or else a `file:Error` if the path cannot be derived
-public function getAbsolutePath(@untainted string path) returns string|Error = @java:Method {
+public isolated function getAbsolutePath(@untainted string path) returns string|Error = @java:Method {
     name: "absolute",
     'class: "org.ballerinalang.stdlib.file.nativeimpl.FilePathUtils"
 } external;
@@ -125,7 +125,7 @@ public isolated function parentPath(string path) returns string|Error {
 #  `NORMCASE` - Normalize the case of a pathname. On windows, all the characters are converted to lowercase and "/" is
 # converted to "\\".
 # + return - Normalized file path or else a `file:Error` if the path is invalid
-public function normalizePath(string path, NormOption option) returns string|Error {
+public isolated function normalizePath(string path, NormOption option) returns string|Error {
     match option {
 
         CLEAN => {
@@ -262,7 +262,7 @@ public isolated function splitPath(string path) returns string[]|Error {
 #
 # + parts - String values of the file path parts
 # + return - String value of the file path or else a `file:Error` if the parts are invalid
-public function joinPath(string... parts) returns string|Error {
+public isolated function joinPath(string... parts) returns string|Error {
     if (isWindows) {
         return check buildWindowsPath(...parts);
     } else {
@@ -281,7 +281,7 @@ public function joinPath(string... parts) returns string|Error {
 # + target - String value of the target file path
 # + return - The target path relative to the base path, or else an
 #            `file:Error` if target path cannot be made relative to the base path
-public function relativePath(string base, string target) returns string|Error {
+public isolated function relativePath(string base, string target) returns string|Error {
     string cleanBase = check normalizePath(base, CLEAN);
     string cleanTarget = check normalizePath(target, CLEAN);
     if (isSamePath(cleanBase, cleanTarget)) {
@@ -349,7 +349,7 @@ public function relativePath(string base, string target) returns string|Error {
 #
 # + path - Security-validated string value of the file path
 # + return - Resolved file path or else a `file:Error` if the path is invalid
-function resolve(@untainted string path) returns string|Error = @java:Method {
+isolated function resolve(@untainted string path) returns string|Error = @java:Method {
     name: "resolve",
     'class: "org.ballerinalang.stdlib.file.nativeimpl.FilePathUtils"
 } external;

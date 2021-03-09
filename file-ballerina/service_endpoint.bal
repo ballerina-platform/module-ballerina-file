@@ -45,7 +45,7 @@ public class Listener {
     # Stops the `file:Listener` gracefully.
     # 
     # + return - () or else error upon failure to stop the listener 
-        public isolated function gracefulStop() returns error? {
+    public isolated function gracefulStop() returns error? {
         return ();
     }
 

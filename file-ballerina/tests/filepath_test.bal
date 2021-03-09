@@ -23,7 +23,7 @@ import ballerina/lang.'boolean as booleans;
 boolean isWin = os:getEnv("OS") != "";
 
 @test:Config {}
-function testGetAbsolutePath() {
+isolated function testGetAbsolutePath() {
     string absPathFrmUtil = getAbsPath(java:fromString("test.txt"));
     string|error absPath = getAbsolutePath("test.txt");
     if (absPath is string) {
@@ -34,7 +34,7 @@ function testGetAbsolutePath() {
 }
 
 @test:Config {}
-function testAbsolutePath() {
+isolated function testAbsolutePath() {
     string absPathFrmUtil = getAbsPath(java:fromString("/test.txt"));
     string|error absPath = getAbsolutePath("/test.txt");
     if (absPath is string) {

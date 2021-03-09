@@ -36,7 +36,7 @@ public isolated function getCurrentDir() returns string = @java:Method {
 # + option - Indicates whether the `createDir` should create non-existing parent directories. The default is only to
 # create the given current directory.
 # + return - A `file:Error` if the directory creation failed
-public function createDir(@untainted string dir, DirOption option = NON_RECURSIVE) returns Error? = @java:Method {
+public isolated function createDir(@untainted string dir, DirOption option = NON_RECURSIVE) returns Error? = @java:Method {
     'class: "org.ballerinalang.stdlib.file.nativeimpl.Utils",
     name: "createDir"
 } external;
@@ -49,7 +49,7 @@ public function createDir(@untainted string dir, DirOption option = NON_RECURSIV
 # + path - String value of the file/directory path
 # + option - Indicates whether the `remove` should recursively remove all the files inside the given directory
 # + return - An `file:Error` if failed to remove
-public function remove(@untainted string path, DirOption option = NON_RECURSIVE) returns Error? = @java:Method {
+public isolated function remove(@untainted string path, DirOption option = NON_RECURSIVE) returns Error? = @java:Method {
     'class: "org.ballerinalang.stdlib.file.nativeimpl.Utils",
     name: "remove"
 } external;
@@ -63,7 +63,7 @@ public function remove(@untainted string path, DirOption option = NON_RECURSIVE)
 # + oldPath - String value of the old file path
 # + newPath - String value of the new file path
 # + return - An `file:Error` if failed to rename
-public function rename(@untainted string oldPath, @untainted string newPath) returns Error? = @java:Method {
+public isolated function rename(@untainted string oldPath, @untainted string newPath) returns Error? = @java:Method {
     'class: "org.ballerinalang.stdlib.file.nativeimpl.Utils",
     name: "rename"
 } external;
@@ -76,12 +76,12 @@ public function rename(@untainted string oldPath, @untainted string newPath) ret
 #
 # + path - String value of the file path
 # + return - A `file:Error` if file creation failed
-public function create(@untainted string path) returns Error? = @java:Method {
+public isolated function create(@untainted string path) returns Error? = @java:Method {
     'class: "org.ballerinalang.stdlib.file.nativeimpl.Utils",
     name: "createFile"
 } external;
 
-function getRawMetaData(@untainted string path) returns MetaData|Error = @java:Method {
+isolated function getRawMetaData(@untainted string path) returns MetaData|Error = @java:Method {
     'class: "org.ballerinalang.stdlib.file.nativeimpl.Utils",
     name: "getMetaData"
 } external;
@@ -93,7 +93,7 @@ function getRawMetaData(@untainted string path) returns MetaData|Error = @java:M
 #
 # + path - String value of the file path.
 # + return - The `MetaData` instance with the file metadata or else an `file:Error`
-public function getMetaData(@untainted string path) returns (MetaData & readonly)|Error {
+public isolated function getMetaData(@untainted string path) returns (MetaData & readonly)|Error {
     var result = getRawMetaData(path);
     if (result is MetaData) {
         return <readonly & MetaData>result.cloneReadOnly();
@@ -102,7 +102,7 @@ public function getMetaData(@untainted string path) returns (MetaData & readonly
     }
 }
 
-function readDirRaw(@untainted string path) returns MetaData[]|Error = @java:Method {
+isolated function readDirRaw(@untainted string path) returns MetaData[]|Error = @java:Method {
     'class: "org.ballerinalang.stdlib.file.nativeimpl.Utils",
     name: "readDir"
 } external;
@@ -115,7 +115,7 @@ function readDirRaw(@untainted string path) returns MetaData[]|Error = @java:Met
 #
 # + path - String value of the directory path.
 # + return - The `MetaData` array or else an `file:Error` if there is an error
-public function readDir(@untainted string path) returns (MetaData[] & readonly)|Error {
+public isolated function readDir(@untainted string path) returns (MetaData[] & readonly)|Error {
     var result = readDirRaw(path);
     if (result is MetaData[]) {
         return <readonly & MetaData[]>result.cloneReadOnly();
@@ -136,7 +136,7 @@ public function readDir(@untainted string path) returns (MetaData[] & readonly)|
 #  `COPY_ATTRIBUTES` - Copy the file attributes as well to the target,
 #  `NO_FOLLOW_LINKS` - If source is a symlink, only the link is copied, not the target of the link.
 # + return - An `file:Error` if failed to copy
-public function copy(@untainted string sourcePath, @untainted string destinationPath,
+public isolated function copy(@untainted string sourcePath, @untainted string destinationPath,
                      CopyOption... options) returns Error? = @java:Method {
     'class: "org.ballerinalang.stdlib.file.nativeimpl.Utils",
     name: "copy"
@@ -151,7 +151,7 @@ public function copy(@untainted string sourcePath, @untainted string destination
 # + prefix - Optional file prefix
 # + dir - The directory path where the temp file should be created. If not specified, temp file will be created in the default temp directory of the OS.
 # + return - Temporary file path or an error if one occured
-public function createTemp(string? suffix = (), string? prefix = (), string? dir  = ())
+public isolated function createTemp(string? suffix = (), string? prefix = (), string? dir  = ())
                                  returns string|Error = @java:Method {
     'class: "org.ballerinalang.stdlib.file.nativeimpl.Utils",
     name: "createTemp"
@@ -166,7 +166,7 @@ public function createTemp(string? suffix = (), string? prefix = (), string? dir
 # + prefix - Optional directory prefix
 # + dir - The directory path where the temp directory should be created. If not specified, temp directory will be created in the default temp directory of the OS.
 # + return - Temporary directory path or an error if one occured
-public function createTempDir(string? suffix = (), string? prefix = (), string? dir  = ())
+public isolated function createTempDir(string? suffix = (), string? prefix = (), string? dir  = ())
                                  returns string|Error = @java:Method {
     'class: "org.ballerinalang.stdlib.file.nativeimpl.Utils",
     name: "createTempDir"
@@ -185,7 +185,7 @@ public function createTempDir(string? suffix = (), string? prefix = (), string? 
 #  `READABLE` - Test whether a file path is readable,
 #  `WRITABLE` - Test whether a file path is writable.
 # + return - True/false depending on the option to be tested, or else an error if one occurs
-public function test(@untainted string path, TestOption testOption) returns boolean|Error = @java:Method {
+public isolated function test(@untainted string path, TestOption testOption) returns boolean|Error = @java:Method {
     'class: "org.ballerinalang.stdlib.file.nativeimpl.Utils",
     name: "test"
 } external;

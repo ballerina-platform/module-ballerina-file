@@ -180,7 +180,7 @@ function testFileExists() {
 }
 
 @test:Config {}
-function testFileExistsNonExistingFile() {
+isolated function testFileExistsNonExistingFile() {
     boolean|error result = test("tests/resources/no-file.txt", EXISTS);
     if (result is boolean) {
             test:assertFalse(result, "File exists!");
@@ -314,7 +314,7 @@ function testGetCurrentDirectory() {
 }
 
 @test:Config {}
-function testCreateTempFile() {
+isolated function testCreateTempFile() {
     string|error result = createTemp();
     if (result is string) {
         boolean|error ss = test(result, EXISTS);

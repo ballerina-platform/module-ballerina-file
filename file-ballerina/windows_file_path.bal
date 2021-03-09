@@ -15,7 +15,7 @@
 // under the License.
 
 
-function buildWindowsPath(string... parts) returns string|Error {
+isolated function buildWindowsPath(string... parts) returns string|Error {
     int count = parts.length();
     if (count <= 0) {
         return "";

@@ -115,7 +115,6 @@ task updateTomlVersions {
 
         def newDependencyConfig = ballerinaDependencyFile.text.replace("@stdlib.regex.version@", stdlibDependentRegexVersion)
         newDependencyConfig = newDependencyConfig.replace("@stdlib.time.version@", stdlibDependentTimeVersion)
-        newDependencyConfig = newDependencyConfig.replace("@stdlib.io.version@", stdlibDependentIoVersion)
         newDependencyConfig = newDependencyConfig.replace("@stdlib.log.version@", stdlibDependentLogVersion)
         newDependencyConfig = newDependencyConfig.replace("@stdlib.os.version@", stdlibDependentOsVersion)
         ballerinaDependencyFile.text = newDependencyConfig

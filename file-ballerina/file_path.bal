@@ -14,7 +14,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/io;
 import ballerina/log;
 import ballerina/os;
 import ballerina/regex;
@@ -422,7 +421,7 @@ isolated function isLetter(string c) returns boolean {
     string regEx = "^[a-zA-Z]{1}$";
     boolean|error letter = regex:matches(c,regEx);
     if (letter is error) {
-        log:printError("Error while checking input character is string", err = letter);
+        log:printError("Error while checking input character is string", 'error = letter);
         return false;
     } else {
         return letter;
@@ -448,8 +447,7 @@ isolated function getOffsetIndexes(string path) returns int[]|Error {
 isolated function charAt(string input, int index) returns string|Error {
     int length = input.length();
     if (index > length) {
-        return error GenericError(io:sprintf("Character index %d is greater then path string length %d",
-        index, length));
+        return error GenericError(string `Character index ${index} is greater then path string length ${length}`);
     }
     return input.substring(index, index + 1);
 }

@@ -105,7 +105,6 @@ task updateTomlVersions {
     doLast {
         def stdlibDependentRegexVersion = project.stdlibRegexVersion.replace("${snapshotVersion}", "")
         def stdlibDependentTimeVersion = project.stdlibTimeVersion.replace("${snapshotVersion}", "")
-        def stdlibDependentIoVersion = project.stdlibIoVersion.replace("${snapshotVersion}", "")
         def stdlibDependentLogVersion = project.stdlibLogVersion.replace("${snapshotVersion}", "")
         def stdlibDependentOsVersion = project.stdlibOsVersion.replace("${snapshotVersion}", "")
 
@@ -116,7 +115,6 @@ task updateTomlVersions {
 
         def newDependencyConfig = ballerinaDependencyFile.text.replace("@stdlib.regex.version@", stdlibDependentRegexVersion)
         newDependencyConfig = newDependencyConfig.replace("@stdlib.time.version@", stdlibDependentTimeVersion)
-        newDependencyConfig = newDependencyConfig.replace("@stdlib.io.version@", stdlibDependentIoVersion)
         newDependencyConfig = newDependencyConfig.replace("@stdlib.log.version@", stdlibDependentLogVersion)
         newDependencyConfig = newDependencyConfig.replace("@stdlib.os.version@", stdlibDependentOsVersion)
         ballerinaDependencyFile.text = newDependencyConfig
@@ -130,11 +128,19 @@ task revertTomlFile {
     }
 }
 
+def groupParams = ""
+def disableGroups = ""
 def debugParams = ""
 def balJavaDebugParam = ""
 def testParams = ""
 
 task initializeVariables {
+    if (project.hasProperty("groups")) {
+        groupParams = "--groups ${project.findProperty("groups")}"
+    }
+    if (project.hasProperty("disable")) {
+        disableGroups = "--disable-groups ${project.findProperty("disable")}"
+    }
     if (project.hasProperty("debug")) {
         debugParams = "--debug ${project.findProperty("debug")}"
     }
@@ -166,39 +172,21 @@ task initializeVariables {
 }
 
 task ballerinaTest {
-    dependsOn(copyStdlibs)
-    dependsOn(":${packageName}-native:build")
-    dependsOn(":${packageName}-test-utils:build")
-    dependsOn(updateTomlVersions)
-    dependsOn(initializeVariables)
-    finalizedBy(revertTomlFile)
 
     doLast {
         exec {
             workingDir project.projectDir
             environment "JAVA_OPTS", "-DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true"
             if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                commandLine 'cmd', '/c', "$balJavaDebugParam $distributionBinPath/bal.bat test --code-coverage --includes=* ${debugParams} && exit %%ERRORLEVEL%%"
+                commandLine 'cmd', '/c', "$balJavaDebugParam $distributionBinPath/bal.bat test --code-coverage --includes=* ${groupParams} ${disableGroups} ${debugParams} ${certsAndKeys} && exit %%ERRORLEVEL%%"
             } else {
-                commandLine 'sh', '-c', "$balJavaDebugParam $distributionBinPath/bal test --code-coverage --includes=* ${debugParams}"
+                commandLine 'sh', '-c', "$balJavaDebugParam $distributionBinPath/bal test --code-coverage --includes=* ${groupParams} ${disableGroups}${debugParams} ${certsAndKeys}"
             }
         }
     }
 }
 
-test {
-    dependsOn(ballerinaTest)
-}
-
 task ballerinaBuild {
-    dependsOn(test)
-    inputs.dir file(project.projectDir)
-    dependsOn(":${packageName}-native:build")
-    dependsOn(":${packageName}-test-utils:build")
-    dependsOn(updateTomlVersions)
-    dependsOn(initializeVariables)
-    finalizedBy(revertTomlFile)
-
     doLast {
         // Build and populate caches
         exec {
@@ -295,6 +283,20 @@ unpackJballerinaTools.dependsOn copyToLib
 unpackStdLibs.dependsOn unpackJballerinaTools
 copyStdlibs.dependsOn unpackStdLibs
 updateTomlVersions.dependsOn copyStdlibs
+
+ballerinaTest.finalizedBy revertTomlFile
+ballerinaTest.dependsOn initializeVariables
+ballerinaTest.dependsOn updateTomlVersions
+ballerinaTest.dependsOn ":${packageName}-native:build"
+ballerinaTest.dependsOn ":${packageName}-test-utils:build"
+test.dependsOn ballerinaTest
+
+ballerinaBuild.dependsOn test
+ballerinaBuild.finalizedBy revertTomlFile
+ballerinaBuild.dependsOn initializeVariables
+ballerinaBuild.dependsOn updateTomlVersions
+ballerinaBuild.dependsOn ":${packageName}-native:build"
+ballerinaTest.dependsOn ":${packageName}-test-utils:build"
 build.dependsOn ballerinaBuild
 
 ballerinaPublish.dependsOn ballerinaBuild
@@ -302,4 +304,5 @@ ballerinaPublish.finalizedBy revertTomlFile
 ballerinaPublish.dependsOn initializeVariables
 ballerinaPublish.dependsOn updateTomlVersions
 ballerinaPublish.dependsOn ":${packageName}-native:build"
+ballerinaTest.dependsOn ":${packageName}-test-utils:build"
 publish.dependsOn ballerinaPublish

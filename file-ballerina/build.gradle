@@ -105,7 +105,6 @@ task updateTomlVersions {
     doLast {
         def stdlibDependentRegexVersion = project.stdlibRegexVersion.replace("${snapshotVersion}", "")
         def stdlibDependentTimeVersion = project.stdlibTimeVersion.replace("${snapshotVersion}", "")
-        def stdlibDependentIoVersion = project.stdlibIoVersion.replace("${snapshotVersion}", "")
         def stdlibDependentLogVersion = project.stdlibLogVersion.replace("${snapshotVersion}", "")
         def stdlibDependentOsVersion = project.stdlibOsVersion.replace("${snapshotVersion}", "")
 

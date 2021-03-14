@@ -28,7 +28,7 @@ import ballerina/time;
 public type MetaData record{|
     string absPath;
     int size;
-    time:Time modifiedTime;
+    time:Utc modifiedTime;
     boolean dir;
     boolean readable;
     boolean writable;

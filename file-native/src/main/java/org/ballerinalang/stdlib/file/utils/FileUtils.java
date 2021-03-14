@@ -23,13 +23,12 @@ import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.values.BError;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BString;
-import org.ballerinalang.stdlib.time.util.TimeUtils;
+import org.ballerinalang.stdlib.time.util.TimeValueHandler;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.FileTime;
-import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -79,13 +78,10 @@ public class FileUtils {
     public static Object getMetaData(File inputFile) throws IOException {
         BMap<BString, Object> lastModifiedInstance;
         FileTime lastModified = Files.getLastModifiedTime(inputFile.toPath());
-        ZonedDateTime zonedDateTime = ZonedDateTime.parse(lastModified.toString());
-        lastModifiedInstance = TimeUtils.createTimeRecord(lastModified.toMillis(),
-                StringUtils.fromString(zonedDateTime.getZone().toString()));
         Map<String, Object> metadataRecord = new HashMap<>();
         metadataRecord.put(ABS_PATH, inputFile.getAbsolutePath());
         metadataRecord.put(SIZE, inputFile.length());
-        metadataRecord.put(MODIFIED_TIME, lastModifiedInstance);
+        metadataRecord.put(MODIFIED_TIME, TimeValueHandler.createUtcFromMilliSeconds(lastModified.toMillis()));
         metadataRecord.put(DIR, inputFile.isDirectory());
         metadataRecord.put(META_DATA_READABLE, Files.isReadable(inputFile.toPath()));
         metadataRecord.put(META_DATA_WRITABLE, Files.isWritable(inputFile.toPath()));

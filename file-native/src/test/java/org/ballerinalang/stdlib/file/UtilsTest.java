@@ -21,7 +21,6 @@ package org.ballerinalang.stdlib.file;
 import io.ballerina.runtime.api.values.BError;
 import org.ballerinalang.stdlib.file.utils.FileConstants;
 import org.ballerinalang.stdlib.file.utils.FileUtils;
-import org.junit.jupiter.api.Test;
 
 import java.nio.file.InvalidPathException;
 
@@ -34,7 +33,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class UtilsTest {
 
-    @Test
     public void testGetPathError() {
         InvalidPathException exp = new InvalidPathException("/User/ballerina/path\\test", "Invalid path format");
 

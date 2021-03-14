@@ -125,7 +125,7 @@ public class FileUtils {
         if (details == null) {
             details = UNKNOWN_MESSAGE;
         }
-        return ErrorCreator.createDistinctError(reason, ModuleUtils.getModule(), StringUtils.fromString(details));
+        return ErrorCreator.createError(ModuleUtils.getModule(), reason, StringUtils.fromString(details), null, null);
     }
 
     private FileUtils() {

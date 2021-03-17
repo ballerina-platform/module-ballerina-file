@@ -71,8 +71,8 @@ public class FileUtils {
      * @return Ballerina error object.
      */
     public static BError getBallerinaError(String error, String message) {
-        return ErrorCreator.createDistinctError(error, ModuleUtils.getModule(),
-                                                 StringUtils.fromString(message != null ? message : UNKNOWN_MESSAGE));
+        return ErrorCreator.createError(ModuleUtils.getModule(), error, StringUtils.fromString(message != null ?
+                        message : UNKNOWN_MESSAGE), null, null);
     }
 
     public static Object getMetaData(File inputFile) throws IOException {

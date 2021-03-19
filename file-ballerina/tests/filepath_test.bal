@@ -23,7 +23,7 @@ import ballerina/lang.'boolean as booleans;
 boolean isWin = os:getEnv("OS") != "";
 
 @test:Config {}
-function testGetAbsolutePath() {
+isolated function testGetAbsolutePath() {
     string absPathFrmUtil = getAbsPath(java:fromString("test.txt"));
     string|error absPath = getAbsolutePath("test.txt");
     if (absPath is string) {
@@ -34,7 +34,7 @@ function testGetAbsolutePath() {
 }
 
 @test:Config {}
-function testAbsolutePath() {
+isolated function testAbsolutePath() {
     string absPathFrmUtil = getAbsPath(java:fromString("/test.txt"));
     string|error absPath = getAbsolutePath("/test.txt");
     if (absPath is string) {
@@ -179,7 +179,7 @@ function testResolvePath() {
 }
 
 @test:Config {}
-function testResolveNotLinkPath() {
+isolated function testResolveNotLinkPath() {
     string path = "tests/resources/test.txt";
     string|error resPath = normalizePath(path, SYMLINK);
     if(resPath is error) {
@@ -190,7 +190,7 @@ function testResolveNotLinkPath() {
 }
 
 @test:Config {}
-function testResolveNonExistencePath() {
+isolated function testResolveNonExistencePath() {
     string path = "tests/resources/test_non_existent.txt";
     string|error resPath = normalizePath(path, SYMLINK);
     if(resPath is error) {
@@ -215,7 +215,7 @@ function testNormcase() {
 
 //Util functions
 
-function validateAbsolutePath(string path, string expected) returns error? {
+isolated function validateAbsolutePath(string path, string expected) returns error? {
     boolean|error isAbs = isAbsolutePath(path);
     if(isAbs is boolean) {
         test:assertEquals(isAbs, check booleans:fromString(expected));
@@ -224,7 +224,7 @@ function validateAbsolutePath(string path, string expected) returns error? {
     }
 }
 
-function validateFilename(string path, string expected) {
+isolated function validateFilename(string path, string expected) {
     string|error fname = basename(path);
     if(expected=="error") {
         test:assertTrue(fname is error);
@@ -239,7 +239,7 @@ function validateFilename(string path, string expected) {
     }
 }
 
-function validateParent(string input, string expected) {
+isolated function validateParent(string input, string expected) {
     string|error parentName = parentPath(input);
     if(expected=="error") {
         test:assertTrue(parentName is error);
@@ -254,7 +254,7 @@ function validateParent(string input, string expected) {
     }
 }
 
-function validateNormalizePath(string input, string expected) {
+isolated function validateNormalizePath(string input, string expected) {
     string|error normPath = normalizePath(input, CLEAN);
     if(expected=="error") {
         test:assertTrue(normPath is error);
@@ -269,7 +269,7 @@ function validateNormalizePath(string input, string expected) {
     }
 }
 
-function validateSplitPath(string input, string expected) {
+isolated function validateSplitPath(string input, string expected) {
     string[]|error path = splitPath(input);
     if(expected=="error") {
         test:assertTrue(path is error);
@@ -290,7 +290,7 @@ function validateSplitPath(string input, string expected) {
     }
 }
 
-function validatejoinPath(string[] parts, string expected) {
+isolated function validatejoinPath(string[] parts, string expected) {
     string|error bpath = joinPath(...parts);
     if(expected=="error") {
         test:assertTrue(bpath is error);
@@ -305,7 +305,7 @@ function validatejoinPath(string[] parts, string expected) {
     }
 }
 
-function validateRelativePath(string basePath, string targetPath, string expected) {
+isolated function validateRelativePath(string basePath, string targetPath, string expected) {
     string|error relPath = relativePath(basePath, targetPath);
     if(expected=="error") {
         test:assertTrue(relPath is error);
@@ -323,7 +323,7 @@ function validateRelativePath(string basePath, string targetPath, string expecte
 
 //Data providers
 
-function testIsAbsPathDataProvider() returns (string[][]) {
+isolated function testIsAbsPathDataProvider() returns (string[][]) {
     return [
         ["/A/B/C", "true", "false"],
         ["/foo/..", "true", "false"],
@@ -357,7 +357,7 @@ function testIsAbsPathDataProvider() returns (string[][]) {
     ];
 }
 
-function getFileNameDataset() returns (string[][]) {
+isolated function getFileNameDataset() returns (string[][]) {
      return [
         ["/A/B/C", "C", "C"],
         ["/foo/..", "..", ".."],
@@ -392,7 +392,7 @@ function getFileNameDataset() returns (string[][]) {
      ];
  }
 
-function getParentDataset() returns (string[][]) {
+isolated function getParentDataset() returns (string[][]) {
     return [
         ["/A/B/C", "/A/B", "\\A\\B"],
         ["/foo/..", "/foo", "\\foo"],
@@ -429,7 +429,7 @@ function getParentDataset() returns (string[][]) {
     ];
 }
 
-function getNormalizedDataset() returns (string[][]) {
+isolated function getNormalizedDataset() returns (string[][]) {
     return [
         ["/A/B/C", "/A/B/C", "\\A\\B\\C"],
         ["/foo/..", "/", "\\"],
@@ -468,7 +468,7 @@ function getNormalizedDataset() returns (string[][]) {
     ];
 }
 
-function getSplitDataset() returns (string[][]) {
+isolated function getSplitDataset() returns (string[][]) {
     return [
         ["/A/B/C", "A,B,C", "A,B,C"],
         ["/foo/..", "foo,..", "foo,.."],
@@ -507,7 +507,7 @@ function getSplitDataset() returns (string[][]) {
     ];
 }
 
-function getPosixFileParts() returns ([string[], string][][]) {
+isolated function getPosixFileParts() returns ([string[], string][][]) {
     return [
         [[[], ""]],
         [[[""], ""]],
@@ -530,7 +530,7 @@ function getPosixFileParts() returns ([string[], string][][]) {
     ];
 }
 
-function getWindowsFileParts() returns ([string[], string][][]) {
+isolated function getWindowsFileParts() returns ([string[], string][][]) {
     return [
         [[["directory", "file"], "directory\\file"]],
         [[["C:\\Windows\\", "System32"], "C:\\Windows\\System32"]],
@@ -559,7 +559,7 @@ function getWindowsFileParts() returns ([string[], string][][]) {
     ];
 }
 
-function getRelativeSet() returns (string[][]) {
+isolated function getRelativeSet() returns (string[][]) {
     return [
         ["a/b", "a/b", ".", "."],
         ["a/b/.", "a/b", ".", "."],
@@ -611,18 +611,18 @@ function getRelativeSet() returns (string[][]) {
 
 //Interops
 
-function getAbsPath(handle path) returns string = @java:Method {
+isolated function getAbsPath(handle path) returns string = @java:Method {
      'class: "org.ballerinalang.stdlib.file.testutils.TestUtil"
 } external;
 
-function createLink() = @java:Method {
+isolated function createLink() = @java:Method {
     'class: "org.ballerinalang.stdlib.file.testutils.TestUtil"
 } external;
 
-function getSymLink() returns string = @java:Method {
+isolated function getSymLink() returns string = @java:Method {
     'class: "org.ballerinalang.stdlib.file.testutils.TestUtil"
 } external;
 
-function removeLink() = @java:Method {
+isolated function removeLink() = @java:Method {
     'class: "org.ballerinalang.stdlib.file.testutils.TestUtil"
 } external;

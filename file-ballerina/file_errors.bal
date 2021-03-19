@@ -15,41 +15,40 @@
 // under the License.
 
 # Represents an error that occurs when a file system operation is denied due to invalidity.
-public type InvalidOperationError distinct error;
+public type InvalidOperationError distinct Error;
 
 # Represents an error that occurs when a file system operation is denied, due to the absence of file permission.
-public type PermissionError distinct error;
+public type PermissionError distinct Error;
 
 # Represents an error that occurs when a file system operation fails.
-public type FileSystemError distinct error;
+public type FileSystemError distinct Error;
 
 # Represents an error that occurs when the file/directory does not exist at the given filepath.
-public type FileNotFoundError distinct error;
+public type FileNotFoundError distinct Error;
 
 # Represents error occur when the file at the given filepath is not a symbolic link.
-public type NotLinkError distinct error;
+public type NotLinkError distinct Error;
 
 # Represents IO error occur when trying to access the file at the given filepath.
-public type IOError distinct error;
+public type IOError distinct Error;
 
 # Represents security error occur when trying to access the file at the given filepath.
-public type SecurityError distinct error;
+public type SecurityError distinct Error;
 
 # Represents error occur when the given file path is invalid.
-public type InvalidPathError distinct error;
+public type InvalidPathError distinct Error;
 
 # Represent error occur when the given pattern is not a valid filepath pattern.
-public type InvalidPatternError distinct error;
+public type InvalidPatternError distinct Error;
 
 # Represents an error that occurs when the given target filepath cannot be derived relative to the base filepath.
-public type RelativePathError distinct error;
+public type RelativePathError distinct Error;
 
 # Represents error occur in the UNC path.
-public type UNCPathError distinct error;
+public type UNCPathError distinct Error;
 
 # Represents generic error for filepath
-public type GenericError distinct error;
+public type GenericError distinct Error;
 
 # Represents file system related errors.
-public type Error InvalidOperationError | PermissionError | FileSystemError | FileNotFoundError| NotLinkError |
-IOError | SecurityError | InvalidPathError | InvalidPatternError | RelativePathError | UNCPathError | GenericError;
+public type Error distinct error;

@@ -29,6 +29,7 @@ string noFile = "/no-file.txt";
 string srcFileRaw = "/src-file.txt";
 string destFile = "/dest-file.txt";
 string copyFile = "/cpy-file.txt";
+string fileName = "file.txt";
 
 int srcFileLength = 0;
 int srcModifiedFileLength = 0;
@@ -325,6 +326,151 @@ isolated function testCreateTempFile() {
         }
     } else {
         test:assertFail("Error creating temporary file!");
+    }
+}
+
+@test:Config {}
+isolated function testCreateTempFileWithArguments() returns error? {
+    string|error result = createTemp("-surfix", "prefix-", "tests/resources/src-dir");
+    if (result is string) {
+        boolean|error isExist = test(result, EXISTS);
+        boolean|error isReadable = test(result, READABLE);
+        boolean|error isWriteable = test(result, WRITABLE);
+        if (isExist is boolean && isReadable is boolean && isWriteable is boolean) {
+            test:assertTrue(isExist);
+            test:assertTrue(isReadable);
+            test:assertTrue(isWriteable);
+            check remove(result);
+        } else {
+            test:assertFail("Error testing file existance!");
+        }
+    } else {
+        test:assertFail("Error creating temporary file!");
+    }
+}
+
+@test:Config {}
+isolated function testCreateTempDirWithArguments() returns error? {
+    string|error result = createTempDir("-surfix", "prefix-", "tests/resources/src-dir");
+    if (result is string) {
+        boolean|error isExist = test(result, EXISTS);
+        boolean|error isDir = test(result, IS_DIR);
+        if (isExist is boolean && isDir is boolean) {
+            test:assertTrue(isExist);
+            test:assertTrue(isDir);
+            check remove(result);
+        } else {
+            test:assertFail("Error testing file existance!");
+        }
+    } else {
+        test:assertFail("Error creating temporary file!");
+    }
+}
+
+@test:Config {}
+isolated function testCreateTempDir() returns error? {
+    string|error result = createTempDir();
+    if (result is string) {
+        boolean|error isExist = test(result, EXISTS);
+        boolean|error isSymLink = test(result, IS_SYMLINK);
+        if (isExist is boolean && isSymLink is boolean) {
+            test:assertTrue(isExist);
+            test:assertFalse(isSymLink);
+            check remove(result);
+        } else {
+            test:assertFail("Error testing file existance!");
+        }
+    } else {
+        test:assertFail("Error creating temporary file!");
+    }
+}
+
+@test:Config {
+    groups: ["create", "file"]
+}
+function testCreateFile() returns error? {
+    error? crResult = create(fileName);
+    if (crResult is error) {
+        test:assertFail("File not created!");
+    }
+}
+
+@test:Config {
+    groups: ["rename", "negative"],
+    dependsOn: [testCreateFile]
+}
+function negativeTestRenameFile() returns error? {
+    error? renameResult = rename(fileName, srcDir +"/dir/file.txt");
+    if (renameResult is error) {
+        //io:println(renameResult.toString());
+        test:assertTrue(renameResult.toString().includes("FileSystemError"));
+    } else {
+        test:assertFail("Test failed!");
+    }
+    check remove(fileName);
+}
+@test:Config {}
+function testCopyAttribute() returns error? {
+    error? copyResult = copy(srcFile, srcDir + srcFileRaw, COPY_ATTRIBUTES);
+    if (copyResult is error) {
+        test:assertFail("File not copied!");
+    }
+    check remove(srcDir + srcFileRaw);
+}
+
+@test:Config {}
+function testCopyNoFollowsLink() returns error? {
+    string newFileName = srcDir + "/" + fileName;
+    error? copyResult = copy(srcFile, newFileName, NO_FOLLOW_LINKS);
+    if (copyResult is error) {
+        test:assertFail("File not copied!");
+    }
+    check remove(newFileName);
+}
+
+//@test:Config {}
+//function testCreateExistingFile() {
+//    error? crResult = create(srcFile);
+//    if (crResult is error) {
+//        string expectedErrMsg = "File already exists. Failed to create the file";
+//        test:assertTrue(crResult.message().includes(expectedErrMsg));
+//    }
+//}
+
+//@test:Config {}
+//function testCreateDirWithParentDir() {
+//    error? result = createDir(tmpdir + "/parent" + "/child", RECURSIVE);
+//    if (result is error) {
+//        test:assertFail("Directory creation not successful!");
+//    } else {
+//        error? removeResult = remove(tmpdir + "/parent", RECURSIVE);
+//        if (removeResult is error) {
+//            test:assertFail("Error removing test resource!");
+//        }
+//    }
+//}
+
+@test:Config {
+    groups: ["dir", "negative"]
+}
+function negativeTestCreateDir() {
+    error? result = createDir(srcDir);
+    if (result is error) {
+        test:assertTrue(result.message().includes("File already exists."));
+    } else {
+         test:assertFail("Test failed!");
+    }
+}
+
+@test:Config {
+    groups: ["rename", "negative"]
+}
+function negativeTestRename() {
+    error? renameResult = rename(srcDir + "file.txt", srcDir + "file.txt");
+    if (renameResult is error) {
+        test:assertTrue(renameResult.message().includes("File not found"));
+    } else {
+        test:assertFail("Test failed!");
     }
 }
 

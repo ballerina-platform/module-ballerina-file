@@ -428,28 +428,6 @@ function testCopyNoFollowsLink() returns error? {
     check remove(newFileName);
 }
 
-//@test:Config {}
-//function testCreateExistingFile() {
-//    error? crResult = create(srcFile);
-//    if (crResult is error) {
-//        string expectedErrMsg = "File already exists. Failed to create the file";
-//        test:assertTrue(crResult.message().includes(expectedErrMsg));
-//    }
-//}
-
-//@test:Config {}
-//function testCreateDirWithParentDir() {
-//    error? result = createDir(tmpdir + "/parent" + "/child", RECURSIVE);
-//    if (result is error) {
-//        test:assertFail("Directory creation not successful!");
-//    } else {
-//        error? removeResult = remove(tmpdir + "/parent", RECURSIVE);
-//        if (removeResult is error) {
-//            test:assertFail("Error removing test resource!");
-//        }
-//    }
-//}
-
 @test:Config {
     groups: ["dir", "negative"]
 }

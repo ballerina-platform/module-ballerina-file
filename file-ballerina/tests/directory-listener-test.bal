@@ -75,6 +75,51 @@ function isDeleteInvoked() {
     }
 }
 
+Listener|error localFolder1 = new ({
+    path: "tests/test",
+    recursive: false
+});
+
+@test:Config {}
+function testDirectoryNotExist() {
+    Listener|error temporaryLoader = localFolder1;
+    if (temporaryLoader is error) {
+        test:assertTrue(temporaryLoader.message().includes("Folder does not exist: tests/test"));
+    } else {
+        test:assertFail("Test Failed!");
+    }
+}
+
+Listener|error localFolder2 = new ({
+    path: "",
+    recursive: false
+});
+
+@test:Config {}
+function testDirectoryEmpty() {
+    Listener|error temporaryLoader = localFolder2;
+    if (temporaryLoader is error) {
+        test:assertTrue(temporaryLoader.message().includes("'path' field is empty"));
+    } else {
+        test:assertFail("Test Failed!");
+    }
+}
+
+Listener|error localFolder3 = new ({
+    path: "tests/resources/test.txt",
+    recursive: false
+});
+
+@test:Config {}
+function testNotDirectory() {
+    Listener|error temporaryLoader = localFolder3;
+    if (temporaryLoader is error) {
+        test:assertTrue(temporaryLoader.message().includes("Unable to find a directory: tests/resources/test.txt"));
+    } else {
+        test:assertFail("Test Failed!");
+    }
+}
+
 function createTestFile() returns error? = @java:Method {
     'class: "org.ballerinalang.stdlib.file.testutils.TestUtil"
 } external;

@@ -17,7 +17,7 @@
 import ballerina/jballerina.java;
 
 ///////////////////////////////////
-/// Direcotry Listener Endpoint ///
+/// Directory Listener Endpoint ///
 ///////////////////////////////////
 
 # Represents the directory listener endpoint, which is used to listen to a directory in the local file system.

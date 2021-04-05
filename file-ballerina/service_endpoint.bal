@@ -53,7 +53,7 @@ public class Listener {
     # 
     # + return - () or else error upon failure to stop the listener 
     public isolated function immediateStop() returns error? {
-        return ();
+        return stop(self);
     }
 
     # Binds a service to the `file:Listener`.
@@ -95,4 +95,8 @@ isolated function register(Listener fileListener, service object {} s) returns e
 isolated function startEndpoint(Listener fileListener) returns error? = @java:Method {
     'class: "org.ballerinalang.stdlib.file.service.endpoint.Start",
     name: "start"
+} external;
+
+isolated function stop(Listener fileListener) returns error? = @java:Method {
+    'class: "org.ballerinalang.stdlib.file.service.endpoint.Stop"
 } external;

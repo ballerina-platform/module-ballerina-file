@@ -14,7 +14,7 @@
 // specific language governing permissions and limitations
 // under the License.
 //
-//import ballerina/io;
+
 import ballerina/test;
 import ballerina/lang.runtime as runtime;
 import ballerina/jballerina.java;
@@ -121,19 +121,6 @@ function testNotDirectory() {
     }
 }
 
-Listener|error localFolder4 = new ({
-    recursive: false
-});
-
-@test:Config {}
-function testIsEmpty() {
-    Listener|error temporaryLoader = localFolder4;
-    if (temporaryLoader is error) {
-        test:assertTrue(temporaryLoader.message().includes("Path can't be empty"));
-    } else {
-        test:assertFail("Test Failed!");
-    }
-}
 
 Listener|error localFolder5 = new ({
     path: "tests/resources",
@@ -154,6 +141,40 @@ function testAttachEmptyService() {
         } else {
             test:assertFail("Attach service test Failed!");
         }
+    } else {
+        test:assertFail("Test Failed!");
+    }
+}
+
+service object {} attachService1 = service object {
+
+    remote function onCreate(FileEvent m) {
+        createInvoke = true;
+    }
+};
+
+@test:Config {}
+function testService() returns error? {
+    Listener|error temporaryLoader = localFolder5;
+    if (temporaryLoader is Listener) {
+        check temporaryLoader.attach(attachService1);
+        check temporaryLoader.'start();
+        check temporaryLoader.detach(attachService1);
+        check temporaryLoader.immediateStop();
+    } else {
+        test:assertFail("Test Failed!");
+    }
+}
+
+Listener|error localFolder4 = new ({
+    recursive: false
+});
+
+@test:Config {}
+function testIsEmpty() {
+    Listener|error temporaryLoader = localFolder4;
+    if (temporaryLoader is error) {
+        test:assertTrue(temporaryLoader.message().includes("Path can't be null"));
     } else {
         test:assertFail("Test Failed!");
     }

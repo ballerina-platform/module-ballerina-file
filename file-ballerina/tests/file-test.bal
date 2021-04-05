@@ -452,6 +452,16 @@ function negativeTestRename() {
     }
 }
 
+@test:Config {}
+function negTestCreateDir() returns error? {
+    error? result = createDir("/tests/resources/dir/newDir");
+    if (result is error) {
+        test:assertTrue(result.message().includes("IO error while creating the file"));
+    } else {
+        test:assertFail("Test failed.");
+    }
+}
+
 function getTmpDir() returns string = @java:Method {
     'class: "org.ballerinalang.stdlib.file.testutils.TestUtil"
 } external;

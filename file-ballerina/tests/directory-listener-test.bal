@@ -13,7 +13,8 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
-
+//
+//import ballerina/io;
 import ballerina/test;
 import ballerina/lang.runtime as runtime;
 import ballerina/jballerina.java;
@@ -115,6 +116,44 @@ function testNotDirectory() {
     Listener|error temporaryLoader = localFolder3;
     if (temporaryLoader is error) {
         test:assertTrue(temporaryLoader.message().includes("Unable to find a directory: tests/resources/test.txt"));
+    } else {
+        test:assertFail("Test Failed!");
+    }
+}
+
+Listener|error localFolder4 = new ({
+    recursive: false
+});
+
+@test:Config {}
+function testIsEmpty() {
+    Listener|error temporaryLoader = localFolder4;
+    if (temporaryLoader is error) {
+        test:assertTrue(temporaryLoader.message().includes("Path can't be empty"));
+    } else {
+        test:assertFail("Test Failed!");
+    }
+}
+
+Listener|error localFolder5 = new ({
+    path: "tests/resources",
+    recursive: false
+});
+
+service object {} attachService = service object {
+};
+
+
+@test:Config {}
+function testAttachEmptyService() {
+    Listener|error temporaryLoader = localFolder5;
+    if (temporaryLoader is Listener) {
+        error? result = trap temporaryLoader.attach(attachService);
+        if (result is error) {
+            test:assertTrue(result.message().includes("At least a single resource required from following"));
+        } else {
+            test:assertFail("Attach service test Failed!");
+        }
     } else {
         test:assertFail("Test Failed!");
     }

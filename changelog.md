@@ -7,5 +7,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.0-alpha5] - 2021-03-19
 
 ### Changed
-- Update error types
-- Change APIs to isolated
+- [Update error types](https://github.com/ballerina-platform/ballerina-standard-library/issues/1226)
+- [Change APIs to isolated](https://github.com/ballerina-platform/ballerina-standard-library/issues/1226)

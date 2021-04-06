@@ -25,8 +25,6 @@ import org.ballerinalang.stdlib.file.utils.FileUtils;
 import org.wso2.transport.localfilesystem.server.connector.contract.LocalFileSystemServerConnector;
 import org.wso2.transport.localfilesystem.server.exception.LocalFileSystemServerConnectorException;
 
-import java.nio.file.ClosedWatchServiceException;
-
 /**
  * Stop server connector.
  */
@@ -39,8 +37,6 @@ public class Stop {
             serverConnector.stop();
         } catch (LocalFileSystemServerConnectorException e) {
             return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR, e.getMessage());
-        } catch (ClosedWatchServiceException e) {
-            //
         }
         return null;
     }

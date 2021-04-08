@@ -14,66 +14,66 @@
 // specific language governing permissions and limitations
 // under the License.
 
-//import ballerina/test;
-//import ballerina/lang.runtime as runtime;
+import ballerina/test;
+import ballerina/lang.runtime as runtime;
 import ballerina/jballerina.java;
 
-//listener Listener localFolder = new ({
-//    path: "tests/resources",
-//    recursive: false
-//});
-//
-//boolean createInvoke = false;
-//boolean modifyInvoke = false;
-//boolean deleteInvoke = false;
-//
-//service "filesystem" on localFolder {
-//
-//    remote function onCreate(FileEvent m) {
-//        createInvoke = true;
-//    }
-//
-//    remote function onModify(FileEvent m) {
-//        modifyInvoke = true;
-//    }
-//
-//    remote function onDelete(FileEvent m) {
-//        deleteInvoke = true;
-//    }
-//}
+listener Listener localFolder = new ({
+    path: "tests/resources",
+    recursive: false
+});
 
-//@test:Config {}
-//function isCreateInvoked() {
-//    error? fileResult = createTestFile();
-//    if (fileResult is error) {
-//        test:assertFail("File not opened!");
-//    } else {
-//        runtime:sleep(2);
-//        test:assertTrue(createInvoke, "File creation event not captured!");
-//    }
-//}
-//
-//@test:Config { dependsOn: [isCreateInvoked]}
-//function isModifyInvoked() {
-//     error? fileResult = modifyTestFile();
-//    if (fileResult is error) {
-//        test:assertFail("File not modified!");
-//    } else {
-//        runtime:sleep(2);
-//        test:assertTrue(modifyInvoke, "File modification event not captured!");
-//    }
-//}
-//
-//@test:Config { dependsOn: [isCreateInvoked, isModifyInvoked]}
-//function isDeleteInvoked() {
-//    error? fileResult = deleteTestFile();
-//    if (fileResult is error) {
-//        test:assertFail("File not deleted!");
-//    } else {
-//        runtime:sleep(2);
-//        test:assertTrue(deleteInvoke, "File deletion event not captured!");
-//    }
-//}
+boolean createInvoke = false;
+boolean modifyInvoke = false;
+boolean deleteInvoke = false;
+
+service "filesystem" on localFolder {
+
+    remote function onCreate(FileEvent m) {
+        createInvoke = true;
+    }
+
+    remote function onModify(FileEvent m) {
+        modifyInvoke = true;
+    }
+
+    remote function onDelete(FileEvent m) {
+        deleteInvoke = true;
+    }
+}
+
+@test:Config {}
+function isCreateInvoked() {
+    error? fileResult = createTestFile();
+    if (fileResult is error) {
+        test:assertFail("File not opened!");
+    } else {
+        runtime:sleep(2);
+        test:assertTrue(createInvoke, "File creation event not captured!");
+    }
+}
+
+@test:Config { dependsOn: [isCreateInvoked]}
+function isModifyInvoked() {
+     error? fileResult = modifyTestFile();
+    if (fileResult is error) {
+        test:assertFail("File not modified!");
+    } else {
+        runtime:sleep(2);
+        test:assertTrue(modifyInvoke, "File modification event not captured!");
+    }
+}
+
+@test:Config { dependsOn: [isCreateInvoked, isModifyInvoked]}
+function isDeleteInvoked() {
+    error? fileResult = deleteTestFile();
+    if (fileResult is error) {
+        test:assertFail("File not deleted!");
+    } else {
+        runtime:sleep(2);
+        test:assertTrue(deleteInvoke, "File deletion event not captured!");
+    }
+}
 
 function createTestFile() returns error? = @java:Method {
     'class: "org.ballerinalang.stdlib.file.testutils.TestUtil"

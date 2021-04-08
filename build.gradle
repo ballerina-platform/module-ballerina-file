@@ -23,10 +23,6 @@ plugins {
     id "net.researchgate.release" version "2.8.0"
 }
 
-ext.ballerinaLangVersion = project.ballerinaLangVersion
-ext.checkstyleVersion = project.checkstylePluginVersion
-ext.slf4jVersion = "1.7.30"
-
 allprojects {
     group = 'org.ballerinalang'
     version = project.version

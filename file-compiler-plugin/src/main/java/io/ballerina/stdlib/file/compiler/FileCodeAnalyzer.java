@@ -29,6 +29,5 @@ public class FileCodeAnalyzer extends CodeAnalyzer {
     @Override
     public void init(CodeAnalysisContext codeAnalysisContext) {
         codeAnalysisContext.addSyntaxNodeAnalysisTask(new FileServiceValidator(), SyntaxKind.SERVICE_DECLARATION);
-
     }
 }

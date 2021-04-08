@@ -40,9 +40,9 @@ import org.ballerinalang.util.diagnostic.DiagnosticErrorCode;
 public class FileServiceValidator implements AnalysisTask<SyntaxNodeAnalysisContext> {
     private static final String CODE = "File";
     private static final String FILE_EVENT = "file:FileEvent";
-    public static final String RESOURCE_NAME_ON_CREATE = "onCreate";
-    public static final String RESOURCE_NAME_ON_DELETE = "onDelete";
-    public static final String RESOURCE_NAME_ON_MODIFY = "onModify";
+    private static final String RESOURCE_NAME_ON_CREATE = "onCreate";
+    private static final String RESOURCE_NAME_ON_DELETE = "onDelete";
+    private static final String RESOURCE_NAME_ON_MODIFY = "onModify";
     private static final String INVALID_INPUT_PARAM = "Invalid parameter type `{0}` provided for remote function. " +
             "Only file:FileEvent is allowed as the parameter type";
     private static final String INVALID_REMOTE_FUNCTION =

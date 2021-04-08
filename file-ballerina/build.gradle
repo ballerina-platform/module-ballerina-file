@@ -26,6 +26,7 @@ def snapshotVersion = "-SNAPSHOT"
 def tomlVersion = project.version.replace("${snapshotVersion}", "")
 def ballerinaConfigFile = new File("$project.projectDir/Ballerina.toml")
 def ballerinaDependencyFile = new File("$project.projectDir/Dependencies.toml")
+def ballerinaCompilerPluginFile = new File("$project.projectDir/CompilerPlugin.toml")
 def artifactBallerinaDocs = file("$project.projectDir/build/docs_parent/")
 def artifactCacheParent = file("$project.projectDir/build/cache_parent/")
 def artifactLibParent = file("$project.projectDir/build/lib_parent/")
@@ -33,6 +34,7 @@ def artifactTestableJar = file("$project.projectDir/target/cache/${packageOrg}/$
 def ballerinaCentralAccessToken = System.getenv('BALLERINA_CENTRAL_ACCESS_TOKEN')
 def originalConfig = ballerinaConfigFile.text
 def originalDependencies = ballerinaDependencyFile.text
+def originalCompilerPlugin = ballerinaCompilerPluginFile.text
 def distributionBinPath = project.projectDir.absolutePath + "/build/target/extracted-distributions/jballerina-tools-zip/jballerina-tools-${ballerinaLangVersion}/bin"
 
 configurations {
@@ -118,6 +120,9 @@ task updateTomlVersions {
         newDependencyConfig = newDependencyConfig.replace("@stdlib.log.version@", stdlibDependentLogVersion)
         newDependencyConfig = newDependencyConfig.replace("@stdlib.os.version@", stdlibDependentOsVersion)
         ballerinaDependencyFile.text = newDependencyConfig
+
+        def newCompilerPluginToml = ballerinaCompilerPluginFile.text.replace("@project.version@", project.version)
+        ballerinaCompilerPluginFile.text = newCompilerPluginToml
     }
 }
 
@@ -125,6 +130,7 @@ task revertTomlFile {
     doLast {
         ballerinaConfigFile.text = originalConfig
         ballerinaDependencyFile.text = originalDependencies
+        ballerinaCompilerPluginFile.text = originalCompilerPlugin
     }
 }
 
@@ -289,6 +295,7 @@ ballerinaTest.dependsOn initializeVariables
 ballerinaTest.dependsOn updateTomlVersions
 ballerinaTest.dependsOn ":${packageName}-native:build"
 ballerinaTest.dependsOn ":${packageName}-test-utils:build"
+ballerinaTest.dependsOn ":${packageName}-compiler-plugin:build"
 test.dependsOn ballerinaTest
 
 ballerinaBuild.dependsOn test
@@ -296,7 +303,8 @@ ballerinaBuild.finalizedBy revertTomlFile
 ballerinaBuild.dependsOn initializeVariables
 ballerinaBuild.dependsOn updateTomlVersions
 ballerinaBuild.dependsOn ":${packageName}-native:build"
-ballerinaTest.dependsOn ":${packageName}-test-utils:build"
+ballerinaBuild.dependsOn ":${packageName}-test-utils:build"
+ballerinaBuild.dependsOn ":${packageName}-compiler-plugin:build"
 build.dependsOn ballerinaBuild
 
 ballerinaPublish.dependsOn ballerinaBuild
@@ -304,5 +312,6 @@ ballerinaPublish.finalizedBy revertTomlFile
 ballerinaPublish.dependsOn initializeVariables
 ballerinaPublish.dependsOn updateTomlVersions
 ballerinaPublish.dependsOn ":${packageName}-native:build"
-ballerinaTest.dependsOn ":${packageName}-test-utils:build"
+ballerinaPublish.dependsOn ":${packageName}-test-utils:build"
+ballerinaPublish.dependsOn ":${packageName}-compiler-plugin:build"
 publish.dependsOn ballerinaPublish

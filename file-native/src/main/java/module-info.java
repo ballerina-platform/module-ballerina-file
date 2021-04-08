@@ -25,7 +25,6 @@ module io.ballerina.stdlib.file {
     requires org.wso2.transport.local.file.system;
     exports org.ballerinalang.stdlib.file.nativeimpl;
     exports org.ballerinalang.stdlib.file.service;
-    exports org.ballerinalang.stdlib.file.service.compiler;
     exports org.ballerinalang.stdlib.file.service.endpoint;
     exports org.ballerinalang.stdlib.file.utils;
 }

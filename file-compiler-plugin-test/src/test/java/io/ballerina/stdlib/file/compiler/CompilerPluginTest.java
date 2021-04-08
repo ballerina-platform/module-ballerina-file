@@ -94,9 +94,9 @@ public class CompilerPluginTest {
         Package currentPackage = loadPackage("package_05");
         PackageCompilation compilation = currentPackage.getCompilation();
         String errMsg = "ERROR [file_service.bal:(28:20,28:28)] invalid token 'remote'";
-        String errMsg1 = "ERROR [file_service.bal:(25:4,26:5)] Missing remote key word in the remote " +
+        String errMsg1 = "ERROR [file_service.bal:(25:4,26:5)] Missing remote keyword in the remote " +
                 "function `onCreate`";
-        String errMsg2 = "ERROR [file_service.bal:(28:4,29:5)] Missing remote key word in the remote " +
+        String errMsg2 = "ERROR [file_service.bal:(28:4,29:5)] Missing remote keyword in the remote " +
                 "function `onModify`";
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();
         Assert.assertEquals(diagnosticResult.diagnostics().size(), 3);
@@ -137,6 +137,21 @@ public class CompilerPluginTest {
         Assert.assertEquals(diagnosticResult.diagnostics().size(), 1);
         Assert.assertTrue(diagnosticResult.diagnostics().stream().anyMatch(
                 diagnostic -> errMsg.equals(diagnostic.toString())));
+    }
+
+    @Test
+    public void testCompilerPluginWithDumyAndMultipleService() {
+        Package currentPackage = loadPackage("package_08");
+        String errMsg = "ERROR [file_service.bal:(35:4,37:5)] Return types are not allowed in the remote " +
+                "function `onCreate`";
+        String errMsg1 = "ERROR [file_service.bal:(49:4,51:5)] Return types are not allowed in the remote " +
+                "function `onCreate`";
+        PackageCompilation compilation = currentPackage.getCompilation();
+        DiagnosticResult diagnosticResult = compilation.diagnosticResult();
+        Assert.assertEquals(diagnosticResult.diagnostics().size(), 2);
+        Object[] errors = diagnosticResult.diagnostics().toArray();
+        Assert.assertEquals(errors[0].toString(), errMsg);
+        Assert.assertEquals(errors[1].toString(), errMsg1);
     }
 
     private Package loadPackage(String path) {

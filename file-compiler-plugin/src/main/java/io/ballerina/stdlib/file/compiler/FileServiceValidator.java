@@ -18,6 +18,12 @@
 
 package io.ballerina.stdlib.file.compiler;
 
+import io.ballerina.compiler.api.symbols.ServiceDeclarationSymbol;
+import io.ballerina.compiler.api.symbols.Symbol;
+import io.ballerina.compiler.api.symbols.TypeDescKind;
+import io.ballerina.compiler.api.symbols.TypeReferenceTypeSymbol;
+import io.ballerina.compiler.api.symbols.TypeSymbol;
+import io.ballerina.compiler.api.symbols.UnionTypeSymbol;
 import io.ballerina.compiler.syntax.tree.FunctionDefinitionNode;
 import io.ballerina.compiler.syntax.tree.FunctionSignatureNode;
 import io.ballerina.compiler.syntax.tree.ParameterNode;
@@ -34,6 +40,9 @@ import io.ballerina.tools.diagnostics.DiagnosticSeverity;
 import io.ballerina.tools.diagnostics.Location;
 import org.ballerinalang.util.diagnostic.DiagnosticErrorCode;
 
+import java.util.List;
+import java.util.Optional;
+
 /**
  * File service validator for compiler API.
  */
@@ -45,34 +54,37 @@ public class FileServiceValidator implements AnalysisTask<SyntaxNodeAnalysisCont
     private static final String RESOURCE_NAME_ON_MODIFY = "onModify";
     private static final String INVALID_INPUT_PARAM = "Invalid parameter type `{0}` provided for remote function. " +
             "Only file:FileEvent is allowed as the parameter type";
-    private static final String INVALID_REMOTE_FUNCTION = "Missing remote key word in the remote function `{0}`";
+    private static final String INVALID_REMOTE_FUNCTION = "Missing remote keyword in the remote function `{0}`";
     private static final String INVALID_FUNCTION_NAME = "Invalid function name `{0}`";
     private static final String INVALID_RETURN_TYPE = "Return types are not allowed in the remote function `{0}`";
     private static final String INVALID_PARAM_SIZE = "The remote function should contain a parameter";
     private static final String EMPTY_SERVICE = "At least a single remote function required in the service";
+    public static final String BALLERINA_ORG_NAME = "ballerina";
+    public static final String PACKAGE_NAME = "file";
 
     @Override
     public void perform(SyntaxNodeAnalysisContext syntaxNodeAnalysisContext) {
-        ServiceDeclarationNode serviceDeclarationNode = (ServiceDeclarationNode) syntaxNodeAnalysisContext.node();
-        long size = serviceDeclarationNode.members().stream().filter(child -> child.kind() ==
-                SyntaxKind.OBJECT_METHOD_DEFINITION || child.kind() == SyntaxKind.RESOURCE_ACCESSOR_DEFINITION)
-                .count();
-        if (size > 0) {
-            serviceDeclarationNode.members().stream().filter(child -> child.kind() ==
-                    SyntaxKind.OBJECT_METHOD_DEFINITION || child.kind() == SyntaxKind.RESOURCE_ACCESSOR_DEFINITION).
-                    forEach(node -> {
-                FunctionDefinitionNode functionDefinitionNode = (FunctionDefinitionNode) node;
-                // Check functions are remote or not
-                validateServiceFunctions(functionDefinitionNode, syntaxNodeAnalysisContext);
-                // Check params and return types
-                validateFunctionSignature(functionDefinitionNode, syntaxNodeAnalysisContext);
+        if (isFileService(syntaxNodeAnalysisContext)) {
+            ServiceDeclarationNode serviceDeclarationNode = (ServiceDeclarationNode) syntaxNodeAnalysisContext.node();
+            long size = serviceDeclarationNode.members().stream().filter(child -> child.kind() ==
+                    SyntaxKind.OBJECT_METHOD_DEFINITION || child.kind() == SyntaxKind.RESOURCE_ACCESSOR_DEFINITION)
+                    .count();
+            if (size > 0) {
+                serviceDeclarationNode.members().stream().filter(child -> child.kind() ==
+                        SyntaxKind.OBJECT_METHOD_DEFINITION || child.kind() == SyntaxKind.RESOURCE_ACCESSOR_DEFINITION).
+                        forEach(node -> {
+                            FunctionDefinitionNode functionDefinitionNode = (FunctionDefinitionNode) node;
+                            // Check functions are remote or not
+                            validateServiceFunctions(functionDefinitionNode, syntaxNodeAnalysisContext);
+                            // Check params and return types
+                            validateFunctionSignature(functionDefinitionNode, syntaxNodeAnalysisContext);
 
-            });
-        } else {
-            reportErrorDiagnostic(serviceDeclarationNode.absoluteResourcePath().get(0).location(),
-                    syntaxNodeAnalysisContext, CODE, EMPTY_SERVICE);
+                        });
+            } else {
+                reportErrorDiagnostic(serviceDeclarationNode.absoluteResourcePath().get(0).location(),
+                        syntaxNodeAnalysisContext, CODE, EMPTY_SERVICE);
+            }
         }
-
     }
 
     public void validateServiceFunctions(FunctionDefinitionNode functionDefinitionNode,
@@ -117,6 +129,37 @@ public class FileServiceValidator implements AnalysisTask<SyntaxNodeAnalysisCont
                     INVALID_PARAM_SIZE);
         }
 
+    }
+
+    public boolean isFileService(SyntaxNodeAnalysisContext syntaxNodeAnalysisContext) {
+        ServiceDeclarationNode serviceDeclarationNode = (ServiceDeclarationNode) syntaxNodeAnalysisContext.node();
+        Optional<Symbol> serviceDeclarationSymbol = syntaxNodeAnalysisContext.semanticModel()
+                .symbol(serviceDeclarationNode);
+        if (serviceDeclarationSymbol.isPresent()) {
+            List<TypeSymbol> listenerTypes = ((ServiceDeclarationSymbol) serviceDeclarationSymbol.get())
+                    .listenerTypes();
+            for (TypeSymbol listenerType : listenerTypes) {
+                if (listenerType.typeKind() == TypeDescKind.UNION) {
+                    List<TypeSymbol> memberDescriptors = ((UnionTypeSymbol) listenerType).memberTypeDescriptors();
+                    for (TypeSymbol typeSymbol : memberDescriptors) {
+                        if (typeSymbol.getModule().isPresent() && typeSymbol.getModule().get().id().orgName()
+                                .equals(BALLERINA_ORG_NAME) && typeSymbol.getModule()
+                                .flatMap(Symbol::getName).orElse("").equals(PACKAGE_NAME)) {
+
+                            return true;
+                        }
+                    }
+                } else if (listenerType.typeKind() == TypeDescKind.TYPE_REFERENCE
+                        && listenerType.getModule().isPresent()
+                        && listenerType.getModule().get().id().orgName().equals(BALLERINA_ORG_NAME)
+                        && ((TypeReferenceTypeSymbol) listenerType).typeDescriptor().getModule()
+                        .flatMap(Symbol::getName).orElse("").equals(PACKAGE_NAME)) {
+
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public void reportErrorDiagnostic(Location location, SyntaxNodeAnalysisContext syntaxNodeAnalysisContext,

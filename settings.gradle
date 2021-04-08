@@ -24,8 +24,8 @@ rootProject.name = 'file'
 include(':build-config:checkstyle')
 include 'file-native'
 include 'file-test-utils'
-include 'file-ballerina'
 include 'file-compiler-plugin'
+include 'file-ballerina'
 include 'file-compiler-plugin-test'
 
 gradleEnterprise {

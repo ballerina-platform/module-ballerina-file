@@ -17,7 +17,7 @@
 import ballerina/jballerina.java;
 
 ///////////////////////////////////
-/// Direcotry Listener Endpoint ///
+/// Directory Listener Endpoint ///
 ///////////////////////////////////
 
 # Represents the directory listener endpoint, which is used to listen to a directory in the local file system.
@@ -53,7 +53,7 @@ public class Listener {
     # 
     # + return - () or else error upon failure to stop the listener 
     public isolated function immediateStop() returns error? {
-        return ();
+        return stop(self);
     }
 
     # Binds a service to the `file:Listener`.
@@ -78,7 +78,7 @@ public class Listener {
 # + path - Directory path which need to listen
 # + recursive - Recursively monitor all sub folders or not in the given direcotry path
 public type ListenerConfig record {|
-    string? path = ();
+    string path;
     boolean recursive = false;
 |};
 
@@ -95,4 +95,8 @@ isolated function register(Listener fileListener, service object {} s) returns e
 isolated function startEndpoint(Listener fileListener) returns error? = @java:Method {
     'class: "org.ballerinalang.stdlib.file.service.endpoint.Start",
     name: "start"
+} external;
+
+isolated function stop(Listener fileListener) returns error? = @java:Method {
+    'class: "org.ballerinalang.stdlib.file.service.endpoint.Stop"
 } external;

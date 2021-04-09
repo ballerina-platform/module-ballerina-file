@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - [Update the compiler plugin to validate file service](https://github.com/ballerina-platform/ballerina-standard-library/issues/1227)
-- [[Change the path field in the `ListenerConfig` from optional to mandatory]](https://github.com/ballerina-platform/ballerina-standard-library/issues/1235)
+- [Change the path field in the `ListenerConfig` from optional to mandatory](https://github.com/ballerina-platform/ballerina-standard-library/issues/1235)
 
 ## [1.1.0-alpha5] - 2021-03-19
 

@@ -166,20 +166,6 @@ function testService() returns error? {
     }
 }
 
-Listener|error localFolder4 = new ({
-    recursive: false
-});
-
-@test:Config {}
-function testIsEmpty() {
-    Listener|error temporaryLoader = localFolder4;
-    if (temporaryLoader is error) {
-        test:assertTrue(temporaryLoader.message().includes("Path can't be null"));
-    } else {
-        test:assertFail("Test Failed!");
-    }
-}
-
 function createTestFile() returns error? = @java:Method {
     'class: "org.ballerinalang.stdlib.file.testutils.TestUtil"
 } external;

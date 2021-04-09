@@ -97,9 +97,7 @@ public class Register {
         final boolean recursive = serviceEndpointConfig
                 .getBooleanValue(DirectoryListenerConstants.ANNOTATION_DIRECTORY_RECURSIVE);
         Map<String, String> paramMap = new HashMap<>(3);
-        if (path != null && !path.isEmpty()) {
-            paramMap.put(Constants.FILE_URI, path);
-        }
+        paramMap.put(Constants.FILE_URI, path);
         paramMap.put(Constants.DIRECTORY_WATCH_EVENTS, events);
         paramMap.put(Constants.DIRECTORY_WATCH_RECURSIVE, String.valueOf(recursive));
         return paramMap;

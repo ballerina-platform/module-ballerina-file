@@ -78,7 +78,7 @@ public class Listener {
 # + path - Directory path which need to listen
 # + recursive - Recursively monitor all sub folders or not in the given direcotry path
 public type ListenerConfig record {|
-    string? path = ();
+    string path;
     boolean recursive = false;
 |};
 

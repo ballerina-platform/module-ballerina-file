@@ -13,6 +13,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+//
 
 import ballerina/test;
 import ballerina/lang.runtime as runtime;
@@ -72,6 +73,96 @@ function isDeleteInvoked() {
     } else {
         runtime:sleep(2);
         test:assertTrue(deleteInvoke, "File deletion event not captured!");
+    }
+}
+
+Listener|error localFolder1 = new ({
+    path: "tests/test",
+    recursive: false
+});
+
+@test:Config {}
+function testDirectoryNotExist() {
+    Listener|error temporaryLoader = localFolder1;
+    if (temporaryLoader is error) {
+        test:assertTrue(temporaryLoader.message().includes("Folder does not exist: tests/test"));
+    } else {
+        test:assertFail("Test Failed!");
+    }
+}
+
+Listener|error localFolder2 = new ({
+    path: "",
+    recursive: false
+});
+
+@test:Config {}
+function testDirectoryEmpty() {
+    Listener|error temporaryLoader = localFolder2;
+    if (temporaryLoader is error) {
+        test:assertTrue(temporaryLoader.message().includes("'path' field is empty"));
+    } else {
+        test:assertFail("Test Failed!");
+    }
+}
+
+Listener|error localFolder3 = new ({
+    path: "tests/resources/test.txt",
+    recursive: false
+});
+
+@test:Config {}
+function testNotDirectory() {
+    Listener|error temporaryLoader = localFolder3;
+    if (temporaryLoader is error) {
+        test:assertTrue(temporaryLoader.message().includes("Unable to find a directory: tests/resources/test.txt"));
+    } else {
+        test:assertFail("Test Failed!");
+    }
+}
+
+
+Listener|error localFolder5 = new ({
+    path: "tests/resources",
+    recursive: false
+});
+
+service object {} attachService = service object {
+};
+
+
+@test:Config {}
+function testAttachEmptyService() {
+    Listener|error temporaryLoader = localFolder5;
+    if (temporaryLoader is Listener) {
+        error? result = trap temporaryLoader.attach(attachService);
+        if (result is error) {
+            test:assertTrue(result.message().includes("At least a single resource required from following"));
+        } else {
+            test:assertFail("Attach service test Failed!");
+        }
+    } else {
+        test:assertFail("Test Failed!");
+    }
+}
+
+service object {} attachService1 = service object {
+
+    remote function onCreate(FileEvent m) {
+        createInvoke = true;
+    }
+};
+
+@test:Config {}
+function testService() returns error? {
+    Listener|error temporaryLoader = localFolder5;
+    if (temporaryLoader is Listener) {
+        check temporaryLoader.attach(attachService1);
+        check temporaryLoader.'start();
+        check temporaryLoader.detach(attachService1);
+        check temporaryLoader.immediateStop();
+    } else {
+        test:assertFail("Test Failed!");
     }
 }
 

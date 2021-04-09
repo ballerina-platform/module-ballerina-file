@@ -34,9 +34,9 @@ import java.nio.file.Paths;
 public class InitEndpoint {
 
     public static Object initEndpoint(BObject listener) {
-        final String path = listener.getMapValue(DirectoryListenerConstants.SERVICE_ENDPOINT_CONFIG).
-                getStringValue(DirectoryListenerConstants.ANNOTATION_PATH).getValue();
-        if (path == null || path.isEmpty()) {
+        String path = listener.getMapValue(DirectoryListenerConstants.SERVICE_ENDPOINT_CONFIG).
+                    getStringValue(DirectoryListenerConstants.ANNOTATION_PATH).getValue();
+        if (path.isEmpty()) {
             return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR, "'path' field is empty");
         }
         final Path dirPath = Paths.get(path);

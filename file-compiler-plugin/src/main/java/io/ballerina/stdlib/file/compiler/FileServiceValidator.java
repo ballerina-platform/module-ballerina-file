@@ -55,7 +55,7 @@ public class FileServiceValidator implements AnalysisTask<SyntaxNodeAnalysisCont
     private static final String INVALID_INPUT_PARAM = "invalid parameter type `{0}` provided for remote function. " +
             "Only file:FileEvent is allowed as the parameter type";
     private static final String INVALID_REMOTE_FUNCTION = "missing remote keyword in the remote function `{0}`";
-    private static final String INVALID_FUNCTION_NAME = "invalid function name `{0}`, File Listener only supports " +
+    private static final String INVALID_FUNCTION_NAME = "invalid function name `{0}`, file listener only supports " +
             "`onCreate`, `onModify` and `onDelete` remote functions";
     private static final String INVALID_RETURN_TYPE = "return types are not allowed in the remote function `{0}`";
     private static final String INVALID_PARAM_SIZE = "the remote function should only contain file:FileEvent parameter";

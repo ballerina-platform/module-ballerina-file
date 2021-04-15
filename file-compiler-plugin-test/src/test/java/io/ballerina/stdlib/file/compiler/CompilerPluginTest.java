@@ -57,7 +57,7 @@ public class CompilerPluginTest {
         String errMsg = "ERROR [file_service.bal:(29:4,31:5)] the remote function should only contain " +
                 "file:FileEvent parameter";
         String errMsg1 = "ERROR [file_service.bal:(33:4,35:5)] invalid function name `onEdit`, " +
-                "File Listener only supports `onCreate`, `onModify` and `onDelete` remote functions";
+                "file listener only supports `onCreate`, `onModify` and `onDelete` remote functions";
         String errMsg2 = "ERROR [file_service.bal:(37:4,39:5)] the remote function should only contain " +
                 "file:FileEvent parameter";
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();

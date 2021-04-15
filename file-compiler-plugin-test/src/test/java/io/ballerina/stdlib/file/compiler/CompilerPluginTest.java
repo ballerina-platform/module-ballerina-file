@@ -56,7 +56,7 @@ public class CompilerPluginTest {
         PackageCompilation compilation = currentPackage.getCompilation();
         String errMsg = "ERROR [file_service.bal:(29:4,31:5)] the remote function should only contain " +
                 "file:FileEvent parameter";
-        String errMsg1 = "ERROR [file_service.bal:(33:4,35:5)] Invalid function name `onEdit`, " +
+        String errMsg1 = "ERROR [file_service.bal:(33:4,35:5)] invalid function name `onEdit`, " +
                 "File Listener only supports `onCreate`, `onModify` and `onDelete` remote functions";
         String errMsg2 = "ERROR [file_service.bal:(37:4,39:5)] the remote function should only contain " +
                 "file:FileEvent parameter";
@@ -143,7 +143,7 @@ public class CompilerPluginTest {
     }
 
     @Test
-    public void testCompilerPluginWithDumyAndMultipleService() {
+    public void testCompilerPluginWithDummyAndMultipleService() {
         Package currentPackage = loadPackage("package_08");
         String errMsg = "ERROR [file_service.bal:(35:4,37:5)] return types are not allowed in the remote " +
                 "function `onCreate`";

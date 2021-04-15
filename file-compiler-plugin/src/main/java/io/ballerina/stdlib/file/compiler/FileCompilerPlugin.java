@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -16,22 +16,18 @@
  * under the License.
  */
 
-plugins {
-    id "com.gradle.enterprise" version "3.2"
-}
+package io.ballerina.stdlib.file.compiler;
 
-rootProject.name = 'file'
-include(':build-config:checkstyle')
-include 'file-native'
-include 'file-test-utils'
-include 'file-compiler-plugin'
-include 'file-ballerina'
-include 'file-compiler-plugin-test'
+import io.ballerina.projects.plugins.CompilerPlugin;
+import io.ballerina.projects.plugins.CompilerPluginContext;
 
-gradleEnterprise {
-    buildScan {
-        termsOfServiceUrl = 'https://gradle.com/terms-of-service'
-        termsOfServiceAgree = 'yes'
+/**
+ * File compiler plugin.
+ */
+public class FileCompilerPlugin extends CompilerPlugin {
+
+    @Override
+    public void init(CompilerPluginContext compilerPluginContext) {
+        compilerPluginContext.addCodeAnalyzer(new FileCodeAnalyzer());
     }
 }
-

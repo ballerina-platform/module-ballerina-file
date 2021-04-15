@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,22 +16,9 @@
  * under the License.
  */
 
-plugins {
-    id "com.gradle.enterprise" version "3.2"
+module io.ballerina.stdlib.file.plugin {
+    requires io.ballerina.lang;
+    requires io.ballerina.parser;
+    requires io.ballerina.tools.api;
+    exports io.ballerina.stdlib.file.compiler;
 }
-
-rootProject.name = 'file'
-include(':build-config:checkstyle')
-include 'file-native'
-include 'file-test-utils'
-include 'file-compiler-plugin'
-include 'file-ballerina'
-include 'file-compiler-plugin-test'
-
-gradleEnterprise {
-    buildScan {
-        termsOfServiceUrl = 'https://gradle.com/terms-of-service'
-        termsOfServiceAgree = 'yes'
-    }
-}
-

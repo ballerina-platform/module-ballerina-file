@@ -54,9 +54,12 @@ public class CompilerPluginTest {
     public void testCompilerPluginWithInvalidParams() {
         Package currentPackage = loadPackage("package_02");
         PackageCompilation compilation = currentPackage.getCompilation();
-        String errMsg = "ERROR [file_service.bal:(29:4,31:5)] The remote function should contain a parameter";
-        String errMsg1 = "ERROR [file_service.bal:(33:4,35:5)] Invalid function name `onEdit`";
-        String errMsg2 = "ERROR [file_service.bal:(37:4,39:5)] The remote function should contain a parameter";
+        String errMsg = "ERROR [file_service.bal:(29:4,31:5)] the remote function should only contain " +
+                "file:FileEvent parameter";
+        String errMsg1 = "ERROR [file_service.bal:(33:4,35:5)] Invalid function name `onEdit`, " +
+                "File Listener only supports `onCreate`, `onModify` and `onDelete` remote functions";
+        String errMsg2 = "ERROR [file_service.bal:(37:4,39:5)] the remote function should only contain " +
+                "file:FileEvent parameter";
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();
         Assert.assertEquals(diagnosticResult.diagnostics().size(), 3);
         Object[] errors = diagnosticResult.diagnostics().toArray();
@@ -69,7 +72,7 @@ public class CompilerPluginTest {
     public void testCompilerPluginWithInvalidParamsType() {
         Package currentPackage = loadPackage("package_03");
         PackageCompilation compilation = currentPackage.getCompilation();
-        String errMsg = "ERROR [file_service.bal:(29:4,31:5)] Invalid parameter type `string` provided for remote " +
+        String errMsg = "ERROR [file_service.bal:(29:4,31:5)] invalid parameter type `string` provided for remote " +
                 "function. Only file:FileEvent is allowed as the parameter type";
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();
         Assert.assertEquals(diagnosticResult.diagnostics().size(), 1);
@@ -81,7 +84,7 @@ public class CompilerPluginTest {
     public void testCompilerPluginWithEmptyFunction() {
         Package currentPackage = loadPackage("package_04");
         PackageCompilation compilation = currentPackage.getCompilation();
-        String errMsg = "ERROR [file_service.bal:(23:8,23:20)] At least a single remote function " +
+        String errMsg = "ERROR [file_service.bal:(23:8,23:20)] at least a single remote function " +
                 "required in the service";
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();
         Assert.assertEquals(diagnosticResult.diagnostics().size(), 1);
@@ -94,9 +97,9 @@ public class CompilerPluginTest {
         Package currentPackage = loadPackage("package_05");
         PackageCompilation compilation = currentPackage.getCompilation();
         String errMsg = "ERROR [file_service.bal:(28:20,28:28)] invalid token 'remote'";
-        String errMsg1 = "ERROR [file_service.bal:(25:4,26:5)] Missing remote keyword in the remote " +
+        String errMsg1 = "ERROR [file_service.bal:(25:4,26:5)] missing remote keyword in the remote " +
                 "function `onCreate`";
-        String errMsg2 = "ERROR [file_service.bal:(28:4,29:5)] Missing remote keyword in the remote " +
+        String errMsg2 = "ERROR [file_service.bal:(28:4,29:5)] missing remote keyword in the remote " +
                 "function `onModify`";
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();
         Assert.assertEquals(diagnosticResult.diagnostics().size(), 3);
@@ -130,7 +133,7 @@ public class CompilerPluginTest {
     @Test
     public void testCompilerPluginWithReturn() {
         Package currentPackage = loadPackage("package_07");
-        String errMsg = "ERROR [file_service.bal:(25:4,27:5)] Return types are not allowed in the remote " +
+        String errMsg = "ERROR [file_service.bal:(25:4,27:5)] return types are not allowed in the remote " +
                 "function `onCreate`";
         PackageCompilation compilation = currentPackage.getCompilation();
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();
@@ -142,9 +145,9 @@ public class CompilerPluginTest {
     @Test
     public void testCompilerPluginWithDumyAndMultipleService() {
         Package currentPackage = loadPackage("package_08");
-        String errMsg = "ERROR [file_service.bal:(35:4,37:5)] Return types are not allowed in the remote " +
+        String errMsg = "ERROR [file_service.bal:(35:4,37:5)] return types are not allowed in the remote " +
                 "function `onCreate`";
-        String errMsg1 = "ERROR [file_service.bal:(49:4,51:5)] Return types are not allowed in the remote " +
+        String errMsg1 = "ERROR [file_service.bal:(49:4,51:5)] return types are not allowed in the remote " +
                 "function `onCreate`";
         PackageCompilation compilation = currentPackage.getCompilation();
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();

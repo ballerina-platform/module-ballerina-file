@@ -52,13 +52,14 @@ public class FileServiceValidator implements AnalysisTask<SyntaxNodeAnalysisCont
     private static final String RESOURCE_NAME_ON_CREATE = "onCreate";
     private static final String RESOURCE_NAME_ON_DELETE = "onDelete";
     private static final String RESOURCE_NAME_ON_MODIFY = "onModify";
-    private static final String INVALID_INPUT_PARAM = "Invalid parameter type `{0}` provided for remote function. " +
+    private static final String INVALID_INPUT_PARAM = "invalid parameter type `{0}` provided for remote function. " +
             "Only file:FileEvent is allowed as the parameter type";
-    private static final String INVALID_REMOTE_FUNCTION = "Missing remote keyword in the remote function `{0}`";
-    private static final String INVALID_FUNCTION_NAME = "Invalid function name `{0}`";
-    private static final String INVALID_RETURN_TYPE = "Return types are not allowed in the remote function `{0}`";
-    private static final String INVALID_PARAM_SIZE = "The remote function should contain a parameter";
-    private static final String EMPTY_SERVICE = "At least a single remote function required in the service";
+    private static final String INVALID_REMOTE_FUNCTION = "missing remote keyword in the remote function `{0}`";
+    private static final String INVALID_FUNCTION_NAME = "invalid function name `{0}`, File Listener only supports " +
+            "`onCreate`, `onModify` and `onDelete` remote functions";
+    private static final String INVALID_RETURN_TYPE = "return types are not allowed in the remote function `{0}`";
+    private static final String INVALID_PARAM_SIZE = "the remote function should only contain file:FileEvent parameter";
+    private static final String EMPTY_SERVICE = "at least a single remote function required in the service";
     public static final String BALLERINA_ORG_NAME = "ballerina";
     public static final String PACKAGE_NAME = "file";
 

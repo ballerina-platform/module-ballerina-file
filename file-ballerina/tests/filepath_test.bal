@@ -213,6 +213,17 @@ function testNormcase() {
     }
 }
 
+@test:Config {}
+function testJoinPathWithSpace() {
+    string expectedPath = "user\\a b";
+    string|Error path = joinPath("user", "a b");
+    if (path is string) {
+        test:assertEquals(path, expectedPath);
+    } else {
+        test:assertFail("Error normalizing case!");
+    }
+
+}
 //Util functions
 
 isolated function validateAbsolutePath(string path, string expected) returns error? {

@@ -214,15 +214,25 @@ function testNormcase() {
 }
 
 @test:Config {}
-function testJoinPathWithSpace() {
-    string expectedPath = "user\\a b";
-    string|Error path = joinPath("user", "a b");
+function testJoinPathWithSpace1() {
+    string expectedPath = "tests\\resources\\read-dir\\space dir\\sample.txt";
+    string|Error path = joinPath("tests", "resources", "read-dir", "space dir", "sample.txt");
+    if (path is string) {
+        test:assertTrue(checkpanic test(path, EXISTS));
+    } else {
+        test:assertFail("Error normalizing case!");
+    }
+}
+
+@test:Config {}
+function testJoinPathWithSpace2() {
+    string expectedPath = "tests\\resources\\read-dir\\space dir\\sample.txt";
+    string|Error path = joinPath("tests", "resources", "read-dir", "space dir", "sample.txt");
     if (path is string) {
         test:assertEquals(path, expectedPath);
     } else {
         test:assertFail("Error normalizing case!");
     }
-
 }
 //Util functions
 

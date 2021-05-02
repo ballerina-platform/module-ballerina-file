@@ -40,4 +40,6 @@ public class Stop {
         }
         return null;
     }
+
+    private Stop() {}
 }

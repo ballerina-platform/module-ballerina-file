@@ -1,2 +1,3 @@
 ignore:
   - "**/testutils"
+  - "file-ballerina/windows_file_path.bal"

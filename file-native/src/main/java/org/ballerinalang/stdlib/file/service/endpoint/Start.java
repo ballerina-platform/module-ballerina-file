@@ -41,4 +41,6 @@ public class Start {
         }
         return null;
     }
+
+    private Start() {}
 }

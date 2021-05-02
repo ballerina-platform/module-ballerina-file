@@ -48,4 +48,6 @@ public class InitEndpoint {
         }
         return null;
     }
+
+    private InitEndpoint() {}
 }

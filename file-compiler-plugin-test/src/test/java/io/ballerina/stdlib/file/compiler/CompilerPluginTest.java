@@ -118,7 +118,7 @@ public class CompilerPluginTest {
         String errMsg1 = "ERROR [file_service.bal:(18:9,18:17)] unknown type 'Listener'";
         String errMsg2 = "ERROR [file_service.bal:(18:32,21:2)] cannot infer type of the object from '(other|error)'";
         String errMsg3 = "ERROR [file_service.bal:(23:29,26:2)] incompatible types: expected 'ballerina/file:0.7.0" +
-                "-alpha8:Listener', found '(ballerina/file:0.7.0-alpha8:Listener|error)'";
+                "-alpha9:Listener', found '(ballerina/file:0.7.0-alpha9:Listener|error)'";
         String errMsg4 = "ERROR [file_service.bal:(28:24,28:36)] invalid listener attachment";
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();
         Assert.assertEquals(diagnosticResult.diagnostics().size(), 5);

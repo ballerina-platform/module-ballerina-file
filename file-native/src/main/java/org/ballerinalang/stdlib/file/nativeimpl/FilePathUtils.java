@@ -62,4 +62,6 @@ public class FilePathUtils {
             return FileUtils.getPathError(FileConstants.SECURITY_ERROR, "Security error for " + inputPath);
         }
     }
+
+    private FilePathUtils() {}
 }

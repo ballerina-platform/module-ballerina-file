@@ -44,4 +44,7 @@ public class DirectoryListenerConstants {
     public static final String RESOURCE_NAME_ON_DELETE = "onDelete";
     public static final String RESOURCE_NAME_ON_MODIFY = "onModify";
     public static final String RESOURCE_NAME_ON_MESSAGE = "onMessage";
+
+    private DirectoryListenerConstants() {
+    }
 }

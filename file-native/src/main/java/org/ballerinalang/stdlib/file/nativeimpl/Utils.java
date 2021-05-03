@@ -415,5 +415,7 @@ public class Utils {
             return FileUtils.getBallerinaError(FileConstants.PERMISSION_ERROR, msg + e.getMessage());
         }
     }
+
+    private Utils() {}
 }
 

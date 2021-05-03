@@ -102,4 +102,6 @@ public class Register {
         paramMap.put(Constants.DIRECTORY_WATCH_RECURSIVE, String.valueOf(recursive));
         return paramMap;
     }
+
+    private Register() {}
 }

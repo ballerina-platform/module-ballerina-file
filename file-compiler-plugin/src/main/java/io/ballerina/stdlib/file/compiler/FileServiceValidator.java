@@ -94,7 +94,7 @@ public class FileServiceValidator implements AnalysisTask<SyntaxNodeAnalysisCont
                 .filter(q -> q.kind() == SyntaxKind.REMOTE_KEYWORD).toArray().length == 1;
         if (!hasRemoteKeyword) {
             reportErrorDiagnostic(functionDefinitionNode.location(), syntaxNodeAnalysisContext,
-                    DiagnosticErrorCode.KEY_NOT_FOUND.diagnosticId(), INVALID_REMOTE_FUNCTION,
+                    DiagnosticErrorCode.METHOD_NOT_FOUND.diagnosticId(), INVALID_REMOTE_FUNCTION,
                     functionDefinitionNode.functionName().text());
         }
     }

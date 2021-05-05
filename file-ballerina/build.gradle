@@ -157,7 +157,7 @@ def needSeparateTest = false
 def needBuildWithTest = false
 def needPublishToCentral = false
 def needPublishToLocalCentral = false
-def testCoverageParam = "--code-coverage --jacoco-xml --includes=org.ballerinalang.stdlib.file.*:ballerina.file.*"
+def testCoverageParam = "--code-coverage --jacoco-xml --includes=*"
 
 task initializeVariables {
     if (project.hasProperty("groups")) {

@@ -38,7 +38,6 @@ import io.ballerina.tools.diagnostics.DiagnosticFactory;
 import io.ballerina.tools.diagnostics.DiagnosticInfo;
 import io.ballerina.tools.diagnostics.DiagnosticSeverity;
 import io.ballerina.tools.diagnostics.Location;
-import org.ballerinalang.util.diagnostic.DiagnosticErrorCode;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,19 +46,10 @@ import java.util.Optional;
  * File service validator for compiler API.
  */
 public class FileServiceValidator implements AnalysisTask<SyntaxNodeAnalysisContext> {
-    private static final String CODE = "File";
     private static final String FILE_EVENT = "file:FileEvent";
     private static final String RESOURCE_NAME_ON_CREATE = "onCreate";
     private static final String RESOURCE_NAME_ON_DELETE = "onDelete";
     private static final String RESOURCE_NAME_ON_MODIFY = "onModify";
-    private static final String INVALID_INPUT_PARAM = "invalid parameter type `{0}` provided for remote function. " +
-            "Only file:FileEvent is allowed as the parameter type";
-    private static final String INVALID_REMOTE_FUNCTION = "missing remote keyword in the remote function `{0}`";
-    private static final String INVALID_FUNCTION_NAME = "invalid function name `{0}`, file listener only supports " +
-            "`onCreate`, `onModify` and `onDelete` remote functions";
-    private static final String INVALID_RETURN_TYPE = "return types are not allowed in the remote function `{0}`";
-    private static final String INVALID_PARAM_SIZE = "the remote function should only contain file:FileEvent parameter";
-    private static final String EMPTY_SERVICE = "at least a single remote function required in the service";
     public static final String BALLERINA_ORG_NAME = "ballerina";
     public static final String PACKAGE_NAME = "file";
 
@@ -83,7 +73,7 @@ public class FileServiceValidator implements AnalysisTask<SyntaxNodeAnalysisCont
                         });
             } else {
                 reportErrorDiagnostic(serviceDeclarationNode.absoluteResourcePath().get(0).location(),
-                        syntaxNodeAnalysisContext, CODE, EMPTY_SERVICE);
+                        syntaxNodeAnalysisContext, ErrorCodes.FILE_106);
             }
         }
     }
@@ -94,8 +84,7 @@ public class FileServiceValidator implements AnalysisTask<SyntaxNodeAnalysisCont
                 .filter(q -> q.kind() == SyntaxKind.REMOTE_KEYWORD).toArray().length == 1;
         if (!hasRemoteKeyword) {
             reportErrorDiagnostic(functionDefinitionNode.location(), syntaxNodeAnalysisContext,
-                    DiagnosticErrorCode.METHOD_NOT_FOUND.diagnosticId(), INVALID_REMOTE_FUNCTION,
-                    functionDefinitionNode.functionName().text());
+                    ErrorCodes.FILE_102, functionDefinitionNode.functionName().text());
         }
     }
 
@@ -108,8 +97,7 @@ public class FileServiceValidator implements AnalysisTask<SyntaxNodeAnalysisCont
         if (!(functionName.equals(RESOURCE_NAME_ON_CREATE) || functionName.equals(RESOURCE_NAME_ON_DELETE) ||
                 functionName.equals(RESOURCE_NAME_ON_MODIFY))) {
             reportErrorDiagnostic(functionDefinitionNode.location(), syntaxNodeAnalysisContext,
-                    DiagnosticErrorCode.INVALID_FUNCTION_INVOCATION_WITH_NAME.diagnosticId(), INVALID_FUNCTION_NAME,
-                    functionName);
+                    ErrorCodes.FILE_103, functionName);
         }
         if (parameterNodes.size() == 1) {
             RequiredParameterNode requiredParameterNode = (RequiredParameterNode)
@@ -117,17 +105,14 @@ public class FileServiceValidator implements AnalysisTask<SyntaxNodeAnalysisCont
             String value = requiredParameterNode.toString();
             if (!value.contains(FILE_EVENT)) {
                 reportErrorDiagnostic(functionDefinitionNode.location(), syntaxNodeAnalysisContext,
-                        DiagnosticErrorCode.INVALID_VARIABLE_ASSIGNMENT.diagnosticId(), INVALID_INPUT_PARAM,
-                        value.split(" ")[0]);
+                        ErrorCodes.FILE_101, value.split(" ")[0]);
             } else if (functionSignatureNode.returnTypeDesc().isPresent()) {
                 reportErrorDiagnostic(functionDefinitionNode.location(), syntaxNodeAnalysisContext,
-                        DiagnosticErrorCode.CHECKED_EXPR_NO_MATCHING_ERROR_RETURN_IN_ENCL_INVOKABLE.diagnosticId(),
-                        INVALID_RETURN_TYPE, functionName);
+                        ErrorCodes.FILE_104, functionName);
             }
         } else {
             reportErrorDiagnostic(functionDefinitionNode.location(), syntaxNodeAnalysisContext,
-                    DiagnosticErrorCode.CHECKED_EXPR_NO_MATCHING_ERROR_RETURN_IN_ENCL_INVOKABLE.diagnosticId(),
-                    INVALID_PARAM_SIZE);
+                    ErrorCodes.FILE_105);
         }
 
     }
@@ -164,8 +149,9 @@ public class FileServiceValidator implements AnalysisTask<SyntaxNodeAnalysisCont
     }
 
     public void reportErrorDiagnostic(Location location, SyntaxNodeAnalysisContext syntaxNodeAnalysisContext,
-                                      String code, String message, Object... args) {
-        DiagnosticInfo diagnosticErrInfo = new DiagnosticInfo(code , message, DiagnosticSeverity.ERROR);
+                                      ErrorCodes errorCode, Object... args) {
+        DiagnosticInfo diagnosticErrInfo = new DiagnosticInfo(errorCode.getErrorCode() , errorCode.getError(),
+                DiagnosticSeverity.ERROR);
         Diagnostic diagnostic = DiagnosticFactory.createDiagnostic(diagnosticErrInfo, location, args);
         syntaxNodeAnalysisContext.reportDiagnostic(diagnostic);
     }

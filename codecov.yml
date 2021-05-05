@@ -1,3 +1,7 @@
+ignore:
+  - "**/testutils"
+  - "file-ballerina/windows_file_path.bal"
+
 coverage:
   precision: 2
   round: down

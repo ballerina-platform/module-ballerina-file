@@ -96,7 +96,7 @@ public class CompilerPluginTest {
     public void testCompilerPluginWithRemoteFunc() {
         Package currentPackage = loadPackage("package_05");
         PackageCompilation compilation = currentPackage.getCompilation();
-        String errMsg = "ERROR [file_service.bal:(28:20,28:28)] invalid token 'remote'";
+        String errMsg = "ERROR [file_service.bal:(29:21,29:29)] invalid token 'remote'";
         String errMsg1 = "ERROR [file_service.bal:(25:4,26:5)] missing remote keyword in the remote " +
                 "function `onCreate`";
         String errMsg2 = "ERROR [file_service.bal:(28:4,29:5)] missing remote keyword in the remote " +
@@ -113,11 +113,11 @@ public class CompilerPluginTest {
     public void testCompilerPluginWithListener() {
         Package currentPackage = loadPackage("package_06");
         PackageCompilation compilation = currentPackage.getCompilation();
-        String errMsg = "ERROR [file_service.bal:(18:0,21:3)] listener variable incompatible types: 'localFolder' " +
+        String errMsg = "ERROR [file_service.bal:(19:1,22:4)] listener variable incompatible types: 'localFolder' " +
                 "is not a Listener object";
-        String errMsg1 = "ERROR [file_service.bal:(18:9,18:17)] unknown type 'Listener'";
-        String errMsg2 = "ERROR [file_service.bal:(18:32,21:2)] cannot infer type of the object from '(other|error)'";
-        String errMsg4 = "ERROR [file_service.bal:(28:24,28:36)] invalid listener attachment";
+        String errMsg1 = "ERROR [file_service.bal:(19:10,19:18)] unknown type 'Listener'";
+        String errMsg2 = "ERROR [file_service.bal:(19:33,22:3)] cannot infer type of the object from '(other|error)'";
+        String errMsg4 = "ERROR [file_service.bal:(29:25,29:37)] invalid listener attachment";
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();
         Assert.assertEquals(diagnosticResult.diagnostics().size(), 5);
         Object[] errors = diagnosticResult.diagnostics().toArray();

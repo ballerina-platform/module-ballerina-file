@@ -20,7 +20,7 @@ listener file:Listener inFolder = new ({
 });
 ```
 
-If the listener needs to monitor subdirectories of the given directory, needs to be set `recursive` to true. The default value of this is false.
+If the listener needs to monitor subdirectories of the given directory, need to set `recursive` to true. The default value of this is false.
 
 A `Service` has the defined remote methods with the `file:FileEvent` and can be exposed via a `Listener` endpoint. 
 When there are changes in the listening directory, the `file:FileEvent` will be triggered with the action of the file 

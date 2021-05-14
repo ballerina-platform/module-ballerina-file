@@ -29,7 +29,7 @@ public isolated function getCurrentDir() returns string = @java:Method {
 
 # Creates a new directory with the specified name.
 # ```ballerina
-# file:Error? results = file:createDir("foo/bar");
+# check file:createDir("foo/bar");
 # ```
 #
 # + dir - Directory name
@@ -43,7 +43,7 @@ public isolated function createDir(@untainted string dir, DirOption option = NON
 
 # Removes the specified file or directory.
 # ```ballerina
-# file:Error? results = file:remove("foo/bar.txt");
+# check file:remove("foo/bar.txt");
 # ```
 #
 # + path - String value of the file/directory path
@@ -57,7 +57,7 @@ public isolated function remove(@untainted string path, DirOption option = NON_R
 # Renames(Moves) the old path with the new path.
 # If the new path already exists and it is not a directory, this replaces the file.
 # ```ballerina
-# file:Error? results = file:rename("/A/B/C", "/A/B/D");
+# check file:rename("/A/B/C", "/A/B/D");
 # ```
 #
 # + oldPath - String value of the old file path
@@ -71,7 +71,7 @@ public isolated function rename(@untainted string oldPath, @untainted string new
 # Creates a file in the specified file path.
 # Truncates if the file already exists in the given path.
 # ```ballerina
-# file:Error? results = file:create("bar.txt");
+# check file:create("bar.txt");
 # ```
 #
 # + path - String value of the file path
@@ -88,11 +88,11 @@ isolated function getRawMetaData(@untainted string path) returns MetaData|Error 
 
 # Returns the metadata information of the file specified in the file path.
 # ```ballerina
-# file:MetaData | error result = file:getMetaData("foo/bar.txt");
+# file:MetaData result = check file:getMetaData("foo/bar.txt");
 # ```
 #
 # + path - String value of the file path.
-# + return - The `MetaData` instance with the file metadata or else an `file:Error`
+# + return - The `MetaData` instance with the file metadata, or else an `file:Error`
 public isolated function getMetaData(@untainted string path) returns (MetaData & readonly)|Error {
     var result = getRawMetaData(path);
     if (result is MetaData) {
@@ -110,11 +110,11 @@ isolated function readDirRaw(@untainted string path) returns MetaData[]|Error = 
 # Reads the directory and returns a list of metadata of files and directories
 # inside the specified directory.
 # ```ballerina
-# file:MetaData[] | error results = file:readDir("foo/bar");
+# file:MetaData[] results = check file:readDir("foo/bar");
 # ```
 #
 # + path - String value of the directory path.
-# + return - The `MetaData` array or else an `file:Error` if there is an error
+# + return - The `MetaData` array, or else an `file:Error` if there is an error
 public isolated function readDir(@untainted string path) returns (MetaData[] & readonly)|Error {
     var result = readDirRaw(path);
     if (result is MetaData[]) {
@@ -126,7 +126,7 @@ public isolated function readDir(@untainted string path) returns (MetaData[] & r
 
 # Copy the file/directory in the old path to the new path.
 # ```ballerina
-# file:Error? results = file:copy("/A/B/C", "/A/B/D", true);
+# check file:copy("/A/B/C", "/A/B/D", true);
 # ```
 #
 # + sourcePath - String value of the old file path
@@ -144,13 +144,13 @@ public isolated function copy(@untainted string sourcePath, @untainted string de
 
 # Creates a temporary file.
 # ```ballerina
-# string|error tmpFile = file:createTemp();
+# string tmpFile = check file:createTemp();
 # ```
 #
 # + suffix - Optional file suffix
 # + prefix - Optional file prefix
 # + dir - The directory path where the temp file should be created. If not specified, temp file will be created in the default temp directory of the OS.
-# + return - Temporary file path or an error if one occured
+# + return - Temporary file path, or else an `file:Error` if there is an error
 public isolated function createTemp(string? suffix = (), string? prefix = (), string? dir  = ())
                                  returns string|Error = @java:Method {
     'class: "org.ballerinalang.stdlib.file.nativeimpl.Utils",
@@ -159,13 +159,13 @@ public isolated function createTemp(string? suffix = (), string? prefix = (), st
 
 # Creates a temporary directory.
 # ```ballerina
-# string|error tmpDir = file:createTempDir();
+# string tmpDir = check file:createTempDir();
 # ```
 #
 # + suffix - Optional directory suffix
 # + prefix - Optional directory prefix
 # + dir - The directory path where the temp directory should be created. If not specified, temp directory will be created in the default temp directory of the OS.
-# + return - Temporary directory path or an error if one occured
+# + return - Temporary directory path, or else an `file:Error` if there is an error
 public isolated function createTempDir(string? suffix = (), string? prefix = (), string? dir  = ())
                                  returns string|Error = @java:Method {
     'class: "org.ballerinalang.stdlib.file.nativeimpl.Utils",
@@ -174,7 +174,7 @@ public isolated function createTempDir(string? suffix = (), string? prefix = (),
 
 # Tests a file path against a test condition .
 # ```ballerina
-# boolean|error result = file:test("foo/bar.txt", file:EXISTS);
+# boolean result = check file:test("foo/bar.txt", file:EXISTS);
 # ```
 #
 # + path - String value of the file path
@@ -184,7 +184,7 @@ public isolated function createTempDir(string? suffix = (), string? prefix = (),
 #  `IS_SYMLINK` - Test whether a file path is a symlink,
 #  `READABLE` - Test whether a file path is readable,
 #  `WRITABLE` - Test whether a file path is writable.
-# + return - True/false depending on the option to be tested, or else an error if one occurs
+# + return - True/false depending on the option to be tested, or else an `file:Error` if there is an error
 public isolated function test(@untainted string path, TestOption testOption) returns boolean|Error = @java:Method {
     'class: "org.ballerinalang.stdlib.file.nativeimpl.Utils",
     name: "test"

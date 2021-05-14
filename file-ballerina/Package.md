@@ -1,12 +1,15 @@
 ## Package Overview
 
-This package contains functions to perform file system based operations such as create, delete, rename the
-file/directory, and retrieve metadata of the file.
+The File library is one of the standard library packages of the<a target="_blank" href="https://ballerina.io/"> Ballerina
+</a> language.
 
-For an example on the usage of the operations, see the [File Example](https://ballerina.io/learn/by-example/file.html).
+This package provides APIs which perform file, file path, and directory operations and a `Directory Listener` which is used to listen a directory in the local file system.
 
-## Directory Listener 
+### Report Issues
 
-The `Directory Listener` is used to listen to a directory in the local file system. It notifies when new files are created in the directory or when the existing files are deleted or modified.
+To report bugs, request new features, start new discussions, view project boards, etc. please visit Ballerina Standard Library [parent repository](https://github.com/ballerina-platform/ballerina-standard-library).
 
-For an example on the usage of the operations, see the [Directory Listener Example](https://ballerina.io/learn/by-example/directory-listener.html).
+### Useful Links
+- Discuss code changes of the Ballerina project in [ballerina-dev@googlegroups.com](mailto:ballerina-dev@googlegroups.com).
+- Chat live with us via our [Slack channel](https://ballerina.io/community/slack/).
+- Post all technical questions on Stack Overflow with the [#ballerina](https://stackoverflow.com/questions/tagged/ballerina) tag.

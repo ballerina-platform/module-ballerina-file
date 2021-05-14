@@ -10,11 +10,11 @@ Ballerina File Library
 The File library is one of the standard library packages of the<a target="_blank" href="https://ballerina.io/"> Ballerina
 </a> language.
 
-This package contains functions to perform file system based operations such as create, delete, rename the file/directory, and retrieve metadata of the file.
+This package provides APIs which perform file, file path, and directory operations and a `Directory Listener` which is used to listen a directory in the local file system.
 
-For more information go to [The File Module](https://ballerina.io/learn/api-docs/ballerina/file/).
+For more information go to [The File Module](https://docs.central.ballerina.io/ballerina/file/latest).
 
-For example demonstrations of the usage, go to [Ballerina By Examples](https://ballerina.io/learn/by-example/file.html).
+For example demonstrations of the usage, go to [Ballerina By Examples](https://ballerina.io/learn/by-example/).
 
 ## Issues and Projects
 
@@ -81,6 +81,6 @@ All contributors are encouraged to read the [Ballerina Code of Conduct](https://
 
 ## Useful Links
 
-* Discuss about code changes of the Ballerina project in [ballerina-dev@googlegroups.com](mailto:ballerina-dev@googlegroups.com).
+* Discuss code changes of the Ballerina project in [ballerina-dev@googlegroups.com](mailto:ballerina-dev@googlegroups.com).
 * Chat live with us via our [Slack channel](https://ballerina.io/community/slack/).
 * Post all technical questions on Stack Overflow with the [#ballerina](https://stackoverflow.com/questions/tagged/ballerina) tag.

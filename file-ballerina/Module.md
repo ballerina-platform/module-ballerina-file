@@ -5,7 +5,7 @@ This module provides APIs which perform file, file path, and directory operation
 This provide the interface to create, delete, rename the file/directory, retrieve metadata of the given file, and manipulate 
 filename paths in a way compatible according to the target operating system-defined file paths.
 
-The path of the file/directory will be need to define as either forward slashes or backslashes depending on the operating system.
+The path of the file/directory needs to be defined with either forward slashes or backslashes depending on the operating system.
 
 ### Directory Listener
 
@@ -20,7 +20,7 @@ listener file:Listener inFolder = new ({
 });
 ```
 
-If the listener needs to monitor subdirectories of the given directory, needs to be set `recursive` to true. The default value of this is false.
+If the listener needs to monitor subdirectories of the given directory, need to set `recursive` to true. The default value of this is false.
 
 A `Service` has the defined remote methods with the `file:FileEvent` and can be exposed via a `Listener` endpoint. 
 When there are changes in the listening directory, the `file:FileEvent` will be triggered with the action of the file 

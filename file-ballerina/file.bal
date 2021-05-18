@@ -92,7 +92,7 @@ isolated function getRawMetaData(@untainted string path) returns MetaData|Error 
 # ```
 #
 # + path - String value of the file path.
-# + return - The `MetaData` instance with the file metadata, or else an `file:Error`
+# + return - The `MetaData` instance with the file metadata or else a `file:Error`
 public isolated function getMetaData(@untainted string path) returns (MetaData & readonly)|Error {
     var result = getRawMetaData(path);
     if (result is MetaData) {
@@ -114,7 +114,7 @@ isolated function readDirRaw(@untainted string path) returns MetaData[]|Error = 
 # ```
 #
 # + path - String value of the directory path.
-# + return - The `MetaData` array, or else an `file:Error` if there is an error
+# + return - The `MetaData` array or else a `file:Error` if there is an error
 public isolated function readDir(@untainted string path) returns (MetaData[] & readonly)|Error {
     var result = readDirRaw(path);
     if (result is MetaData[]) {
@@ -150,7 +150,7 @@ public isolated function copy(@untainted string sourcePath, @untainted string de
 # + suffix - Optional file suffix
 # + prefix - Optional file prefix
 # + dir - The directory path where the temp file should be created. If not specified, temp file will be created in the default temp directory of the OS.
-# + return - Temporary file path, or else an `file:Error` if there is an error
+# + return - Temporary file path or else a `file:Error` if there is an error
 public isolated function createTemp(string? suffix = (), string? prefix = (), string? dir  = ())
                                  returns string|Error = @java:Method {
     'class: "org.ballerinalang.stdlib.file.nativeimpl.Utils",
@@ -165,7 +165,7 @@ public isolated function createTemp(string? suffix = (), string? prefix = (), st
 # + suffix - Optional directory suffix
 # + prefix - Optional directory prefix
 # + dir - The directory path where the temp directory should be created. If not specified, temp directory will be created in the default temp directory of the OS.
-# + return - Temporary directory path, or else an `file:Error` if there is an error
+# + return - Temporary directory path or else a `file:Error` if there is an error
 public isolated function createTempDir(string? suffix = (), string? prefix = (), string? dir  = ())
                                  returns string|Error = @java:Method {
     'class: "org.ballerinalang.stdlib.file.nativeimpl.Utils",
@@ -184,7 +184,7 @@ public isolated function createTempDir(string? suffix = (), string? prefix = (),
 #  `IS_SYMLINK` - Test whether a file path is a symlink,
 #  `READABLE` - Test whether a file path is readable,
 #  `WRITABLE` - Test whether a file path is writable.
-# + return - True/false depending on the option to be tested, or else an `file:Error` if there is an error
+# + return - True/false depending on the option to be tested or else a `file:Error` if there is an error
 public isolated function test(@untainted string path, TestOption testOption) returns boolean|Error = @java:Method {
     'class: "org.ballerinalang.stdlib.file.nativeimpl.Utils",
     name: "test"

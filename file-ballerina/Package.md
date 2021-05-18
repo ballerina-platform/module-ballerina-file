@@ -1,10 +1,8 @@
 ## Package Overview
 
-The File library is one of the standard library packages of the<a target="_blank" href="https://ballerina.io/"> Ballerina
-</a> language.
+The `file` library is one of the standard library packages of the<a target="_blank" href="https://ballerina.io/"> Ballerina
 
-This package provides APIs which perform file, file path, and directory operations and a `Directory Listener` which is used to listen a directory in the local file system.
-
+This package provides APIs, which perform file, file path, and directory operations, and a `Directory Listener`, which is used to listen to a directory in the local file system.
 ### Report Issues
 
 To report bugs, request new features, start new discussions, view project boards, etc., go to the [Ballerina Standard Library parent repository](https://github.com/ballerina-platform/ballerina-standard-library).

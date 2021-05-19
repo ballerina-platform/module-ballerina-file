@@ -25,7 +25,7 @@ final string pathListSeparator = isWindows ? ";" : ":";
 
 # Retrieves the absolute path from the provided location.
 # ```ballerina
-#  string|file:Error absolutePath = file:getAbsolutePath(<@untainted> "test.txt");
+#  string absolutePath = check file:getAbsolutePath(<@untainted> "test.txt");
 # ```
 #
 # + path - String value of the file path free from potential malicious codes
@@ -40,7 +40,7 @@ public isolated function getAbsolutePath(@untainted string path) returns string|
 # On Unix, a path is absolute if it starts with the root.
 # On Windows, a path is absolute if it has a prefix and starts with the root: c:\windows.
 # ```ballerina
-#  boolean|file:Error isAbsolute = file:isAbsolutePath("/A/B/C");
+#  boolean isAbsolute = check file:isAbsolutePath("/A/B/C");
 # ```
 #
 # + path - String value of the file path
@@ -61,7 +61,7 @@ public isolated function isAbsolutePath(string path) returns boolean|Error {
 # which is the last element of the path.
 # Trailing path separators are removed before extracting the last element.
 # ```ballerina
-#  string|file:Error name = file:basename("/A/B/C.txt");
+#  string name = check file:basename("/A/B/C.txt");
 # ```
 #
 # + path - String value of file path
@@ -86,7 +86,7 @@ public isolated function basename(string path) returns string|Error {
 # If the path is empty, parent returns ".".
 # The returned path does not end in a separator unless it is the root directory.
 # ```ballerina
-#  string|file:Error parentPath = file:parentPath("/A/B/C.txt");
+#  string parentPath = check file:parentPath("/A/B/C.txt");
 # ```
 #
 # + path - String value of the file/directory path
@@ -114,7 +114,7 @@ public isolated function parentPath(string path) returns string|Error {
 
 # Normalizes a path value.
 # ```ballerina
-#  string|file:Error normalizedPath = file:normalizePath("foo/../bar", file:CLEAN);
+#  string normalizedPath = check file:normalizePath("foo/../bar", file:CLEAN);
 # ```
 #
 # + path - String value of the file path
@@ -227,7 +227,7 @@ public isolated function normalizePath(string path, NormOption option) returns s
 
 # Splits a list of paths joined by the OS-specific path separator.
 # ```ballerina
-#  string[]|file:Error parts = file:splitPath("/A/B/C");
+#  string[] parts = check file:splitPath("/A/B/C");
 # ```
 #
 # + path - String value of the file path
@@ -256,7 +256,7 @@ public isolated function splitPath(string path) returns string[]|Error {
 
 # Joins any number of path elements into a single path.
 # ```ballerina
-#  string|file:Error path = file:joinPath("/", "foo", "bar");
+#  string path = check file:joinPath("/", "foo", "bar");
 # ```
 #
 # + parts - String values of the file path parts
@@ -273,7 +273,7 @@ public isolated function joinPath(string... parts) returns string|Error {
 # intervening separator.
 # An error is returned if the target path cannot be made relative to the base path.
 # ```ballerina
-#  string|file:Error relative = file:relativePath("a/b/e", "a/c/d");
+#  string relative = check file:relativePath("a/b/e", "a/c/d");
 # ```
 #
 # + base - String value of the base file path

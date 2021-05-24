@@ -54,105 +54,96 @@ public class CompilerPluginTest {
     public void testCompilerPluginWithInvalidParams() {
         Package currentPackage = loadPackage("package_02");
         PackageCompilation compilation = currentPackage.getCompilation();
-        String errMsg = "ERROR [file_service.bal:(29:4,31:5)] the remote function should only contain " +
-                "file:FileEvent parameter";
-        String errMsg1 = "ERROR [file_service.bal:(33:4,35:5)] invalid function name `onEdit`, " +
-                "file listener only supports `onCreate`, `onModify` and `onDelete` remote functions";
-        String errMsg2 = "ERROR [file_service.bal:(37:4,39:5)] the remote function should only contain " +
-                "file:FileEvent parameter";
+        String errMsg = "the remote function should only contain file:FileEvent parameter";
+        String errMsg1 = "invalid function name `onEdit`, file listener only supports `onCreate`, `onModify` and " +
+                "`onDelete` remote functions";
+        String errMsg2 = "the remote function should only contain file:FileEvent parameter";
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();
         Assert.assertEquals(diagnosticResult.diagnostics().size(), 3);
         Object[] errors = diagnosticResult.diagnostics().toArray();
-        Assert.assertEquals(errors[0].toString(), errMsg);
-        Assert.assertEquals(errors[1].toString(), errMsg1);
-        Assert.assertEquals(errors[2].toString(), errMsg2);
+        Assert.assertTrue(errors[0].toString().contains(errMsg));
+        Assert.assertTrue(errors[1].toString().contains(errMsg1));
+        Assert.assertTrue(errors[2].toString().contains(errMsg2));
     }
 
     @Test
     public void testCompilerPluginWithInvalidParamsType() {
         Package currentPackage = loadPackage("package_03");
         PackageCompilation compilation = currentPackage.getCompilation();
-        String errMsg = "ERROR [file_service.bal:(29:4,31:5)] invalid parameter type `string` provided for remote " +
-                "function. Only file:FileEvent is allowed as the parameter type";
+        String errMsg = "invalid parameter type `string` provided for remote function. Only file:FileEvent " +
+                "is allowed as the parameter type";
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();
         Assert.assertEquals(diagnosticResult.diagnostics().size(), 1);
         Assert.assertTrue(diagnosticResult.diagnostics().stream().anyMatch(
-                diagnostic -> errMsg.equals(diagnostic.toString())));
+                diagnostic -> diagnostic.toString().contains(errMsg)));
     }
 
     @Test
     public void testCompilerPluginWithEmptyFunction() {
         Package currentPackage = loadPackage("package_04");
         PackageCompilation compilation = currentPackage.getCompilation();
-        String errMsg = "ERROR [file_service.bal:(23:8,23:20)] at least a single remote function " +
-                "required in the service";
+        String errMsg = "at least a single remote function required in the service";
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();
         Assert.assertEquals(diagnosticResult.diagnostics().size(), 1);
         Assert.assertTrue(diagnosticResult.diagnostics().stream().anyMatch(
-                diagnostic -> errMsg.equals(diagnostic.toString())));
+                diagnostic -> diagnostic.toString().contains(errMsg)));
     }
 
     @Test
     public void testCompilerPluginWithRemoteFunc() {
         Package currentPackage = loadPackage("package_05");
         PackageCompilation compilation = currentPackage.getCompilation();
-        String errMsg = "ERROR [file_service.bal:(29:21,29:29)] invalid token 'remote'";
-        String errMsg1 = "ERROR [file_service.bal:(25:4,26:5)] missing remote keyword in the remote " +
-                "function `onCreate`";
-        String errMsg2 = "ERROR [file_service.bal:(28:4,29:5)] missing remote keyword in the remote " +
-                "function `onModify`";
+        String errMsg = "invalid token 'remote'";
+        String errMsg1 = "missing remote keyword in the remote function `onCreate`";
+        String errMsg2 = "missing remote keyword in the remote function `onModify`";
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();
         Assert.assertEquals(diagnosticResult.diagnostics().size(), 3);
         Object[] errors = diagnosticResult.diagnostics().toArray();
-        Assert.assertEquals(errors[0].toString(), errMsg);
-        Assert.assertEquals(errors[1].toString(), errMsg1);
-        Assert.assertEquals(errors[2].toString(), errMsg2);
+        Assert.assertTrue(errors[0].toString().contains(errMsg));
+        Assert.assertTrue(errors[1].toString().contains(errMsg1));
+        Assert.assertTrue(errors[2].toString().contains(errMsg2));
     }
 
     @Test
     public void testCompilerPluginWithListener() {
         Package currentPackage = loadPackage("package_06");
         PackageCompilation compilation = currentPackage.getCompilation();
-        String errMsg = "ERROR [file_service.bal:(19:1,22:4)] listener variable incompatible types: 'localFolder' " +
-                "is not a Listener object";
-        String errMsg1 = "ERROR [file_service.bal:(19:10,19:18)] unknown type 'Listener'";
-        String errMsg2 = "ERROR [file_service.bal:(19:33,22:3)] cannot infer type of the object from '(other|error)'";
-        String errMsg4 = "ERROR [file_service.bal:(29:25,29:37)] invalid listener attachment";
+        String errMsg = "listener variable incompatible types: 'localFolder' is not a Listener object";
+        String errMsg1 = "unknown type 'Listener'";
+        String errMsg2 = "cannot infer type of the object from '(other|error)'";
+        String errMsg4 = "invalid listener attachment";
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();
         Assert.assertEquals(diagnosticResult.diagnostics().size(), 5);
         Object[] errors = diagnosticResult.diagnostics().toArray();
-        Assert.assertEquals(errors[0].toString(), errMsg);
-        Assert.assertEquals(errors[1].toString(), errMsg1);
-        Assert.assertEquals(errors[2].toString(), errMsg2);
+        Assert.assertTrue(errors[0].toString().contains(errMsg));
+        Assert.assertTrue(errors[1].toString().contains(errMsg1));
+        Assert.assertTrue(errors[2].toString().contains(errMsg2));
         Assert.assertFalse(errors[3].toString().isEmpty());
-        Assert.assertEquals(errors[4].toString(), errMsg4);
+        Assert.assertTrue(errors[4].toString().contains(errMsg4));
     }
 
     @Test
     public void testCompilerPluginWithReturn() {
         Package currentPackage = loadPackage("package_07");
-        String errMsg = "ERROR [file_service.bal:(25:4,27:5)] return types are not allowed in the remote " +
-                "function `onCreate`";
+        String errMsg = "return types are not allowed in the remote function `onCreate`";
         PackageCompilation compilation = currentPackage.getCompilation();
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();
         Assert.assertEquals(diagnosticResult.diagnostics().size(), 1);
         Assert.assertTrue(diagnosticResult.diagnostics().stream().anyMatch(
-                diagnostic -> errMsg.equals(diagnostic.toString())));
+                diagnostic -> diagnostic.toString().contains(errMsg)));
     }
 
     @Test
     public void testCompilerPluginWithDummyAndMultipleService() {
         Package currentPackage = loadPackage("package_08");
-        String errMsg = "ERROR [file_service.bal:(35:4,37:5)] return types are not allowed in the remote " +
-                "function `onCreate`";
-        String errMsg1 = "ERROR [file_service.bal:(49:4,51:5)] return types are not allowed in the remote " +
-                "function `onCreate`";
+        String errMsg = "return types are not allowed in the remote function `onCreate`";
+        String errMsg1 = "return types are not allowed in the remote function `onCreate`";
         PackageCompilation compilation = currentPackage.getCompilation();
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();
         Assert.assertEquals(diagnosticResult.diagnostics().size(), 2);
         Object[] errors = diagnosticResult.diagnostics().toArray();
-        Assert.assertEquals(errors[0].toString(), errMsg);
-        Assert.assertEquals(errors[1].toString(), errMsg1);
+        Assert.assertTrue(errors[0].toString().contains(errMsg));
+        Assert.assertTrue(errors[1].toString().contains(errMsg1));
     }
 
     private Package loadPackage(String path) {

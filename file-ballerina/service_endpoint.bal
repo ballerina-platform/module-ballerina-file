@@ -21,14 +21,15 @@ import ballerina/jballerina.java;
 ///////////////////////////////////
 
 # Represents the directory listener endpoint, which is used to listen to a directory in the local file system.
-public class Listener {
+public isolated class Listener {
+
     private ListenerConfig config;
 
     # Creates a new Directory listener.
     # 
     # + listenerConfig - The `ListenerConfig` record with the directory details 
     public isolated function init(ListenerConfig listenerConfig) returns error? {
-        self.config = listenerConfig;
+        self.config = listenerConfig.cloneReadOnly();
         var result = initEndpoint(self);
         if (result is error) {
             return result;

@@ -21,21 +21,17 @@ listener file:Listener localFolder = new ({
     recursive: false
 });
 
-boolean createInvoke = false;
-boolean modifyInvoke = false;
-boolean deleteInvoke = false;
-
 service "filesystem" on localFolder {
 
     remote function onCreate(file:FileEvent m) {
-        createInvoke = true;
+        //
     }
 
     remote function onModify(file:FileEvent m) {
-        modifyInvoke = true;
+        //
     }
 
     remote function onDelete(file:FileEvent m) {
-        deleteInvoke = true;
+        //
     }
 }

@@ -27,15 +27,15 @@ dependencies {
     checkstyle project(':build-config:checkstyle')
     checkstyle "com.puppycrawl.tools:checkstyle:${checkstylePluginVersion}"
 
-    compile group: 'org.ballerinalang', name: 'ballerina-lang', version: "${ballerinaLangVersion}"
-    compile group: 'org.ballerinalang', name: 'ballerina-runtime', version: "${ballerinaLangVersion}"
-    compile group: 'org.ballerinalang', name: 'ballerina-tools-api', version: "${ballerinaLangVersion}"
-    compile group: 'org.ballerinalang', name: 'time-native', version: "${stdlibTimeVersion}"
-    compile group: 'org.slf4j', name: 'slf4j-jdk14', version: "${slf4jVersion}"
-    compile group: 'org.wso2.transport.file', name: 'org.wso2.transport.local-file-system', version: "${fileTransportVersion}"
+    implementation group: 'org.ballerinalang', name: 'ballerina-lang', version: "${ballerinaLangVersion}"
+    implementation group: 'org.ballerinalang', name: 'ballerina-runtime', version: "${ballerinaLangVersion}"
+    implementation group: 'org.ballerinalang', name: 'ballerina-tools-api', version: "${ballerinaLangVersion}"
+    implementation group: 'org.ballerinalang', name: 'time-native', version: "${stdlibTimeVersion}"
+    implementation group: 'org.slf4j', name: 'slf4j-jdk14', version: "${slf4jVersion}"
+    implementation group: 'org.wso2.transport.file', name: 'org.wso2.transport.local-file-system', version: "${fileTransportVersion}"
 
     testImplementation('org.junit.jupiter:junit-jupiter-api:5.4.2')
-    testRuntime('org.junit.jupiter:junit-jupiter-engine:5.4.2')
+    testImplementation('org.junit.jupiter:junit-jupiter-engine:5.4.2')
 }
 
 test {

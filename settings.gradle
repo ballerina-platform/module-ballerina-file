@@ -21,12 +21,19 @@ plugins {
 }
 
 rootProject.name = 'file'
-include(':build-config:checkstyle')
+include(':checkstyle')
 include 'file-native'
 include 'file-test-utils'
 include 'file-compiler-plugin'
 include 'file-ballerina'
 include 'file-compiler-plugin-test'
+
+project(':checkstyle').projectDir = file("build-config${File.separator}checkstyle")
+project(':file-native').projectDir = file('native')
+project(':file-test-utils').projectDir = file('test-utils')
+project(':file-compiler-plugin').projectDir = file('compiler-plugin')
+project(':file-ballerina').projectDir = file('ballerina')
+project(':file-compiler-plugin-test').projectDir = file('compiler-plugin-test')
 
 gradleEnterprise {
     buildScan {

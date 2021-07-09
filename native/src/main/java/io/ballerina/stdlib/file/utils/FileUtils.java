@@ -23,7 +23,7 @@ import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.values.BError;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BString;
-import org.ballerinalang.stdlib.time.util.TimeValueHandler;
+import io.ballerina.stdlib.time.util.TimeValueHandler;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,10 +1,10 @@
 [package]
 org = "ballerina"
 name = "file"
-version = "0.7.0-beta.3"
+version = "@toml.version@"
 
 [[platform.java11.dependency]]
-path = "../native/build/libs/file-native-0.7.0-beta.3-SNAPSHOT.jar"
+path = "../native/build/libs/file-native-@project.version@.jar"
 
 
 [[platform.java11.dependency]]
@@ -12,5 +12,5 @@ path = "./lib/org.wso2.transport.local-file-system-@transport.version@.jar"
 
 
 [[platform.java11.dependency]]
-path = "../test-utils/build/libs/file-test-utils-0.7.0-beta.3-SNAPSHOT.jar"
+path = "../test-utils/build/libs/file-test-utils-@project.version@.jar"
 scope = "testOnly"

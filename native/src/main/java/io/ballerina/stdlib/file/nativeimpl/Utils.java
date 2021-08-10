@@ -60,6 +60,7 @@ public class Utils {
     private static final Logger log = LoggerFactory.getLogger(Utils.class);
     private static final String CURRENT_DIR_PROPERTY_KEY = "user.dir";
     private static final String TEMP_DIR_PROPERTY_KEY = "java.io.tmpdir";
+    private static final String ERROR_MSG = "Error while deleting the file/directory: ";
 
     public static BString getCurrentDirectory() {
         return StringUtils.fromString(FileUtils.getSystemProperty(CURRENT_DIR_PROPERTY_KEY));
@@ -175,16 +176,13 @@ public class Utils {
                 Path directory = Paths.get(removeFile.getCanonicalPath());
                 Files.walkFileTree(directory, new RecursiveFileVisitor());
             } else {
-                if (!removeFile.delete()) {
-                    return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR,
-                            "Error while deleting " + removeFile.getCanonicalPath());
-                }
+                Files.delete(removeFile.toPath());
             }
             return null;
         } catch (IOException ex) {
-            return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR, ex);
+            return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR, ERROR_MSG + ex.getMessage());
         } catch (SecurityException ex) {
-            return FileUtils.getBallerinaError(FileConstants.PERMISSION_ERROR, ex);
+            return FileUtils.getBallerinaError(FileConstants.PERMISSION_ERROR, ERROR_MSG + ex.getMessage());
         }
     }
 

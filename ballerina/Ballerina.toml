@@ -2,6 +2,7 @@
 org = "ballerina"
 name = "file"
 version = "@toml.version@"
+distribution = "slbeta3"
 
 [[platform.java11.dependency]]
 path = "../native/build/libs/file-native-@project.version@.jar"

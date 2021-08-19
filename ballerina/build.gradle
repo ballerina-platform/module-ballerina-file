@@ -35,10 +35,8 @@ def packageName = "file"
 def packageOrg = "ballerina"
 def tomlVersion = stripBallerinaExtensionVersion("${project.version}")
 def ballerinaConfigFile = new File("$project.projectDir/Ballerina.toml")
-def ballerinaDependencyFile = new File("$project.projectDir/Dependencies.toml")
 def ballerinaCompilerPluginFile = new File("$project.projectDir/CompilerPlugin.toml")
 def originalConfig = ballerinaConfigFile.text
-def originalDependencies = ballerinaDependencyFile.text
 def originalCompilerPlugin = ballerinaCompilerPluginFile.text
 
 def stripBallerinaExtensionVersion(String extVersion) {
@@ -76,21 +74,10 @@ dependencies {
 
 task updateTomlFiles {
     doLast {
-        def stdlibDependentRegexVersion = stripBallerinaExtensionVersion(project.stdlibRegexVersion)
-        def stdlibDependentTimeVersion = stripBallerinaExtensionVersion(project.stdlibTimeVersion)
-        def stdlibDependentLogVersion = stripBallerinaExtensionVersion(project.stdlibLogVersion)
-        def stdlibDependentOsVersion = stripBallerinaExtensionVersion(project.stdlibOsVersion)
-
         def newConfig = ballerinaConfigFile.text.replace("@project.version@", project.version)
         newConfig = newConfig.replace("@transport.version@", transportVersion)
         newConfig = newConfig.replace("@toml.version@", tomlVersion)
         ballerinaConfigFile.text = newConfig
-
-        def newDependencyConfig = ballerinaDependencyFile.text.replace("@stdlib.regex.version@", stdlibDependentRegexVersion)
-        newDependencyConfig = newDependencyConfig.replace("@stdlib.time.version@", stdlibDependentTimeVersion)
-        newDependencyConfig = newDependencyConfig.replace("@stdlib.log.version@", stdlibDependentLogVersion)
-        newDependencyConfig = newDependencyConfig.replace("@stdlib.os.version@", stdlibDependentOsVersion)
-        ballerinaDependencyFile.text = newDependencyConfig
 
         def newCompilerPluginToml = ballerinaCompilerPluginFile.text.replace("@project.version@", project.version)
         ballerinaCompilerPluginFile.text = newCompilerPluginToml
@@ -100,7 +87,6 @@ task updateTomlFiles {
 task revertTomlFiles {
     doLast {
         ballerinaConfigFile.text = originalConfig
-        ballerinaDependencyFile.text = originalDependencies
         ballerinaCompilerPluginFile.text = originalCompilerPlugin
     }
 }

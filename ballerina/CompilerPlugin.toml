@@ -1,16 +1,6 @@
-[package]
-org = "ballerina"
-name = "file"
-version = "1.0.0"
-distribution = "slbeta3"
+[plugin]
+id = "file-compiler-plugin"
+class = "io.ballerina.stdlib.file.compiler.FileCompilerPlugin"
 
-[[platform.java11.dependency]]
-path = "../native/build/libs/file-native-1.0.0-SNAPSHOT.jar"
-
-[[platform.java11.dependency]]
-path = "./lib/org.wso2.transport.local-file-system-6.0.55.jar"
-
-
-[[platform.java11.dependency]]
-path = "../test-utils/build/libs/file-test-utils-1.0.0-SNAPSHOT.jar"
-scope = "testOnly"
+[[dependency]]
+path = "../compiler-plugin/build/libs/file-compiler-plugin-1.0.0-SNAPSHOT.jar"

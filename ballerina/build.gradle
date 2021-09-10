@@ -82,7 +82,7 @@ task updateTomlFiles {
         newConfig = newConfig.replace("@toml.version@", tomlVersion)
         ballerinaTomlFile.text = newConfig
 
-        def newCompilerPluginToml = ballerinaTomlFile.text.replace("@project.version@", project.version)
+        def newCompilerPluginToml = compilerPluginTomlFilePlaceHolder.text.replace("@project.version@", project.version)
         compilerPluginTomlFile.text = newCompilerPluginToml
     }
 }

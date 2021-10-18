@@ -177,8 +177,8 @@ isolated function getWindowsOffsetIndex(string path) returns int[]|Error {
                 count = count + 1;
                 index = index + 1;
                 while(index < path.length()) {
-                    cn = check charAt(path, index);
-                    if (cn == "/" || cn == "\\") {
+                    string value = check charAt(path, index);
+                    if (value == "/" || value == "\\") {
                         break;
                     }
                     index = index + 1;

@@ -66,8 +66,7 @@ isolated function getUnixOffsetIndex(string path) returns int[]|Error {
                 count = count + 1;
                 index = index + 1;
                 while(index < path.length()) {
-                    cn = check charAt(path, index);
-                    if (cn == "/") {
+                    if ((check charAt(path, index)) == "/") {
                         break;
                     }
                     index = index + 1;

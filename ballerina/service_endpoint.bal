@@ -30,10 +30,7 @@ public isolated class Listener {
     # + listenerConfig - The `ListenerConfig` record with the directory details 
     public isolated function init(ListenerConfig listenerConfig) returns error? {
         self.config = listenerConfig.cloneReadOnly();
-        var result = initEndpoint(self);
-        if (result is error) {
-            return result;
-        }
+        return initEndpoint(self);
     }
 
     # Starts the `file:Listener`.
@@ -71,6 +68,7 @@ public isolated class Listener {
     # + s - Type descriptor of the service
     # + return - () or else error upon failure to detach to the service
     public isolated function detach(service object {} s) returns error? {
+        return ();
     }
 }
 

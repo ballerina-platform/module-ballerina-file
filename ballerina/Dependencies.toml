@@ -13,7 +13,6 @@ version = "1.0.1"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "lang.boolean"},
-	{org = "ballerina", name = "lang.runtime"},
 	{org = "ballerina", name = "log"},
 	{org = "ballerina", name = "os"},
 	{org = "ballerina", name = "regex"},
@@ -43,26 +42,6 @@ modules = [
 
 [[package]]
 org = "ballerina"
-name = "lang.__internal"
-version = "0.0.0"
-scope = "testOnly"
-dependencies = [
-	{org = "ballerina", name = "jballerina.java"},
-	{org = "ballerina", name = "lang.object"}
-]
-
-[[package]]
-org = "ballerina"
-name = "lang.array"
-version = "0.0.0"
-scope = "testOnly"
-dependencies = [
-	{org = "ballerina", name = "jballerina.java"},
-	{org = "ballerina", name = "lang.__internal"}
-]
-
-[[package]]
-org = "ballerina"
 name = "lang.boolean"
 version = "0.0.0"
 scope = "testOnly"
@@ -71,26 +50,6 @@ dependencies = [
 ]
 modules = [
 	{org = "ballerina", packageName = "lang.boolean", moduleName = "lang.boolean"}
-]
-
-[[package]]
-org = "ballerina"
-name = "lang.object"
-version = "0.0.0"
-scope = "testOnly"
-
-[[package]]
-org = "ballerina"
-name = "lang.runtime"
-version = "0.0.0"
-scope = "testOnly"
-dependencies = [
-	{org = "ballerina", name = "jballerina.java"},
-	{org = "ballerina", name = "lang.array"},
-	{org = "ballerina", name = "lang.value"}
-]
-modules = [
-	{org = "ballerina", packageName = "lang.runtime", moduleName = "lang.runtime"}
 ]
 
 [[package]]

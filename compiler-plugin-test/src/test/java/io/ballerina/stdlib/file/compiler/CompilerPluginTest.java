@@ -38,7 +38,7 @@ public class CompilerPluginTest {
 
     private static final Path RESOURCE_DIRECTORY = Paths.get("src", "test", "resources", "test-src")
             .toAbsolutePath();
-    private static final Path DISTRIBUTION_PATH = Paths.get("build", "target", "ballerina-distribution")
+    private static final Path DISTRIBUTION_PATH = Paths.get("../", "target", "ballerina-runtime")
             .toAbsolutePath();
 
     @Test
@@ -47,7 +47,7 @@ public class CompilerPluginTest {
         PackageCompilation compilation = currentPackage.getCompilation();
 
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();
-        Assert.assertEquals(diagnosticResult.diagnostics().size(), 0);
+        Assert.assertEquals(diagnosticResult.errors().size(), 0);
     }
 
     @Test
@@ -59,8 +59,8 @@ public class CompilerPluginTest {
                 "`onDelete` remote functions";
         String errMsg2 = "the remote function should only contain file:FileEvent parameter";
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();
-        Assert.assertEquals(diagnosticResult.diagnostics().size(), 3);
-        Object[] errors = diagnosticResult.diagnostics().toArray();
+        Assert.assertEquals(diagnosticResult.errors().size(), 3);
+        Object[] errors = diagnosticResult.errors().toArray();
         Assert.assertTrue(errors[0].toString().contains(errMsg));
         Assert.assertTrue(errors[1].toString().contains(errMsg1));
         Assert.assertTrue(errors[2].toString().contains(errMsg2));
@@ -73,8 +73,8 @@ public class CompilerPluginTest {
         String errMsg = "invalid parameter type `string` provided for remote function. Only file:FileEvent " +
                 "is allowed as the parameter type";
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();
-        Assert.assertEquals(diagnosticResult.diagnostics().size(), 1);
-        Assert.assertTrue(diagnosticResult.diagnostics().stream().anyMatch(
+        Assert.assertEquals(diagnosticResult.errors().size(), 1);
+        Assert.assertTrue(diagnosticResult.errors().stream().anyMatch(
                 diagnostic -> diagnostic.toString().contains(errMsg)));
     }
 
@@ -84,8 +84,8 @@ public class CompilerPluginTest {
         PackageCompilation compilation = currentPackage.getCompilation();
         String errMsg = "at least a single remote function required in the service";
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();
-        Assert.assertEquals(diagnosticResult.diagnostics().size(), 1);
-        Assert.assertTrue(diagnosticResult.diagnostics().stream().anyMatch(
+        Assert.assertEquals(diagnosticResult.errors().size(), 1);
+        Assert.assertTrue(diagnosticResult.errors().stream().anyMatch(
                 diagnostic -> diagnostic.toString().contains(errMsg)));
     }
 
@@ -97,8 +97,8 @@ public class CompilerPluginTest {
         String errMsg1 = "missing remote keyword in the remote function `onCreate`";
         String errMsg2 = "missing remote keyword in the remote function `onModify`";
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();
-        Assert.assertEquals(diagnosticResult.diagnostics().size(), 3);
-        Object[] errors = diagnosticResult.diagnostics().toArray();
+        Assert.assertEquals(diagnosticResult.errors().size(), 3);
+        Object[] errors = diagnosticResult.errors().toArray();
         Assert.assertTrue(errors[0].toString().contains(errMsg));
         Assert.assertTrue(errors[1].toString().contains(errMsg1));
         Assert.assertTrue(errors[2].toString().contains(errMsg2));
@@ -113,8 +113,8 @@ public class CompilerPluginTest {
         String errMsg2 = "cannot infer type of the object from '(other|error)'";
         String errMsg4 = "invalid listener attachment";
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();
-        Assert.assertEquals(diagnosticResult.diagnostics().size(), 5);
-        Object[] errors = diagnosticResult.diagnostics().toArray();
+        Assert.assertEquals(diagnosticResult.errors().size(), 5);
+        Object[] errors = diagnosticResult.errors().toArray();
         Assert.assertTrue(errors[0].toString().contains(errMsg));
         Assert.assertTrue(errors[1].toString().contains(errMsg1));
         Assert.assertTrue(errors[2].toString().contains(errMsg2));
@@ -128,8 +128,8 @@ public class CompilerPluginTest {
         String errMsg = "return types are not allowed in the remote function `onCreate`";
         PackageCompilation compilation = currentPackage.getCompilation();
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();
-        Assert.assertEquals(diagnosticResult.diagnostics().size(), 1);
-        Assert.assertTrue(diagnosticResult.diagnostics().stream().anyMatch(
+        Assert.assertEquals(diagnosticResult.errors().size(), 1);
+        Assert.assertTrue(diagnosticResult.errors().stream().anyMatch(
                 diagnostic -> diagnostic.toString().contains(errMsg)));
     }
 
@@ -140,8 +140,8 @@ public class CompilerPluginTest {
         String errMsg1 = "return types are not allowed in the remote function `onCreate`";
         PackageCompilation compilation = currentPackage.getCompilation();
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();
-        Assert.assertEquals(diagnosticResult.diagnostics().size(), 2);
-        Object[] errors = diagnosticResult.diagnostics().toArray();
+        Assert.assertEquals(diagnosticResult.errors().size(), 2);
+        Object[] errors = diagnosticResult.errors().toArray();
         Assert.assertTrue(errors[0].toString().contains(errMsg));
         Assert.assertTrue(errors[1].toString().contains(errMsg1));
     }

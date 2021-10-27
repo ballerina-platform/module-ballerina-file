@@ -93,15 +93,24 @@ public class CompilerPluginTest {
     public void testCompilerPluginWithRemoteFunc() {
         Package currentPackage = loadPackage("package_05");
         PackageCompilation compilation = currentPackage.getCompilation();
-        String errMsg = "invalid token 'remote'";
         String errMsg1 = "missing remote keyword in the remote function `onCreate`";
         String errMsg2 = "missing remote keyword in the remote function `onModify`";
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();
-        Assert.assertEquals(diagnosticResult.errors().size(), 3);
+        Assert.assertEquals(diagnosticResult.errors().size(), 2);
+        Object[] errors = diagnosticResult.errors().toArray();
+        Assert.assertTrue(errors[0].toString().contains(errMsg1));
+        Assert.assertTrue(errors[1].toString().contains(errMsg2));
+    }
+
+    @Test
+    public void testCompilerPluginWithRemoteFunc1() {
+        Package currentPackage = loadPackage("package_09");
+        PackageCompilation compilation = currentPackage.getCompilation();
+        String errMsg = "invalid token 'remote'";
+        DiagnosticResult diagnosticResult = compilation.diagnosticResult();
+        Assert.assertEquals(diagnosticResult.errors().size(), 1);
         Object[] errors = diagnosticResult.errors().toArray();
         Assert.assertTrue(errors[0].toString().contains(errMsg));
-        Assert.assertTrue(errors[1].toString().contains(errMsg1));
-        Assert.assertTrue(errors[2].toString().contains(errMsg2));
     }
 
     @Test

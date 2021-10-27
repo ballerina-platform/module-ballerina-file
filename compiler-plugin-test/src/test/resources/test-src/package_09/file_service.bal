@@ -26,6 +26,6 @@ service "filesystem" on localFolder {
     function onCreate(file:FileEvent m) {
     }
 
-    function onModify(file:FileEvent m) {
+    function remote onModify(file:FileEvent m) {
     }
 }

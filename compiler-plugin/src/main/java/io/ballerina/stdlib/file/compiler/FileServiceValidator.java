@@ -55,6 +55,12 @@ public class FileServiceValidator implements AnalysisTask<SyntaxNodeAnalysisCont
 
     @Override
     public void perform(SyntaxNodeAnalysisContext syntaxNodeAnalysisContext) {
+        List<Diagnostic> diagnostics = syntaxNodeAnalysisContext.semanticModel().diagnostics();
+        for (Diagnostic diagnostic : diagnostics) {
+            if (diagnostic.diagnosticInfo().severity() == DiagnosticSeverity.ERROR) {
+                return;
+            }
+        }
         if (isFileService(syntaxNodeAnalysisContext)) {
             ServiceDeclarationNode serviceDeclarationNode = (ServiceDeclarationNode) syntaxNodeAnalysisContext.node();
             long size = serviceDeclarationNode.members().stream().filter(child -> child.kind() ==

@@ -3,8 +3,8 @@ org = "ballerina"
 name = "file"
 version = "1.0.1"
 authors = ["Ballerina"]
-keywords = ["task", "job", "schedule"]
-repository = "https://github.com/ballerina-platform/module-ballerina-task"
+keywords = ["file", "path", "directory", "filepath"]
+repository = "https://github.com/ballerina-platform/module-ballerina-file"
 license = ["Apache-2.0"]
 distribution = "slbeta3"
 

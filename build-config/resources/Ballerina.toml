@@ -2,6 +2,10 @@
 org = "ballerina"
 name = "file"
 version = "@toml.version@"
+authors = ["Ballerina"]
+keywords = ["file", "path", "directory", "filepath"]
+repository = "https://github.com/ballerina-platform/module-ballerina-file"
+license = ["Apache-2.0"]
 distribution = "slbeta3"
 
 [[platform.java11.dependency]]

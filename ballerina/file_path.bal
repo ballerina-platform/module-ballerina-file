@@ -241,12 +241,9 @@ public isolated function splitPath(string path) returns string[]|Error {
     int i = 0;
     while (i < count) {
         int begin = offsetIndexes[i];
-        int length;
         if (i == (count - 1)) {
-            length = validatedPath.length() - begin;
             parts[i] = check parse(validatedPath.substring(begin, validatedPath.length()));
         } else {
-            length = offsetIndexes[i + 1] - begin - 1;
             parts[i] = check parse(validatedPath.substring(begin, offsetIndexes[i + 1] - 1));
         }
         i = i + 1;

@@ -249,7 +249,6 @@ isolated function parseWindowsPath(string path, int off) returns string|Error {
     int length = path.length();
     int offset = check nextNonSlashIndex(path, off, length);
     int startIndex = offset;
-    string lastC = "";
     while (offset < length) {
         string c = check charAt(path, offset);
         if (isSlash(c)) {
@@ -260,7 +259,6 @@ isolated function parseWindowsPath(string path, int off) returns string|Error {
             }
             startIndex = offset;
         } else {
-            lastC = c;
             offset = offset + 1;
         }
     }

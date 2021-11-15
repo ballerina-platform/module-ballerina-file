@@ -157,7 +157,7 @@ function testReadEmptyDir() {
     MetaData[]|error metadata = readDir(emptyDir);
     if (metadata is MetaData[]) {
         test:assertEquals(metadata.length(), 0, "Invalid file info!");
-        _ = remove(emptyDir);
+        _ = check remove(emptyDir);
     }
 }
 

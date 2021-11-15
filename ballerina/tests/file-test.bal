@@ -153,11 +153,11 @@ function testCreateDir() {
 }
 
 @test:Config {dependsOn: [testCreateDir]}
-function testReadEmptyDir() {
+function testReadEmptyDir() returns error? {
     MetaData[]|error metadata = readDir(emptyDir);
     if (metadata is MetaData[]) {
         test:assertEquals(metadata.length(), 0, "Invalid file info!");
-        _ = check remove(emptyDir);
+        check remove(emptyDir);
     }
 }
 

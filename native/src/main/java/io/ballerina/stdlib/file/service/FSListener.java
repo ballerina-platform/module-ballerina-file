@@ -18,6 +18,7 @@
 
 package io.ballerina.stdlib.file.service;
 
+import io.ballerina.runtime.api.PredefinedTypes;
 import io.ballerina.runtime.api.Runtime;
 import io.ballerina.runtime.api.async.StrandMetadata;
 import io.ballerina.runtime.api.types.MethodType;
@@ -61,10 +62,10 @@ public class FSListener implements LocalFileSystemListener {
             if (service.getType().isIsolated()
                     && service.getType().isIsolated(resourceName)) {
                 runtime.invokeMethodAsyncConcurrently(service, resourceName, null,
-                        ON_MESSAGE_METADATA, new DirectoryCallback(), properties, null);
+                        ON_MESSAGE_METADATA, new DirectoryCallback(), properties, PredefinedTypes.TYPE_NULL);
             } else {
                 runtime.invokeMethodAsyncSequentially(service, resourceName, null,
-                        ON_MESSAGE_METADATA, new DirectoryCallback(), properties, null);
+                        ON_MESSAGE_METADATA, new DirectoryCallback(), properties, PredefinedTypes.TYPE_NULL);
             }
         } else {
             log.warn(String.format("FileEvent received for unregistered resource: [%s] %s", fileEvent.getEvent(),

@@ -40,9 +40,9 @@ import static io.ballerina.stdlib.file.service.DirectoryListenerConstants.RESOUR
 public class FSListener implements LocalFileSystemListener {
 
     private static final Logger log = LoggerFactory.getLogger(FSListener.class);
-    private final Runtime runtime;
-    private final BObject service;
-    private final Map<String, MethodType> attachedFunctionRegistry;
+    private Runtime runtime;
+    private BObject service;
+    private Map<String, MethodType> attachedFunctionRegistry;
     private static final StrandMetadata ON_MESSAGE_METADATA = new StrandMetadata(ModuleUtils.getModule().getOrg(),
             ModuleUtils.getModule().getName(), ModuleUtils.getModule().getVersion(), RESOURCE_NAME_ON_MESSAGE);
 

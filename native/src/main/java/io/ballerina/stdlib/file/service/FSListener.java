@@ -59,7 +59,7 @@ public class FSListener implements LocalFileSystemListener {
         if (resource != null) {
             String resourceName = resource.getName();
             if (service.getType().isIsolated()
-                        && service.getType().isIsolated(resourceName)) {
+                    && service.getType().isIsolated(resourceName)) {
                 runtime.invokeMethodAsyncConcurrently(service, resourceName, null,
                         ON_MESSAGE_METADATA, new DirectoryCallback(), properties, null);
             } else {

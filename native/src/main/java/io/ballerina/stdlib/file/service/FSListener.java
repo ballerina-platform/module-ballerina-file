@@ -20,12 +20,8 @@ package io.ballerina.stdlib.file.service;
 
 import io.ballerina.runtime.api.Runtime;
 import io.ballerina.runtime.api.async.StrandMetadata;
-import io.ballerina.runtime.api.creators.ValueCreator;
 import io.ballerina.runtime.api.types.MethodType;
-import io.ballerina.runtime.api.utils.StringUtils;
-import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
-import io.ballerina.runtime.api.values.BString;
 import io.ballerina.stdlib.file.utils.FileConstants;
 import io.ballerina.stdlib.file.utils.ModuleUtils;
 import org.slf4j.Logger;
@@ -33,9 +29,9 @@ import org.slf4j.LoggerFactory;
 import org.wso2.transport.localfilesystem.server.connector.contract.LocalFileSystemEvent;
 import org.wso2.transport.localfilesystem.server.connector.contract.LocalFileSystemListener;
 
+import java.util.HashMap;
 import java.util.Map;
 
-import static io.ballerina.stdlib.file.service.DirectoryListenerConstants.FILE_SYSTEM_EVENT;
 import static io.ballerina.stdlib.file.service.DirectoryListenerConstants.RESOURCE_NAME_ON_MESSAGE;
 
 /**
@@ -44,9 +40,9 @@ import static io.ballerina.stdlib.file.service.DirectoryListenerConstants.RESOUR
 public class FSListener implements LocalFileSystemListener {
 
     private static final Logger log = LoggerFactory.getLogger(FSListener.class);
-    private Runtime runtime;
-    private BObject service;
-    private Map<String, MethodType> attachedFunctionRegistry;
+    private final Runtime runtime;
+    private final BObject service;
+    private final Map<String, MethodType> attachedFunctionRegistry;
     private static final StrandMetadata ON_MESSAGE_METADATA = new StrandMetadata(ModuleUtils.getModule().getOrg(),
             ModuleUtils.getModule().getName(), ModuleUtils.getModule().getVersion(), RESOURCE_NAME_ON_MESSAGE);
 
@@ -58,24 +54,29 @@ public class FSListener implements LocalFileSystemListener {
 
     @Override
     public void onMessage(LocalFileSystemEvent fileEvent) {
-        Object[] parameters = getJvmSignatureParameters(fileEvent);
+        Map<String, Object> properties = getJvmSignatureParameters(fileEvent);
         MethodType resource = getMethodType(fileEvent.getEvent());
         if (resource != null) {
-            runtime.invokeMethodAsync(service, resource.getName(), null, ON_MESSAGE_METADATA, new DirectoryCallback(),
-                                      parameters);
+            String resourceName = resource.getName();
+            if (service.getType().isIsolated()
+                        && service.getType().isIsolated(resourceName)) {
+                runtime.invokeMethodAsyncConcurrently(service, resourceName, null,
+                        ON_MESSAGE_METADATA, new DirectoryCallback(), properties, null);
+            } else {
+                runtime.invokeMethodAsyncSequentially(service, resourceName, null,
+                        ON_MESSAGE_METADATA, new DirectoryCallback(), properties, null);
+            }
         } else {
             log.warn(String.format("FileEvent received for unregistered resource: [%s] %s", fileEvent.getEvent(),
                     fileEvent.getFileName()));
         }
     }
 
-    private Object[] getJvmSignatureParameters(LocalFileSystemEvent fileEvent) {
-        BMap<BString, Object> eventStruct = ValueCreator.createRecordValue(ModuleUtils.getModule(), FILE_SYSTEM_EVENT);
-        eventStruct.put(StringUtils.fromString(FileConstants.FILE_EVENT_NAME),
-                StringUtils.fromString(fileEvent.getFileName()));
-        eventStruct.put(StringUtils.fromString(FileConstants.FILE_EVENT_OPERATION),
-                StringUtils.fromString(fileEvent.getEvent()));
-        return new Object[] { eventStruct, true };
+    private Map<String, Object> getJvmSignatureParameters(LocalFileSystemEvent fileEvent) {
+        Map<String, Object> eventStruct = new HashMap<>();
+        eventStruct.put(FileConstants.FILE_EVENT_NAME, fileEvent.getFileName());
+        eventStruct.put(FileConstants.FILE_EVENT_OPERATION, fileEvent.getEvent());
+        return eventStruct;
     }
 
     private MethodType getMethodType(String event) {

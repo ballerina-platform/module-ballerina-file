@@ -69,3 +69,6 @@ public enum CopyOption {
     COPY_ATTRIBUTES,
     NO_FOLLOW_LINKS
 }
+
+# Represents a File service.
+public type Service distinct service object {};

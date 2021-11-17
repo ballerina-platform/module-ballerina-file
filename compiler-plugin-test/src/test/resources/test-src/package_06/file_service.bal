@@ -26,7 +26,7 @@ file:Listener localFolder1 = new ({
     recursive: false
 });
 
-service "filesystem" on localFolder1 {
+service file:Service "filesystem" on localFolder1 {
 
     remote function onCreate(file:FileEvent m) {
     }

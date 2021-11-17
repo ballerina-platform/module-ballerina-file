@@ -24,28 +24,28 @@ listener file:Listener localFolder = new ({
 
 listener dummy:Listener dumyLocalFolder = new ();
 
-service "filesystem1" on dumyLocalFolder {
+service file:Service "filesystem1" on dumyLocalFolder {
 
     remote function onCreate(file:FileEvent m) returns string {
         return "Hi";
     }
 }
 
-service "filesystem2" on localFolder {
+service file:Service "filesystem2" on localFolder {
 
     remote function onCreate(file:FileEvent m) returns string {
         return "Hi";
     }
 }
 
-service "filesystem3" on dumyLocalFolder {
+service file:Service "filesystem3" on dumyLocalFolder {
 
     remote function onCreate(string m) returns string {
         return "Hi";
     }
 }
 
-service "filesystem4" on localFolder {
+service file:Service "filesystem4" on localFolder {
 
     remote function onCreate(file:FileEvent m) returns string {
         return "Hi";

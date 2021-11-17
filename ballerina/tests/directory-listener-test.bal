@@ -130,7 +130,6 @@ Listener|error localFolder5 = new ({
 Service attachService = service object {
 };
 
-
 @test:Config {}
 function testAttachEmptyService() {
     Listener|error temporaryLoader = localFolder5;

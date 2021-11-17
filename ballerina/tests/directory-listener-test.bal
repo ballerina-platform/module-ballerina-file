@@ -28,7 +28,7 @@ boolean createInvoke = false;
 boolean modifyInvoke = false;
 boolean deleteInvoke = false;
 
-service "filesystem" on localFolder {
+service Service "filesystem" on localFolder {
 
     remote function onCreate(FileEvent m) {
         createInvoke = true;
@@ -127,9 +127,8 @@ Listener|error localFolder5 = new ({
     recursive: false
 });
 
-service object {} attachService = service object {
+Service attachService = service object {
 };
-
 
 @test:Config {}
 function testAttachEmptyService() {
@@ -146,7 +145,7 @@ function testAttachEmptyService() {
     }
 }
 
-service object {} attachService1 = service object {
+Service attachService1 = service object {
 
     remote function onCreate(FileEvent m) {
         createInvoke = true;

@@ -59,7 +59,7 @@ public isolated class Listener {
     # + s - Type descriptor of the service
     # + name - Name of the service
     # + return - () or else error upon failure to attach to the service
-    public isolated function attach(service object {} s, string[]|string? name = ()) returns error? {
+    public isolated function attach(Service s, string[]|string? name = ()) returns error? {
         return register(self, s);
     }
 
@@ -67,7 +67,7 @@ public isolated class Listener {
     # 
     # + s - Type descriptor of the service
     # + return - () or else error upon failure to detach to the service
-    public isolated function detach(service object {} s) returns error? {
+    public isolated function detach(Service s) returns error? {
         return ();
     }
 }

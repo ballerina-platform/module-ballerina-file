@@ -231,7 +231,7 @@ public isolated function normalizePath(string path, NormOption option) returns s
 # ```
 #
 # + path - String value of the file path
-# + return - String array of the part components or else a `file:Error` if the path is invalid
+# + return - String array of the path components or else a `file:Error` if the path is invalid
 public isolated function splitPath(string path) returns string[]|Error {
     string validatedPath = check parse(path);
     int[] offsetIndexes = check getOffsetIndexes(validatedPath);

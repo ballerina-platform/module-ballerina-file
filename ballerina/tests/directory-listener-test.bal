@@ -46,7 +46,7 @@ service Service "filesystem" on localFolder {
 @test:Config {}
 function isCreateInvoked() {
     error? fileResult = createTestFile();
-    if (fileResult is error) {
+    if fileResult is error {
         test:assertFail("File not opened!");
     } else {
         runtime:sleep(2);
@@ -57,7 +57,7 @@ function isCreateInvoked() {
 @test:Config { dependsOn: [isCreateInvoked]}
 function isModifyInvoked() {
      error? fileResult = modifyTestFile();
-    if (fileResult is error) {
+    if fileResult is error {
         test:assertFail("File not modified!");
     } else {
         runtime:sleep(2);
@@ -68,7 +68,7 @@ function isModifyInvoked() {
 @test:Config { dependsOn: [isCreateInvoked, isModifyInvoked]}
 function isDeleteInvoked() {
     error? fileResult = deleteTestFile();
-    if (fileResult is error) {
+    if fileResult is error {
         test:assertFail("File not deleted!");
     } else {
         runtime:sleep(2);
@@ -84,7 +84,7 @@ Listener|error localFolder1 = new ({
 @test:Config {}
 function testDirectoryNotExist() {
     Listener|error temporaryLoader = localFolder1;
-    if (temporaryLoader is error) {
+    if temporaryLoader is error {
         test:assertTrue(temporaryLoader.message().includes("Folder does not exist: tests/test"));
     } else {
         test:assertFail("Test Failed!");
@@ -99,7 +99,7 @@ Listener|error localFolder2 = new ({
 @test:Config {}
 function testDirectoryEmpty() {
     Listener|error temporaryLoader = localFolder2;
-    if (temporaryLoader is error) {
+    if temporaryLoader is error {
         test:assertTrue(temporaryLoader.message().includes("'path' field is empty"));
     } else {
         test:assertFail("Test Failed!");
@@ -114,7 +114,7 @@ Listener|error localFolder3 = new ({
 @test:Config {}
 function testNotDirectory() {
     Listener|error temporaryLoader = localFolder3;
-    if (temporaryLoader is error) {
+    if temporaryLoader is error {
         test:assertTrue(temporaryLoader.message().includes("Unable to find a directory: tests/resources/test.txt"));
     } else {
         test:assertFail("Test Failed!");
@@ -133,9 +133,9 @@ Service attachService = service object {
 @test:Config {}
 function testAttachEmptyService() {
     Listener|error temporaryLoader = localFolder5;
-    if (temporaryLoader is Listener) {
+    if temporaryLoader is Listener {
         error? result = trap temporaryLoader.attach(attachService);
-        if (result is error) {
+        if result is error {
             test:assertTrue(result.message().includes("At least a single resource required from following"));
         } else {
             test:assertFail("Attach service test Failed!");
@@ -155,7 +155,7 @@ Service attachService1 = service object {
 @test:Config {}
 function testService() returns error? {
     Listener|error temporaryLoader = localFolder5;
-    if (temporaryLoader is Listener) {
+    if temporaryLoader is Listener {
         check temporaryLoader.attach(attachService1);
         check temporaryLoader.'start();
         check temporaryLoader.detach(attachService1);

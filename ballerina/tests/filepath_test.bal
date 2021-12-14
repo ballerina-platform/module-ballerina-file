@@ -26,7 +26,7 @@ boolean isWin = os:getEnv("OS") != "";
 isolated function testGetAbsolutePath() {
     string absPathFrmUtil = getAbsPath(java:fromString("test.txt"));
     string|error absPath = getAbsolutePath("test.txt");
-    if (absPath is string) {
+    if absPath is string {
         test:assertEquals(absPath, absPathFrmUtil);
     } else {
         test:assertFail("Error retrieving absolute path");
@@ -37,7 +37,7 @@ isolated function testGetAbsolutePath() {
 isolated function testAbsolutePath() {
     string absPathFrmUtil = getAbsPath(java:fromString("/test.txt"));
     string|error absPath = getAbsolutePath("/test.txt");
-    if (absPath is string) {
+    if absPath is string {
         test:assertEquals(absPath, absPathFrmUtil);
     } else {
         test:assertFail("Error retrieving absolute path");
@@ -49,13 +49,13 @@ function testIllegalWindowsPath() {
     string illegal = "/C:/Users/Desktop/workspaces/dk/ballerina/stdlib-path/target/test-classes/absolute" +
                 "\\swagger.json";
     string|error absPath = getAbsolutePath(illegal);
-    if (isWin) {
+    if isWin {
         test:assertTrue(absPath is error);
-        if(absPath is error) {
+        if absPath is error {
             test:assertTrue(absPath.message().includes("Invalid path"));
         }
     } else {
-        if(absPath is string) {
+        if absPath is string {
             test:assertEquals(absPath, getAbsPath(java:fromString(illegal)));
         }
     }
@@ -65,7 +65,7 @@ function testIllegalWindowsPath() {
     dataProvider: testIsAbsPathDataProvider
 }
 function testIsAbsolutePath(string path, string posixOutput, string windowsOutput) returns error? {
-    if(isWin) {
+    if isWin {
        check validateAbsolutePath(path, windowsOutput);
     } else {
         check validateAbsolutePath(path, posixOutput);
@@ -76,7 +76,7 @@ function testIsAbsolutePath(string path, string posixOutput, string windowsOutpu
     dataProvider: getFileNameDataset
 }
 function testGetFileName(string path, string posixOutput, string windowsOutput){
-    if(isWin) {
+    if isWin {
         validateFilename(path, windowsOutput);
     } else {
         validateFilename(path, posixOutput);
@@ -87,7 +87,7 @@ function testGetFileName(string path, string posixOutput, string windowsOutput){
     dataProvider: getParentDataset
 }
 function testGetParent(string path, string posixOutput, string windowsOutput){
-    if(isWin) {
+    if isWin {
         validateParent(path, windowsOutput);
     } else {
         validateParent(path, posixOutput);
@@ -98,7 +98,7 @@ function testGetParent(string path, string posixOutput, string windowsOutput){
     dataProvider: getNormalizedDataset
 }
 function testPosixNormalizePath(string path, string posixOutput, string windowsOutput){
-    if(isWin) {
+    if isWin {
         validateNormalizePath(path, windowsOutput);
     } else {
         validateNormalizePath(path, posixOutput);
@@ -109,7 +109,7 @@ function testPosixNormalizePath(string path, string posixOutput, string windowsO
     dataProvider: getSplitDataset
 }
 function testSplitPath(string path, string posixOutput, string windowsOutput){
-    if(isWin) {
+    if isWin {
         validateSplitPath(path, windowsOutput);
     } else {
         validateSplitPath(path, posixOutput);
@@ -123,7 +123,7 @@ function testPosixjoinPath([string[], string] params){
     string[] a;
     string b;
     [a, b] = params;
-    if (!isWin) {
+    if !isWin {
         validatejoinPath(a, b);
     }
 }
@@ -135,7 +135,7 @@ function testjoinPath([string[], string] params){
     string[] a;
     string b;
     [a, b] = params;
-    if (isWin) {
+    if isWin {
         validatejoinPath(a, b);
     }
 }
@@ -144,7 +144,7 @@ function testjoinPath([string[], string] params){
     dataProvider: getRelativeSet
 }
 function testRelativePath(string path, string targetPath, string posixOutput, string windowsOutput) {
-    if(isWin) {
+    if isWin {
         validateRelativePath(path, targetPath, windowsOutput);
     } else {
         validateRelativePath(path, targetPath, posixOutput);
@@ -153,19 +153,19 @@ function testRelativePath(string path, string targetPath, string posixOutput, st
 
 @test:Config {}
 function testResolvePath() {
-    if (!isWin) {
+    if !isWin {
         error? pathCreated = trap createLink();
-        if (pathCreated is error) {
+        if pathCreated is error {
             test:assertFail("Error creating symlink!");
         } else {
             string path = getTmpDir() + "/test_link.txt";
             string|error resPath = normalizePath(path, SYMLINK);
-            if(resPath is string) {
+            if resPath is string {
                 string|error expected = getSymLink();
-                if(expected is string) {
+                if expected is string {
                     test:assertEquals(resPath, expected);
                     error? removeLinkResult = trap removeLink();
-                    if(removeLinkResult is error) {
+                    if removeLinkResult is error {
                         test:assertFail("Error removing symlink!");
                     }
                 } else {
@@ -182,7 +182,7 @@ function testResolvePath() {
 isolated function testResolveNotLinkPath() {
     string path = "tests/resources/test.txt";
     string|error resPath = normalizePath(path, SYMLINK);
-    if(resPath is error) {
+    if resPath is error {
         test:assertTrue(resPath.message().includes("Path is not a symbolic link"));
     } else {
         test:assertFail("Error resolving path!");
@@ -193,7 +193,7 @@ isolated function testResolveNotLinkPath() {
 isolated function testResolveNonExistencePath() {
     string path = "tests/resources/test_non_existent.txt";
     string|error resPath = normalizePath(path, SYMLINK);
-    if(resPath is error) {
+    if resPath is error {
         test:assertTrue(resPath.message().includes("File does not exist"));
     } else {
         test:assertFail("Error resolving path!");
@@ -202,10 +202,10 @@ isolated function testResolveNonExistencePath() {
 
 @test:Config {}
 function testNormcase() {
-    if (isWin) {
+    if isWin {
         string path = "/hoMe/UseR/";
         string|error normpath = normalizePath(path, NORMCASE);
-        if (normpath is string) {
+        if normpath is string {
             test:assertEquals(normpath, "\\home\\user\\");
         } else {
             test:assertFail("Error normalizing case!");
@@ -217,7 +217,7 @@ function testNormcase() {
 
 isolated function validateAbsolutePath(string path, string expected) returns error? {
     boolean|error isAbs = isAbsolutePath(path);
-    if(isAbs is boolean) {
+    if isAbs is boolean {
         test:assertEquals(isAbs, check booleans:fromString(expected));
     } else {
         test:assertFail("Error checking is-absolute!");
@@ -226,14 +226,14 @@ isolated function validateAbsolutePath(string path, string expected) returns err
 
 isolated function validateFilename(string path, string expected) {
     string|error fname = basename(path);
-    if(expected=="error") {
+    if expected=="error" {
         test:assertTrue(fname is error);
-        if (fname is error) {
+        if fname is error {
             test:assertTrue(fname.message().includes("UNC path"));
         }
     } else {
         test:assertTrue(fname is string);
-        if(fname is string) {
+        if fname is string {
             test:assertEquals(fname, expected);
         }
     }
@@ -241,14 +241,14 @@ isolated function validateFilename(string path, string expected) {
 
 isolated function validateParent(string input, string expected) {
     string|error parentName = parentPath(input);
-    if(expected=="error") {
+    if expected=="error" {
         test:assertTrue(parentName is error);
-        if (parentName is error) {
+        if parentName is error {
             test:assertTrue(parentName.message().includes("UNC path"));
         }
     } else {
         test:assertTrue(parentName is string);
-        if(parentName is string) {
+        if parentName is string {
             test:assertEquals(parentName, expected);
         }
     }
@@ -256,14 +256,14 @@ isolated function validateParent(string input, string expected) {
 
 isolated function validateNormalizePath(string input, string expected) {
     string|error normPath = normalizePath(input, CLEAN);
-    if(expected=="error") {
+    if expected=="error" {
         test:assertTrue(normPath is error);
-        if (normPath is error) {
+        if normPath is error {
             test:assertTrue(normPath.message().includes("UNC path"));
         }
     } else {
         test:assertTrue(normPath is string);
-        if(normPath is string) {
+        if normPath is string {
             test:assertEquals(normPath, expected);
         }
     }
@@ -271,18 +271,18 @@ isolated function validateNormalizePath(string input, string expected) {
 
 isolated function validateSplitPath(string input, string expected) {
     string[]|error path = splitPath(input);
-    if(expected=="error") {
+    if expected=="error" {
         test:assertTrue(path is error);
-        if (path is error) {
+        if path is error {
             test:assertTrue(path.message().includes("UNC path"));
         }
     } else {
         test:assertTrue(path is string[]);
-        if(path is string[]) {
+        if path is string[] {
             string[] exvalues = regex:split(expected, ",");
             int i = 0;
             int arrSize = path.length();
-            while (i < arrSize) {
+            while i < arrSize {
                  test:assertEquals(path[i], exvalues[i]);
                  i = i + 1;
             }
@@ -292,14 +292,14 @@ isolated function validateSplitPath(string input, string expected) {
 
 isolated function validatejoinPath(string[] parts, string expected) {
     string|error bpath = joinPath(...parts);
-    if(expected=="error") {
+    if expected=="error" {
         test:assertTrue(bpath is error);
-        if (bpath is error) {
+        if bpath is error {
             test:assertTrue(bpath.message().includes("UNC path"));
         }
     } else {
         test:assertTrue(bpath is string);
-        if(bpath is string) {
+        if bpath is string {
             test:assertEquals(bpath, expected);
         }
     }
@@ -307,14 +307,14 @@ isolated function validatejoinPath(string[] parts, string expected) {
 
 isolated function validateRelativePath(string basePath, string targetPath, string expected) {
     string|error relPath = relativePath(basePath, targetPath);
-    if(expected=="error") {
+    if expected=="error" {
         test:assertTrue(relPath is error);
-        if (relPath is error) {
+        if relPath is error {
             test:assertTrue(relPath.message().includes("Can't make: " + targetPath + " relative to " + basePath));
         }
     } else {
         test:assertTrue(relPath is string);
-        if(relPath is string) {
+        if relPath is string {
             test:assertEquals(relPath, expected);
         }
     }

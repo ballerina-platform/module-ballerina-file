@@ -16,17 +16,17 @@
 
 isolated function buildUnixPath(string... parts) returns string|Error {
     int count = parts.length();
-    if (count <= 0) {
+    if count <= 0 {
         return "";
     }
     int i = 0;
-    while (i < count) {
-        if (parts[i] != "") {
+    while i < count {
+        if parts[i] != "" {
             break;
         }
         i = i + 1;
     }
-    if (i == count) {
+    if i == count {
         return "";
     }
     string finalPath = parts[i];
@@ -42,7 +42,7 @@ isolated function getUnixRoot(string input) returns [string, int]|Error {
     int length = input.length();
     int offset = 0;
     string root = "";
-    if (length > 0 && isSlash(check charAt(input, 0))) {
+    if length > 0 && isSlash(check charAt(input, 0)) {
         root = pathSeparator;
         offset = 1;
     }
@@ -53,11 +53,11 @@ isolated function getUnixOffsetIndex(string path) returns int[]|Error {
     int[] offsetIndexes = [];
     int index = 0;
     int count = 0;
-    if (isEmpty(path)) {
+    if isEmpty(path) {
         offsetIndexes[count] = 0;
         count = count + 1;
     } else {
-        while(index < path.length()) {
+        while index < path.length() {
             string cn = check charAt(path, index);
             if (cn == "/") {
                 index = index + 1;
@@ -83,25 +83,25 @@ isolated function isPosixSlash(string|byte c) returns boolean {
 
 isolated function parsePosixPath(string input, int off) returns string|Error {
     int n = input.length();
-    while((n > 0)) {
+    while n > 0 {
         string cn = check charAt(input, n-1);
         if(cn != "/") {
             break;
         }
         n = n-1;
     }
-    if (n == 0) {
+    if n == 0 {
         return "/";
     }
     string normalizedPath = "";
-    if (off > 0) {
+    if off > 0 {
         normalizedPath = normalizedPath + input.substring(0, off);
     }
     string prevC = "";
     int i = off;
-    while(i < n) {
+    while  i < n {
         string c = check charAt(input, i);
-        if (c == "/" && prevC == "/") {
+        if c == "/" && prevC == "/" {
             i = i + 1;
             continue;
         }

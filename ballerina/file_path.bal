@@ -73,8 +73,8 @@ public isolated function basename(string path) returns string|Error {
     if count == 0 {
         return "";
     }
-    if count == 1 && validatedPath.length() > 0 {
-        if !check isAbsolutePath(validatedPath) {
+    if (count == 1 && validatedPath.length() > 0) {
+        if !(check isAbsolutePath(validatedPath)) {
             return validatedPath;
         }
     }
@@ -157,17 +157,17 @@ public isolated function normalizePath(string path, NormOption option) returns s
                     length = offsetIndexes[i + 1] - begin - 1;
                     parts[i] = validatedPath.substring(begin, offsetIndexes[i + 1] - 1);
                 }
-                if check charAt(validatedPath, begin) == "." {
+                if check (charAt(validatedPath, begin) == ".") {
                     if length == 1 {
                         ignore[i] = true;
                         remaining = remaining - 1;
-                    } else if length == 2 && check charAt(validatedPath, begin + 1) == "." {
+                    } else if (length == 2 && check charAt(validatedPath, begin + 1) == ".") {
                         parentRef[i] = true;
                         int j = i - 1;
                         boolean hasPrevious = false;
                         while j >= 0 {
                             // A/B/<ignore>/..
-                            if ignore.length() > 0 && !parentRef[j] && !ignore[j] {
+                            if (ignore.length() > 0 && !parentRef[j] && !ignore[j]) {
                                 ignore[j] = true;
                                 remaining = remaining - 1;
                                 hasPrevious = true;
@@ -175,7 +175,7 @@ public isolated function normalizePath(string path, NormOption option) returns s
                             }
                             j = j - 1;
                         }
-                        if hasPrevious || (offset > 0) || isSlash(c0) {
+                        if (hasPrevious || (offset > 0) || isSlash(c0)) {
                             ignore[i] = true;
                             remaining = remaining - 1;
                         }
@@ -198,7 +198,7 @@ public isolated function normalizePath(string path, NormOption option) returns s
             }
             i = 0;
             while i < count {
-                if !ignore[i] && (offset <= offsetIndexes[i]) {
+                if (!ignore[i] && (offset <= offsetIndexes[i])) {
                     normalizedPath = normalizedPath + parts[i] + pathSeparator;
                 }
                 i = i + 1;
@@ -299,10 +299,10 @@ public isolated function relativePath(string base, string target) returns string
     int bl = cleanBase.length();
     int tl = cleanTarget.length();
     while true {
-        while bi < bl && !isSlash(check charAt(cleanBase, bi)) {
+        while (bi < bl && !isSlash(check charAt(cleanBase, bi))) {
             bi = bi + 1;
         }
-        while ti < tl && !isSlash(check charAt(cleanTarget, ti)) {
+        while (ti < tl && !isSlash(check charAt(cleanTarget, ti))) {
             ti = ti + 1;
         }
         if !isSamePath(cleanBase.substring(b0, bi), cleanTarget.substring(t0, ti)) {
@@ -400,7 +400,7 @@ isolated function isSlash(string c) returns boolean {
 
 isolated function nextNonSlashIndex(string path, int offset, int end) returns int|Error {
     int off = offset;
-    while off < end && isSlash(check charAt(path, off)) {
+    while (off < end && isSlash(check charAt(path, off))) {
         off = off + 1;
     }
     return off;
@@ -408,7 +408,7 @@ isolated function nextNonSlashIndex(string path, int offset, int end) returns in
 
 isolated function nextSlashIndex(string path, int offset, int end) returns int|Error {
     int off = offset;
-    while off < end && !isSlash(check charAt(path, off)) {
+    while (off < end && !isSlash(check charAt(path, off))) {
         off = off + 1;
     }
     return off;

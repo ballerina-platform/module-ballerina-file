@@ -42,7 +42,7 @@ isolated function getUnixRoot(string input) returns [string, int]|Error {
     int length = input.length();
     int offset = 0;
     string root = "";
-    if length > 0 && isSlash(check charAt(input, 0)) {
+    if (length > 0 && isSlash(check charAt(input, 0))) {
         root = pathSeparator;
         offset = 1;
     }

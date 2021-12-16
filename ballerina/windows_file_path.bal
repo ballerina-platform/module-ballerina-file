@@ -35,7 +35,7 @@ isolated function buildWindowsPath(string... parts) returns string|Error {
     if firstNonEmptyPart.length() == 2 {
         string c0 = check charAt(firstNonEmptyPart, 0);
         string c1 = check charAt(firstNonEmptyPart, 1);
-        if isLetter(c0) && c1.equalsIgnoreCaseAscii(":") {
+        if (isLetter(c0) && c1.equalsIgnoreCaseAscii(":")) {
             // First element is driver letter without terminating slash.
             i = i + 1;
             while (i < count) {
@@ -213,7 +213,7 @@ isolated function getVolumnNameLength(string path) returns int|Error {
         return 0;
     }
     string c2 = check charAt(path, 2);
-    if size >= 5 && isSlash(c0) && isSlash(c1) && !isSlash(c2) && c2 != "." {
+    if (size >= 5 && isSlash(c0) && isSlash(c1) && !isSlash(c2) && c2 != ".") {
         // first, leading `\\` and next shouldn't be `\`. its server name.
         int n = 3;
         while n < size-1 {

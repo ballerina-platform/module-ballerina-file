@@ -14,9 +14,9 @@
 // specific language governing permissions and limitations
 // under the License.
 
-# Represents an event which will trigger when there is a changes to listining direcotry.
+# Represents an event which will trigger when there is a change to listening directory.
 #
-# + name - Absolute file URI for triggerd event
+# + name - Absolute file URI for triggered event
 # + operation - Triggered event action. This can be create, delete or modify
 public type FileEvent record {|
     string name;

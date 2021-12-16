@@ -32,7 +32,7 @@ The remote methods supported by the `Service` are as follows.
 
 **onDelete:** This method is invoked once an existing file is deleted from the listening directory.
 
-**onDelete:** This method is invoked once an existing file is modified in the listening directory.
+**onModify:** This method is invoked once an existing file is modified in the listening directory.
 
 The following code sample shows how to create a `Service` with the `onCreate` remote method and attach it to the above `Listener` endpoint:
 

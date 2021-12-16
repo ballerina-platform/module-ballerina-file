@@ -157,7 +157,7 @@ public isolated function normalizePath(string path, NormOption option) returns s
                     length = offsetIndexes[i + 1] - begin - 1;
                     parts[i] = validatedPath.substring(begin, offsetIndexes[i + 1] - 1);
                 }
-                if check (charAt(validatedPath, begin) == ".") {
+                if (check charAt(validatedPath, begin) == ".") {
                     if length == 1 {
                         ignore[i] = true;
                         remaining = remaining - 1;

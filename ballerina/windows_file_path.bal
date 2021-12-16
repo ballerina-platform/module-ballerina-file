@@ -17,22 +17,22 @@
 
 isolated function buildWindowsPath(string... parts) returns string|Error {
     int count = parts.length();
-    if (count <= 0) {
+    if count <= 0 {
         return "";
     }
     int i = 0;
-    while (i < count) {
-        if (parts[i] != "") {
+    while i < count {
+        if parts[i] != "" {
             break;
         }
         i = i + 1;
     }
-    if (i == count) {
+    if i == count {
         return "";
     }
     string firstNonEmptyPart = parts[i];
 
-    if (firstNonEmptyPart.length() == 2) {
+    if firstNonEmptyPart.length() == 2 {
         string c0 = check charAt(firstNonEmptyPart, 0);
         string c1 = check charAt(firstNonEmptyPart, 1);
         if (isLetter(c0) && c1.equalsIgnoreCaseAscii(":")) {
@@ -52,7 +52,7 @@ isolated function buildWindowsPath(string... parts) returns string|Error {
                 return normalizePath(firstNonEmptyPart, CLEAN);
             }
 
-            while(i < count) {
+            while i < count {
                 if (parts[i] != "") {
                     tail = tail + "\\" + parts[i];
                 }
@@ -64,10 +64,10 @@ isolated function buildWindowsPath(string... parts) returns string|Error {
 
     // UNC only allowed when the first element is a UNC path.
     string head = firstNonEmptyPart;
-    if (check isUNC(head)) {
+    if check isUNC(head) {
         string finalPath = firstNonEmptyPart;
         i = i + 1;
-        while(i < count) {
+        while i < count {
             finalPath = finalPath + "\\" + parts[i];
             i = i + 1;
         }
@@ -76,15 +76,15 @@ isolated function buildWindowsPath(string... parts) returns string|Error {
 
     i = i + 1;
     string tail;
-    if (i < count) {
+    if i < count {
         tail = parts[i];
         i = i + 1;
     } else {
         return normalizePath(firstNonEmptyPart, CLEAN);
     }
 
-    while(i < count) {
-        if (parts[i] != "") {
+    while i < count {
+        if parts[i] != "" {
             tail = tail + "\\" + parts[i];
         }
         i = i + 1;
@@ -92,11 +92,11 @@ isolated function buildWindowsPath(string... parts) returns string|Error {
     string normalizedHead = check normalizePath(head, CLEAN);
     string normalizedTail = check normalizePath(tail, CLEAN);
 
-    if (tail == "") {
+    if tail == "" {
         return normalizedHead;
     }
     int index = check nextNonSlashIndex(normalizedTail, 0, normalizedTail.length());
-    if (index > 0) {
+    if index > 0 {
         normalizedTail = normalizedTail.substring(index, normalizedTail.length());
     }
 
@@ -110,37 +110,37 @@ isolated function getWindowsRoot(string input) returns [string, int]|Error {
     int length = input.length();
     int offset = 0;
     string root = "";
-    if (length > 1) {
+    if length > 1 {
         string c0 = check charAt(input, 0);
         string c1 = check charAt(input, 1);
         int next = 2;
-        if (isSlash(c0) && isSlash(c1)) {
+        if isSlash(c0) && isSlash(c1) {
             boolean unc = check isUNC(input);
-            if (!unc) {
+            if !unc {
                 return error UNCPathError("Invalid UNC path: " + input);
             }
             offset = check nextNonSlashIndex(input, next, length);
             next = check nextSlashIndex(input, offset, length);
-            if (offset == next) {
+            if offset == next {
                 return error UNCPathError("Hostname is missing in UNC path: " + input);
             }
             string host = input.substring(offset, next);  //host
             offset = check nextNonSlashIndex(input, next, length);
             next = check nextSlashIndex(input, offset, length);
-            if (offset == next) {
+            if offset == next {
                 return error UNCPathError("Sharename is missing in UNC path: " + input);
             }
             //TODO remove dot from expression. added because of formatting issue #13872.
             root = "\\\\" + host + "\\" + input.substring(offset, next) + "\\";
             offset = next;
-        } else if (isSlash(c0)) {
+        } else if isSlash(c0) {
             root = "\\";
             offset = 1;
         } else {
-            if (isLetter(c0) && c1.equalsIgnoreCaseAscii(":")) {
+            if isLetter(c0) && c1.equalsIgnoreCaseAscii(":") {
                 if (input.length() > 2 && isSlash(check charAt(input, 2))) {
                     string c2 = check charAt(input, 2);
-                    if (c2 == "\\") {
+                    if c2 == "\\" {
                         root = input.substring(0, 3);
                     } else {
                         root = input.substring(0, 2) + "\\";
@@ -152,7 +152,7 @@ isolated function getWindowsRoot(string input) returns [string, int]|Error {
                 }
             }
         }
-    } else if (length > 0 && isSlash(check charAt(input, 0))) {
+    } else if length > 0 && isSlash(check charAt(input, 0)) {
             root = "\\";
             offset = 1;
     }
@@ -163,20 +163,20 @@ isolated function getWindowsOffsetIndex(string path) returns int[]|Error {
     int[] offsetIndexes = [];
     int index = 0;
     int count = 0;
-    if (isEmpty(path)) {
+    if isEmpty(path) {
         offsetIndexes[count] = 0;
         count = count + 1;
     } else {
         [_, index] = check getWindowsRoot(path);
         while(index < path.length()) {
             string cn = check charAt(path, index);
-            if (cn == "/" || cn == "\\") {
+            if cn == "/" || cn == "\\" {
                 index = index + 1;
             } else {
                 offsetIndexes[count] = index;
                 count = count + 1;
                 index = index + 1;
-                while(index < path.length()) {
+                while index < path.length() {
                     string value = check charAt(path, index);
                     if (value == "/" || value == "\\") {
                         break;
@@ -190,7 +190,7 @@ isolated function getWindowsOffsetIndex(string path) returns int[]|Error {
 }
 
 isolated function isWindowsSlash(string c) returns boolean {
-    return (c == "\\") || (c == "/");
+    return c == "\\" || c == "/";
 }
 
 # Returns length of windows volumn length.
@@ -205,18 +205,18 @@ isolated function getVolumnNameLength(string path) returns int|Error {
     // check driver
     string c0 = check charAt(path, 0);
     string c1 = check charAt(path, 1);
-    if (isLetter(c0) && c1 == ":") {
+    if isLetter(c0) && c1 == ":" {
         return 2;
     }
     int size = path.length();
-    if (size < 5) {
+    if size < 5 {
         return 0;
     }
     string c2 = check charAt(path, 2);
     if (size >= 5 && isSlash(c0) && isSlash(c1) && !isSlash(c2) && c2 != ".") {
         // first, leading `\\` and next shouldn't be `\`. its server name.
         int n = 3;
-        while (n < size-1) {
+        while n < size-1 {
             // second, next '\' shouldn't be repeated.
             string cn = check charAt(path, n);
             if isSlash(cn) {
@@ -228,7 +228,7 @@ isolated function getVolumnNameLength(string path) returns int|Error {
                         break;
                     }
 
-                    while(n < size) {
+                    while n < size {
                         if isSlash(cn) {
                             break;
                         }
@@ -249,9 +249,9 @@ isolated function parseWindowsPath(string path, int off) returns string|Error {
     int length = path.length();
     int offset = check nextNonSlashIndex(path, off, length);
     int startIndex = offset;
-    while (offset < length) {
+    while offset < length {
         string c = check charAt(path, offset);
-        if (isSlash(c)) {
+        if isSlash(c) {
             normalizedPath = normalizedPath + path.substring(startIndex, offset);
             offset = check nextNonSlashIndex(path, offset, length);
             if (offset != length) {
@@ -262,7 +262,7 @@ isolated function parseWindowsPath(string path, int off) returns string|Error {
             offset = offset + 1;
         }
     }
-    if (startIndex != offset) {
+    if startIndex != offset {
         normalizedPath = normalizedPath + path.substring(startIndex, offset);
     }
     return normalizedPath;

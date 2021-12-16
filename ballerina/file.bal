@@ -36,7 +36,8 @@ public isolated function getCurrentDir() returns string = @java:Method {
 # + option - Indicates whether the `createDir` should create non-existing parent directories. The default is only to
 # create the given current directory.
 # + return - A `file:Error` if the directory creation failed
-public isolated function createDir(@untainted string dir, DirOption option = NON_RECURSIVE) returns Error? = @java:Method {
+public isolated function createDir(@untainted string dir, DirOption option = NON_RECURSIVE)
+returns Error? = @java:Method {
     'class: "io.ballerina.stdlib.file.nativeimpl.Utils",
     name: "createDir"
 } external;
@@ -49,7 +50,8 @@ public isolated function createDir(@untainted string dir, DirOption option = NON
 # + path - String value of the file/directory path
 # + option - Indicates whether the `remove` should recursively remove all the files inside the given directory
 # + return - An `file:Error` if failed to remove
-public isolated function remove(@untainted string path, DirOption option = NON_RECURSIVE) returns Error? = @java:Method {
+public isolated function remove(@untainted string path, DirOption option = NON_RECURSIVE)
+returns Error? = @java:Method {
     'class: "io.ballerina.stdlib.file.nativeimpl.Utils",
     name: "remove"
 } external;
@@ -117,7 +119,7 @@ isolated function readDirRaw(@untainted string path) returns MetaData[]|Error = 
 # + return - The `MetaData` array or else a `file:Error` if there is an error
 public isolated function readDir(@untainted string path) returns (MetaData[] & readonly)|Error {
     var result = readDirRaw(path);
-    if (result is MetaData[]) {
+    if result is MetaData[] {
         return <readonly & MetaData[]>result.cloneReadOnly();
     } else {
         return result;
@@ -149,7 +151,8 @@ public isolated function copy(@untainted string sourcePath, @untainted string de
 #
 # + suffix - Optional file suffix
 # + prefix - Optional file prefix
-# + dir - The directory path where the temp file should be created. If not specified, temp file will be created in the default temp directory of the OS.
+# + dir - The directory path where the temp file should be created. If not specified,
+#         temp file will be created in the default temp directory of the OS.
 # + return - Temporary file path or else a `file:Error` if there is an error
 public isolated function createTemp(string? suffix = (), string? prefix = (), string? dir  = ())
                                  returns string|Error = @java:Method {
@@ -164,7 +167,8 @@ public isolated function createTemp(string? suffix = (), string? prefix = (), st
 #
 # + suffix - Optional directory suffix
 # + prefix - Optional directory prefix
-# + dir - The directory path where the temp directory should be created. If not specified, temp directory will be created in the default temp directory of the OS.
+# + dir - The directory path where the temp directory should be created. If not specified, temp directory
+#         will be created in the default temp directory of the OS.
 # + return - Temporary directory path or else a `file:Error` if there is an error
 public isolated function createTempDir(string? suffix = (), string? prefix = (), string? dir  = ())
                                  returns string|Error = @java:Method {

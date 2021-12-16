@@ -47,10 +47,10 @@ public isolated function getAbsolutePath(@untainted string path) returns string|
 # + return - `true` if path is absolute, `false` otherwise, or else an `file:Error`
 #            occurred if the path is invalid
 public isolated function isAbsolutePath(string path) returns boolean|Error {
-    if (path.length() <= 0) {
+    if path.length() <= 0 {
         return false;
     }
-    if (isWindows) {
+    if isWindows {
         return check getVolumnNameLength(path) > 0;
     } else {
         return check charAt(path, 0) == "/";
@@ -70,7 +70,7 @@ public isolated function basename(string path) returns string|Error {
     string validatedPath = check parse(path);
     int[] offsetIndexes = check getOffsetIndexes(validatedPath);
     int count = offsetIndexes.length();
-    if (count == 0) {
+    if count == 0 {
         return "";
     }
     if (count == 1 && validatedPath.length() > 0) {
@@ -96,11 +96,11 @@ public isolated function parentPath(string path) returns string|Error {
     string validatedPath = check parse(path);
     int[] offsetIndexes = check getOffsetIndexes(validatedPath);
     int count = offsetIndexes.length();
-    if (count == 0) {
+    if count == 0 {
         return "";
     }
     int len = offsetIndexes[count-1] - 1;
-    if (len < 0) {
+    if len < 0 {
         return "";
     }
     int offset;
@@ -145,12 +145,12 @@ public isolated function normalizePath(string path, NormOption option) returns s
             boolean[] ignore = [];
             boolean[] parentRef = [];
             int remaining = count;
-            while (i < count) {
+            while i < count {
                 int begin = offsetIndexes[i];
                 int length;
                 ignore[i] = false;
                 parentRef[i] = false;
-                if (i == (count - 1)) {
+                if i == (count - 1) {
                     length = validatedPath.length() - begin;
                     parts[i] = validatedPath.substring(begin, validatedPath.length());
                 } else {
@@ -158,14 +158,14 @@ public isolated function normalizePath(string path, NormOption option) returns s
                     parts[i] = validatedPath.substring(begin, offsetIndexes[i + 1] - 1);
                 }
                 if (check charAt(validatedPath, begin) == ".") {
-                    if (length == 1) {
+                    if length == 1 {
                         ignore[i] = true;
                         remaining = remaining - 1;
                     } else if (length == 2 && check charAt(validatedPath, begin + 1) == ".") {
                         parentRef[i] = true;
                         int j = i - 1;
                         boolean hasPrevious = false;
-                        while (j >= 0) {
+                        while j >= 0 {
                             // A/B/<ignore>/..
                             if (ignore.length() > 0 && !parentRef[j] && !ignore[j]) {
                                 ignore[j] = true;
@@ -184,20 +184,20 @@ public isolated function normalizePath(string path, NormOption option) returns s
                 i = i + 1;
             }
 
-            if (remaining == count) {
+            if remaining == count {
                 return validatedPath;
             }
 
-            if (remaining == 0) {
+            if remaining == 0 {
                 return root;
             }
 
             string normalizedPath = "";
-            if (root != "") {
+            if root != "" {
                 normalizedPath = normalizedPath + root;
             }
             i = 0;
-            while (i < count) {
+            while i < count {
                 if (!ignore[i] && (offset <= offsetIndexes[i])) {
                     normalizedPath = normalizedPath + parts[i] + pathSeparator;
                 }
@@ -211,7 +211,7 @@ public isolated function normalizePath(string path, NormOption option) returns s
         }
 
         NORMCASE => {
-            if (isWindows) {
+            if isWindows {
                 string lowerCasePath = path.toLowerAscii();
                 lowerCasePath = regex:replaceAll(lowerCasePath, "/", "\\\\");
                 return lowerCasePath;
@@ -239,9 +239,9 @@ public isolated function splitPath(string path) returns string[]|Error {
 
     string[] parts = [];
     int i = 0;
-    while (i < count) {
+    while i < count {
         int begin = offsetIndexes[i];
-        if (i == (count - 1)) {
+        if i == (count - 1) {
             parts[i] = check parse(validatedPath.substring(begin, validatedPath.length()));
         } else {
             parts[i] = check parse(validatedPath.substring(begin, offsetIndexes[i + 1] - 1));
@@ -259,7 +259,7 @@ public isolated function splitPath(string path) returns string[]|Error {
 # + parts - String values of the file path parts
 # + return - String value of the file path or else a `file:Error` if the parts are invalid
 public isolated function joinPath(string... parts) returns string|Error {
-    if (isWindows) {
+    if isWindows {
         return check buildWindowsPath(...parts);
     } else {
         return check buildUnixPath(...parts);
@@ -280,7 +280,7 @@ public isolated function joinPath(string... parts) returns string|Error {
 public isolated function relativePath(string base, string target) returns string|Error {
     string cleanBase = check normalizePath(base, CLEAN);
     string cleanTarget = check normalizePath(target, CLEAN);
-    if (isSamePath(cleanBase, cleanTarget)) {
+    if isSamePath(cleanBase, cleanTarget) {
         return ".";
     }
     string baseRoot;
@@ -289,7 +289,7 @@ public isolated function relativePath(string base, string target) returns string
     string targetRoot;
     int targetOffset;
     [targetRoot, targetOffset] = check getRoot(cleanTarget);
-    if (!isSamePath(baseRoot, targetRoot)) {
+    if !isSamePath(baseRoot, targetRoot) {
         return error RelativePathError("Can't make: " + target + " relative to " + base);
     }
     int b0 = baseOffset;
@@ -298,39 +298,39 @@ public isolated function relativePath(string base, string target) returns string
     int ti = targetOffset;
     int bl = cleanBase.length();
     int tl = cleanTarget.length();
-    while (true) {
+    while true {
         while (bi < bl && !isSlash(check charAt(cleanBase, bi))) {
             bi = bi + 1;
         }
         while (ti < tl && !isSlash(check charAt(cleanTarget, ti))) {
             ti = ti + 1;
         }
-        if (!isSamePath(cleanBase.substring(b0, bi), cleanTarget.substring(t0, ti))) {
+        if !isSamePath(cleanBase.substring(b0, bi), cleanTarget.substring(t0, ti)) {
             break;
         }
-        if (bi < bl) {
+        if bi < bl {
            bi = bi + 1;
         }
-        if (ti < tl) {
+        if ti < tl {
             ti = ti + 1;
         }
         b0 = bi;
         t0 = ti;
     }
-    if (cleanBase.substring(b0, bi) == "..") {
+    if cleanBase.substring(b0, bi) == ".." {
         return error RelativePathError("Can't make: " + target + " relative to " + base);
     }
-    if (b0 != bl) {
+    if b0 != bl {
         string remainder = cleanBase.substring(b0, bl);
         int[] offsets = check getOffsetIndexes(remainder);
         int noSeparators = offsets.length() - 1;
         string relativePath = "..";
         int i = 0;
-        while (i < noSeparators) {
+        while i < noSeparators {
             relativePath = relativePath + pathSeparator + "..";
             i = i + 1;
         }
-        if (t0 != tl) {
+        if t0 != tl {
             relativePath = relativePath + pathSeparator + cleanTarget.substring(t0, tl);
         }
         return relativePath;
@@ -355,10 +355,10 @@ isolated function resolve(@untainted string path) returns string|Error = @java:M
 # + input - String path value
 # + return - Parsed path or else a `file:Error` if the given path is invalid
 isolated function parse(string input) returns string|Error {
-    if (input.length() <= 0) {
+    if input.length() <= 0 {
         return input;
     }
-    if (isWindows) {
+    if isWindows {
         int offset = 0;
         string root = "";
         [root, offset] = check getRoot(input);
@@ -367,7 +367,7 @@ isolated function parse(string input) returns string|Error {
         int n = input.length();
         string prevC = "";
         int i = 0;
-        while (i < n) {
+        while i < n {
             string c = check charAt(input, i);
             if ((c == "/") && (prevC == "/")) {
                 return parsePosixPath(input, i - 1);
@@ -375,7 +375,7 @@ isolated function parse(string input) returns string|Error {
             prevC = c;
             i = i + 1;
         }
-        if (prevC == "/") {
+        if prevC == "/" {
             return parsePosixPath(input, n - 1);
         }
         return input;
@@ -383,7 +383,7 @@ isolated function parse(string input) returns string|Error {
 }
 
 isolated function getRoot(string input) returns [string,int]|Error {
-    if (isWindows) {
+    if isWindows {
         return getWindowsRoot(input);
     } else {
         return getUnixRoot(input);
@@ -391,7 +391,7 @@ isolated function getRoot(string input) returns [string,int]|Error {
 }
 
 isolated function isSlash(string c) returns boolean {
-    if (isWindows) {
+    if isWindows {
         return isWindowsSlash(c);
     } else {
         return isPosixSlash(c);
@@ -400,7 +400,7 @@ isolated function isSlash(string c) returns boolean {
 
 isolated function nextNonSlashIndex(string path, int offset, int end) returns int|Error {
     int off = offset;
-    while(off < end && isSlash(check charAt(path, off))) {
+    while (off < end && isSlash(check charAt(path, off))) {
         off = off + 1;
     }
     return off;
@@ -408,7 +408,7 @@ isolated function nextNonSlashIndex(string path, int offset, int end) returns in
 
 isolated function nextSlashIndex(string path, int offset, int end) returns int|Error {
     int off = offset;
-    while(off < end && !isSlash(check charAt(path, off))) {
+    while (off < end && !isSlash(check charAt(path, off))) {
         off = off + 1;
     }
     return off;
@@ -417,7 +417,7 @@ isolated function nextSlashIndex(string path, int offset, int end) returns int|E
 isolated function isLetter(string c) returns boolean {
     string regEx = "^[a-zA-Z]{1}$";
     boolean|error letter = regex:matches(c,regEx);
-    if (letter is error) {
+    if letter is error {
         log:printError("Error while checking input character is string", 'error = letter);
         return false;
     } else {
@@ -434,7 +434,7 @@ isolated function isEmpty(string path) returns boolean {
 }
 
 isolated function getOffsetIndexes(string path) returns int[]|Error {
-    if (isWindows) {
+    if isWindows {
         return check getWindowsOffsetIndex(path);
     } else {
         return check getUnixOffsetIndex(path);
@@ -443,14 +443,14 @@ isolated function getOffsetIndexes(string path) returns int[]|Error {
 
 isolated function charAt(string input, int index) returns string|Error {
     int length = input.length();
-    if (index > length) {
+    if index > length {
         return error GenericError(string `Character index ${index} is greater then path string length ${length}`);
     }
     return input.substring(index, index + 1);
 }
 
 isolated function isSamePath(string base, string target) returns boolean {
-    if (isWindows) {
+    if isWindows {
         return base.equalsIgnoreCaseAscii(target);
     } else {
         return base == target;

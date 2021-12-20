@@ -1,8 +1,8 @@
 [observer]
-directoryPath = "/Users/admin/Documents/"
+directoryPath = "PATH_OF_DIRECTORY"
 #The following are email configurations:
 host = "smtp.gmail.com"
-username = "ashakalai31@gmail.com"
-password = "Ashakalai123@"
+username = "EMAIL_ID"
+password = "PASSWORD"
 port = 465
-toAddress = "kalaiyarasi@wso2.com"
+toAddress = "TO_EMAIL_ID"

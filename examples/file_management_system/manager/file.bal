@@ -18,24 +18,57 @@ import ballerina/http;
 import ballerina/file;
 import ballerina/io;
 
-configurable string directoryPath = ?;
+configurable string basePath = ?;
 
-service /file on new http:Listener(9090) {
-    resource function post create/[string fileName]() returns string|error {
-        string filePath = check file:joinPath(directoryPath, fileName);
+service /file_manager on new http:Listener(9090) {
+    resource function post file/[string fileName]() returns string|error {
+        string filePath = check file:joinPath(basePath, fileName);
         check file:create(filePath);
         return "File is created successfully";
     }
 
-    resource function delete delete/[string fileName]() returns string|error {
-        string filePath = check file:joinPath(directoryPath, fileName);
+    resource function delete file/[string fileName]() returns string|error {
+        string filePath = check file:joinPath(basePath, fileName);
         check file:remove(filePath);
         return "File is deleted successfully";
     }
 
-    resource function put edit/[string fileName](@http:Payload string content) returns string|error {
-        string filePath = check file:joinPath(directoryPath, fileName[0]);
+    resource function put file/[string fileName](@http:Payload string content) returns string|error {
+        string filePath = check file:joinPath(basePath, fileName);
         check io:fileWriteString(filePath, content);
         return "File is modified successfully";
+    }
+
+    resource function post directory/[string directoryName]() returns string|error {
+        string dirPath = check file:joinPath(basePath, directoryName);
+        check file:createDir(dirPath, file:RECURSIVE);
+        return "Directory is created successfully";
+    }
+
+    resource function get directory/metadata/[string directoryName]() returns file:MetaData[]|error {
+        string filePath = check file:joinPath(basePath, directoryName);
+        file:MetaData[] readDirResults = check file:readDir(filePath);
+        return readDirResults;
+    }
+
+    resource function delete directory/[string directoryName]() returns string|error {
+        string directoryPath = check file:joinPath(basePath, directoryName);
+        check file:remove(directoryPath, file:RECURSIVE);
+        return "Directory is deleted successfully";
+    }
+
+    resource function post directory/[string sourceDirectoryName]/[string destinationDirectoryName]()
+                       returns string|error {
+        string sourceDirectoryPath = check file:joinPath(basePath, sourceDirectoryName);
+        string destinationDirectoryPath = check file:joinPath(basePath, destinationDirectoryName);
+        check file:copy(sourceDirectoryPath, destinationDirectoryPath, file:REPLACE_EXISTING);
+        return "Dirctory is copied successfully";
+    }
+
+    resource function put directory/[string oldDirectoryName]/[string newDirectoryName]() returns string|error {
+        string oldDirectoryPath = check file:joinPath(basePath, oldDirectoryName);
+        string newDirectoryPath = check file:joinPath(basePath, newDirectoryName);
+        check file:rename(oldDirectoryPath, newDirectoryPath);
+        return "The " + oldDirectoryPath + " directory is renamed successfully.";
     }
 }

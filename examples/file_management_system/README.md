@@ -1,9 +1,9 @@
 # Overview
 
-This application shows how to implement a simple file management system by using `file`, `http`, `io` and `email` Ballerina packages.
+This application shows how to implement a simple file and directory management system by using `file`, `http`, `io` and `email` Ballerina packages.
 There are two subparts involved in this system:
-* observer: It listens to a directory in the local file system and notifies via email when new files are created in the directory or when the existing files are deleted or modified.
-* manager: This is used to manage the files in the directory in the local file system by creating, modifying, or deleting files.
+- **Observer**: It listens to a directory in the local file system and notifies via email when new files are created in the directory or when the existing files are deleted or modified.
+- **Manager**: This is used to manage the files or directories in the given base directory in the local file system by creating, modifying, or deleting files/directories.
 
 ## Prerequisite
 
@@ -28,13 +28,33 @@ $ bal run
 3. Send a request to manage files using curl.
     * Create the file
       ```
-      curl -v -X POST http://localhost:9090/file/create/test.txt
+      curl -v -X POST http://localhost:9090/file_manager/file/test.txt
       ```
     * Modify the file
       ```
-      curl -v -X PUT http://localhost:9090/file/edit/test.txt --data "hi" 
+      curl -v -X PUT http://localhost:9090/file_manager/file/test.txt --data "hi" 
       ```
     * Delete the file
       ```
-      curl -v -X DELETE http://localhost:9090/file/delete/test.txt
+      curl -v -X DELETE http://localhost:9090/file_manager/file/test.txt
+      ```
+    * Create the directory
+      ```
+      curl -v -X POST http://localhost:9090/file_manager/directory/file_dir
+      ```
+    * Get metadata of the given directory
+      ```
+      curl -v -X GET http://localhost:9090/file_manager/directory/metadata/file_dir
+      ```
+    * Copy the directory
+      ```
+      curl -v -X POST http://localhost:9090/file_manager/directory/file_dir/new_dir
+      ```
+    * Rename the directory
+      ```
+      curl -v -X PUT http://localhost:9090/file_manager/directory/new_dir/new_diretory
+      ```
+    * Delete the directory
+      ```
+      curl -v -X DELETE http://localhost:9090/file_manager/directory/file_dir
       ```

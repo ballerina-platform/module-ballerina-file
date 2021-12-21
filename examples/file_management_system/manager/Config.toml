@@ -1,2 +1,2 @@
 [manager]
-directoryPath = "PATH_OF_DIRECTORY"
+basePath = "BASE_PATH"

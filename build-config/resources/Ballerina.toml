@@ -5,6 +5,7 @@ version = "@toml.version@"
 authors = ["Ballerina"]
 keywords = ["file", "path", "directory", "filepath"]
 repository = "https://github.com/ballerina-platform/module-ballerina-file"
+icon = "resources/icon.png"
 license = ["Apache-2.0"]
 distribution = "2201.0.0"
 

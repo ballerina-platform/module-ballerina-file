@@ -1,0 +1,8 @@
+[observer]
+directoryPath = "PATH_OF_DIRECTORY"
+#The following are email configurations:
+host = "smtp.gmail.com"
+username = "EMAIL_ID"
+password = "PASSWORD"
+port = 465
+toAddress = "TO_EMAIL_ID"

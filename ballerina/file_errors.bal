@@ -23,31 +23,31 @@ public type PermissionError distinct Error;
 # Represents an error that occurs when a file system operation fails.
 public type FileSystemError distinct Error;
 
-# Represents an error that occurs when the file/directory does not exist at the given filepath.
+# Represents an error that occurs when the file/directory does not exist at the given file path.
 public type FileNotFoundError distinct Error;
 
-# Represents error occur when the file at the given filepath is not a symbolic link.
+# Represents error occurs when the file at the given file path is not a symbolic link.
 public type NotLinkError distinct Error;
 
-# Represents IO error occur when trying to access the file at the given filepath.
+# Represents IO error occur when trying to access the file at the given file path.
 public type IOError distinct Error;
 
-# Represents security error occur when trying to access the file at the given filepath.
+# Represents security error occur when trying to access the file at the given file path.
 public type SecurityError distinct Error;
 
-# Represents error occur when the given file path is invalid.
+# Represents error occurs when the given file path is invalid.
 public type InvalidPathError distinct Error;
 
-# Represent error occur when the given pattern is not a valid filepath pattern.
+# Represent error occurs when the given pattern is not a valid file path pattern.
 public type InvalidPatternError distinct Error;
 
-# Represents an error that occurs when the given target filepath cannot be derived relative to the base filepath.
+# Represents an error that occurs when the given target file path cannot be derived relative to the base file path.
 public type RelativePathError distinct Error;
 
-# Represents error occur in the UNC path.
+# Represents error occurs in the UNC path.
 public type UNCPathError distinct Error;
 
-# Represents generic error for filepath.
+# Represents generic error for the file path.
 public type GenericError distinct Error;
 
 # Represents file system related errors.

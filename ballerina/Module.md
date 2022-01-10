@@ -3,7 +3,7 @@
 This module provides APIs, which perform file, file path, and directory operations, and a `Directory Listener`, which is used to listen to a directory in the local file system.
 
 This provides the interface to create, delete, rename the file/directory, retrieve metadata of the given file, and manipulate the 
-filename paths in a way that is compatible according to the target  file paths defined by the operating system.
+filename paths in a way that is compatible according to the target file paths defined by the operating system.
 
 The path of the file/directory needs to be defined with either forward slashes or back slashes depending on the operating system.
 
@@ -11,7 +11,7 @@ The path of the file/directory needs to be defined with either forward slashes o
 
 The `file:Listener` is used to monitor all the files and subdirectories inside the specified directory. 
 
-A `Listener` endpoint can be defined using the mandatory `path` parameter  and the optional `recursive` parameter  as follows.
+A `Listener` endpoint can be defined using the mandatory `path` parameter and the optional `recursive` parameter as follows.
 
 ```ballerina
 listener file:Listener inFolder = new ({
@@ -46,4 +46,4 @@ service "localObserver" on inFolder {
 }
 ```
 
-For information on the operations, which you can perform with the regex module, see the below **Functions**.
+For information on the operations, which you can perform with the file module, see the below **Functions**.

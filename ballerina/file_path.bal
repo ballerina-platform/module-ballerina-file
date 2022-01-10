@@ -25,12 +25,12 @@ final string pathListSeparator = isWindows ? ";" : ":";
 
 # Retrieves the absolute path from the provided location.
 # ```ballerina
-#  string absolutePath = check file:getAbsolutePath(<@untainted> "test.txt");
+#  string absolutePath = check file:getAbsolutePath("test.txt");
 # ```
 #
 # + path - String value of the file path free from potential malicious codes
 # + return - The absolute path reference or else a `file:Error` if the path cannot be derived
-public isolated function getAbsolutePath(@untainted string path) returns string|Error = @java:Method {
+public isolated function getAbsolutePath(string path) returns string|Error = @java:Method {
     name: "absolute",
     'class: "io.ballerina.stdlib.file.nativeimpl.FilePathUtils"
 } external;
@@ -122,7 +122,7 @@ public isolated function parentPath(string path) returns string|Error {
 #  `CLEAN` - Get the shortest path name equivalent to the given path by eliminating multiple separators, '.', and '..',
 #  `SYMLINK` - Evaluate a symlink,
 #  `NORMCASE` - Normalize the case of a pathname. On windows, all the characters are converted to lowercase and "/" is
-# converted to "\\".
+#               converted to "\\".
 # + return - Normalized file path or else a `file:Error` if the path is invalid
 public isolated function normalizePath(string path, NormOption option) returns string|Error {
     match option {
@@ -338,19 +338,19 @@ public isolated function relativePath(string base, string target) returns string
     return cleanTarget.substring(t0, tl);
 }
 
-# Returns the filepath after the evaluation of any symbolic links.
+# Returns the file path after the evaluation of any symbolic links.
 # If the path is relative, the result will be relative to the current directory
 # unless one of the components is an absolute symbolic link.
 # Resolves normalising the calls on the result.
 #
 # + path - Security-validated string value of the file path
 # + return - Resolved file path or else a `file:Error` if the path is invalid
-isolated function resolve(@untainted string path) returns string|Error = @java:Method {
+isolated function resolve(string path) returns string|Error = @java:Method {
     name: "resolve",
     'class: "io.ballerina.stdlib.file.nativeimpl.FilePathUtils"
 } external;
 
-# Parses the give path and remove redundent slashes.
+# Parses the given path and removes redundant slashes.
 #
 # + input - String path value
 # + return - Parsed path or else a `file:Error` if the given path is invalid

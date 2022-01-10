@@ -72,7 +72,7 @@ public isolated class Listener {
     }
 }
 
-# Represents configurations that required for directory listener.
+# Represents configurations that are required for a directory listener.
 #
 # + path - Directory path which need to listen
 # + recursive - Recursively monitor all sub folders or not in the given direcotry path

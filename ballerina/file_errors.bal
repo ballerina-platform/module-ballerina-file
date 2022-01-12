@@ -23,7 +23,7 @@ public type PermissionError distinct Error;
 # Represents an error that occurs when a file system operation fails.
 public type FileSystemError distinct Error;
 
-# Represents an error that occurs when the file/directory does not exist at the given file path.
+# Represents an error, which occurs when the file/directory does not exist in the given file path.
 public type FileNotFoundError distinct Error;
 
 # Represents error occurs when the file at the given file path is not a symbolic link.

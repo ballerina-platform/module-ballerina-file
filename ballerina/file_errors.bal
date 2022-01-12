@@ -35,7 +35,7 @@ public type IOError distinct Error;
 # Represents a security error, which occurs when trying to access the file in the given file path.
 public type SecurityError distinct Error;
 
-# Represents error occurs when the given file path is invalid.
+# Represents an error, which occurs when the given file path is invalid.
 public type InvalidPathError distinct Error;
 
 # Represent error occurs when the given pattern is not a valid file path pattern.

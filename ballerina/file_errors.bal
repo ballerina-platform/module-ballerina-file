@@ -41,7 +41,7 @@ public type InvalidPathError distinct Error;
 # Represents an error, which occurs when the given pattern is not a valid file path pattern.
 public type InvalidPatternError distinct Error;
 
-# Represents an error that occurs when the given target file path cannot be derived relative to the base file path.
+# Represents an error, which occurs when the given target file path cannot be derived relative to the base file path.
 public type RelativePathError distinct Error;
 
 # Represents error occurs in the UNC path.

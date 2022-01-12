@@ -23,7 +23,7 @@ public type FileEvent record {|
     string operation;
 |};
 
-# Represents the options that can be passed to `normalizePath` function.
+# Represents the options that can be passed to the `normalizePath` function.
 #
 # + CLEAN - Get the shortest path name equivalent to the given path by eliminating multiple separators, '.', and '..'
 # + SYMLINK - Evaluate a symlink

@@ -26,7 +26,7 @@ public type FileSystemError distinct Error;
 # Represents an error, which occurs when the file/directory does not exist in the given file path.
 public type FileNotFoundError distinct Error;
 
-# Represents error occurs when the file at the given file path is not a symbolic link.
+# Represents an error, which occurs when the file in the given file path is not a symbolic link.
 public type NotLinkError distinct Error;
 
 # Represents IO error occur when trying to access the file at the given file path.

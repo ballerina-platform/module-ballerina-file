@@ -34,9 +34,9 @@ public isolated function getCurrentDir() returns string = @java:Method {
 #
 # + dir - Directory name
 # + option - Indicates whether the `createDir` should create non-existing parent directories. The default is only to
-# create the given current directory.
+#            create the given current directory.
 # + return - A `file:Error` if the directory creation failed
-public isolated function createDir(@untainted string dir, DirOption option = NON_RECURSIVE)
+public isolated function createDir(string dir, DirOption option = NON_RECURSIVE)
 returns Error? = @java:Method {
     'class: "io.ballerina.stdlib.file.nativeimpl.Utils",
     name: "createDir"
@@ -50,7 +50,7 @@ returns Error? = @java:Method {
 # + path - String value of the file/directory path
 # + option - Indicates whether the `remove` should recursively remove all the files inside the given directory
 # + return - An `file:Error` if failed to remove
-public isolated function remove(@untainted string path, DirOption option = NON_RECURSIVE)
+public isolated function remove(string path, DirOption option = NON_RECURSIVE)
 returns Error? = @java:Method {
     'class: "io.ballerina.stdlib.file.nativeimpl.Utils",
     name: "remove"
@@ -65,7 +65,7 @@ returns Error? = @java:Method {
 # + oldPath - String value of the old file path
 # + newPath - String value of the new file path
 # + return - An `file:Error` if failed to rename
-public isolated function rename(@untainted string oldPath, @untainted string newPath) returns Error? = @java:Method {
+public isolated function rename(string oldPath, string newPath) returns Error? = @java:Method {
     'class: "io.ballerina.stdlib.file.nativeimpl.Utils",
     name: "rename"
 } external;
@@ -78,12 +78,12 @@ public isolated function rename(@untainted string oldPath, @untainted string new
 #
 # + path - String value of the file path
 # + return - A `file:Error` if file creation failed
-public isolated function create(@untainted string path) returns Error? = @java:Method {
+public isolated function create(string path) returns Error? = @java:Method {
     'class: "io.ballerina.stdlib.file.nativeimpl.Utils",
     name: "createFile"
 } external;
 
-isolated function getRawMetaData(@untainted string path) returns MetaData|Error = @java:Method {
+isolated function getRawMetaData(string path) returns MetaData|Error = @java:Method {
     'class: "io.ballerina.stdlib.file.nativeimpl.Utils",
     name: "getMetaData"
 } external;
@@ -95,7 +95,7 @@ isolated function getRawMetaData(@untainted string path) returns MetaData|Error 
 #
 # + path - String value of the file path.
 # + return - The `MetaData` instance with the file metadata or else a `file:Error`
-public isolated function getMetaData(@untainted string path) returns (MetaData & readonly)|Error {
+public isolated function getMetaData(string path) returns (MetaData & readonly)|Error {
     var result = getRawMetaData(path);
     if (result is MetaData) {
         return <readonly & MetaData>result.cloneReadOnly();
@@ -104,7 +104,7 @@ public isolated function getMetaData(@untainted string path) returns (MetaData &
     }
 }
 
-isolated function readDirRaw(@untainted string path) returns MetaData[]|Error = @java:Method {
+isolated function readDirRaw(string path) returns MetaData[]|Error = @java:Method {
     'class: "io.ballerina.stdlib.file.nativeimpl.Utils",
     name: "readDir"
 } external;
@@ -115,9 +115,9 @@ isolated function readDirRaw(@untainted string path) returns MetaData[]|Error = 
 # file:MetaData[] results = check file:readDir("foo/bar");
 # ```
 #
-# + path - String value of the directory path.
+# + path - String value of the directory path
 # + return - The `MetaData` array or else a `file:Error` if there is an error
-public isolated function readDir(@untainted string path) returns (MetaData[] & readonly)|Error {
+public isolated function readDir(string path) returns (MetaData[] & readonly)|Error {
     var result = readDirRaw(path);
     if result is MetaData[] {
         return <readonly & MetaData[]>result.cloneReadOnly();
@@ -138,7 +138,7 @@ public isolated function readDir(@untainted string path) returns (MetaData[] & r
 #  `COPY_ATTRIBUTES` - Copy the file attributes as well to the target,
 #  `NO_FOLLOW_LINKS` - If source is a symlink, only the link is copied, not the target of the link.
 # + return - An `file:Error` if failed to copy
-public isolated function copy(@untainted string sourcePath, @untainted string destinationPath,
+public isolated function copy(string sourcePath, string destinationPath,
                      CopyOption... options) returns Error? = @java:Method {
     'class: "io.ballerina.stdlib.file.nativeimpl.Utils",
     name: "copy"
@@ -189,7 +189,7 @@ public isolated function createTempDir(string? suffix = (), string? prefix = (),
 #  `READABLE` - Test whether a file path is readable,
 #  `WRITABLE` - Test whether a file path is writable.
 # + return - True/false depending on the option to be tested or else a `file:Error` if there is an error
-public isolated function test(@untainted string path, TestOption testOption) returns boolean|Error = @java:Method {
+public isolated function test(string path, TestOption testOption) returns boolean|Error = @java:Method {
     'class: "io.ballerina.stdlib.file.nativeimpl.Utils",
     name: "test"
 } external;

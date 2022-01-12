@@ -14,7 +14,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-# Represents an event which will trigger when there is a change to listening directory.
+# Represents an event, which will trigger when there is a change to the listening directory.
 #
 # + name - Absolute file URI for triggered event
 # + operation - Triggered event action. This can be create, delete or modify
@@ -23,7 +23,7 @@ public type FileEvent record {|
     string operation;
 |};
 
-# Represents the options that can be passed to normalizePath function.
+# Represents the options that can be passed to the `normalizePath` function.
 #
 # + CLEAN - Get the shortest path name equivalent to the given path by eliminating multiple separators, '.', and '..'
 # + SYMLINK - Evaluate a symlink
@@ -44,7 +44,7 @@ public enum DirOption {
     NON_RECURSIVE
 }
 
-# Represents the options that can be passed to test function.
+# Represents the options that can be passed to the test function.
 #
 # + EXISTS - Test whether a file path exists
 # + IS_DIR - Test whether a file path is a directory

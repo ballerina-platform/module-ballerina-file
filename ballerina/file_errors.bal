@@ -29,7 +29,7 @@ public type FileNotFoundError distinct Error;
 # Represents an error, which occurs when the file in the given file path is not a symbolic link.
 public type NotLinkError distinct Error;
 
-# Represents IO error occur when trying to access the file at the given file path.
+# Represents an IO error, which occurs when trying to access the file in the given file path.
 public type IOError distinct Error;
 
 # Represents security error occur when trying to access the file at the given file path.

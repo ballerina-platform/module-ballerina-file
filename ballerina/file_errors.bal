@@ -32,7 +32,7 @@ public type NotLinkError distinct Error;
 # Represents an IO error, which occurs when trying to access the file in the given file path.
 public type IOError distinct Error;
 
-# Represents security error occur when trying to access the file at the given file path.
+# Represents a security error, which occurs when trying to access the file in the given file path.
 public type SecurityError distinct Error;
 
 # Represents error occurs when the given file path is invalid.

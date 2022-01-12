@@ -47,7 +47,7 @@ public type RelativePathError distinct Error;
 # Represents an error, which occurs in the UNC path.
 public type UNCPathError distinct Error;
 
-# Represents generic error for the file path.
+# Represents a generic error for the file path.
 public type GenericError distinct Error;
 
 # Represents file system related errors.

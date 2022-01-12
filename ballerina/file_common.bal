@@ -14,7 +14,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-# Represents an event which will trigger when there is a change to the listening directory.
+# Represents an event, which will trigger when there is a change to the listening directory.
 #
 # + name - Absolute file URI for triggered event
 # + operation - Triggered event action. This can be create, delete or modify

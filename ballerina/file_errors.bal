@@ -38,7 +38,7 @@ public type SecurityError distinct Error;
 # Represents an error, which occurs when the given file path is invalid.
 public type InvalidPathError distinct Error;
 
-# Represent error occurs when the given pattern is not a valid file path pattern.
+# Represents an error, which occurs when the given pattern is not a valid file path pattern.
 public type InvalidPatternError distinct Error;
 
 # Represents an error that occurs when the given target file path cannot be derived relative to the base file path.

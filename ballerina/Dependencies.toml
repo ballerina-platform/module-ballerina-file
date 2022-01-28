@@ -11,7 +11,6 @@ org = "ballerina"
 name = "file"
 version = "1.2.0"
 dependencies = [
-	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "lang.boolean"},
 	{org = "ballerina", name = "lang.runtime"},
@@ -32,9 +31,6 @@ version = "1.2.0"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"},
 	{org = "ballerina", name = "lang.value"}
-]
-modules = [
-	{org = "ballerina", packageName = "io", moduleName = "io"}
 ]
 
 [[package]]
@@ -94,7 +90,7 @@ modules = [
 [[package]]
 org = "ballerina"
 name = "observe"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"}
 ]

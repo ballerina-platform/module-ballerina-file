@@ -41,7 +41,7 @@ service "localObserver" on inFolder {
 }
 ```
 
-### Report Issues
+## Report Issues
 
 To report bugs, request new features, start new discussions, view project boards, etc., go to the [Ballerina standard library parent repository](https://github.com/ballerina-platform/ballerina-standard-library).
 

@@ -7,7 +7,7 @@ Ballerina File Library
   [![Github issues](https://img.shields.io/github/issues/ballerina-platform/ballerina-standard-library/module/file.svg?label=Open%20Issues)](https://github.com/ballerina-platform/ballerina-standard-library/labels/module%2Ffile)
   [![codecov](https://codecov.io/gh/ballerina-platform/module-ballerina-file/branch/master/graph/badge.svg)](https://codecov.io/gh/ballerina-platform/module-ballerina-file)
 
-This package provides APIs, which perform file, file path, and directory operations, and a `Directory Listener`, which is used to listen to a directory in the local file system.
+This library provides APIs, which perform file, file path, and directory operations, and a `Directory Listener`, which is used to listen to a directory in the local file system.
 
 This provides the interface to create, delete, rename the file/directory, retrieve metadata of the given file, and manipulate the
 filename paths in a way that is compatible according to the target file paths defined by the operating system.

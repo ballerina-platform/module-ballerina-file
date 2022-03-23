@@ -9,7 +9,7 @@ Ballerina File Library
 
 This library provides APIs to create, delete, rename the file/directory, retrieve metadata of the given file, and manipulate the file paths in a way that is compatible with the operating system, and a `Directory Listener`, which is used to listen to the file changes in a directory in the local file system.
 
-### Directory Listener
+### Directory listener
 
 The `file:Listener` is used to monitor all the files and subdirectories inside the specified directory.
 
@@ -50,15 +50,15 @@ service "localObserver" on inFolder {
 
 For example demonstrations of the usage, go to [Ballerina By Examples](https://ballerina.io/learn/by-example/).
 
-## Issues and Projects
+## Issues and projects
 
 Issues and Project tabs are disabled for this repository as this is part of the Ballerina Standard Library. To report bugs, request new features, start new discussions, view project boards, etc. please visit Ballerina Standard Library [parent repository](https://github.com/ballerina-platform/ballerina-standard-library). 
 
 This repository only contains the source code for the package.
 
-## Building from the Source
+## Build from the source
 
-### Setting Up the Prerequisites
+### Set up the prerequisites
 
 1. Download and install Java SE Development Kit (JDK) version 11 (from one of the following locations).
    * [Oracle](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html)
@@ -67,9 +67,9 @@ This repository only contains the source code for the package.
 
         > **Note:** Set the JAVA_HOME environment variable to the path name of the directory into which you installed JDK.
      
-### Building the Source
+### Build the source
 
-Execute the commands below to build from source.
+Execute the commands below to build from the source.
 
 1. To build the library:
 
@@ -103,17 +103,17 @@ Execute the commands below to build from source.
 
         ./gradlew clean build -PpublishToCentral=true
 
-## Contributing to Ballerina
+## Contribute to Ballerina
 
 As an open source project, Ballerina welcomes contributions from the community. 
 
 For more information, go to the [contribution guidelines](https://github.com/ballerina-platform/ballerina-lang/blob/master/CONTRIBUTING.md).
 
-## Code of Conduct
+## Code of conduct
 
 All contributors are encouraged to read the [Ballerina Code of Conduct](https://ballerina.io/code-of-conduct).
 
-## Useful Links
+## Useful links
 
 * For more information go to the [`file` library](https://lib.ballerina.io/ballerina/file/latest).
 * For example demonstrations of the usage, go to [Ballerina By Examples](https://ballerina.io/learn/by-example/).

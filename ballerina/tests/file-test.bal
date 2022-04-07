@@ -15,8 +15,8 @@
 // under the License.
 
 import ballerina/test;
-import ballerina/lang.runtime;
 import ballerina/jballerina.java;
+import ballerina/io;
 
 string tmpdir = getTmpDir();
 string srcDir = "tests/resources/src-dir";
@@ -79,41 +79,17 @@ function testCopyDir() {
 }
 
 @test:Config {}
-function testCopyDir1() returns error? {
-    string targetPath = tmpdir + "/dir-new" ;
-    _ = check create(targetPath);
-    error? copyResult = copy(srcDir, targetPath);
-    if copyResult is error {
-        test:assertFail("Directory not copied!");
-    } else {
-        test:assertFalse(check test(targetPath + "/nested-file.txt", EXISTS));
-    }
-}
-
-@test:Config {
-    dependsOn: [testCopyDir1]
-}
 function testCopyDir2() returns error? {
-     string targetPath = tmpdir + "/dir-new" ;
-    error? copyResult = copy(srcDir, targetPath, REPLACE_EXISTING);
-    runtime:sleep(10);
+    string targetPath = "tests/resources/temp-dir/nested-file.txt";
+    check create(targetPath);
+    error? copyResult = copy(srcDir, "tests/resources/temp-dir", REPLACE_EXISTING);
     if copyResult is error {
         test:assertFail("Directory not copied!");
     } else {
-        test:assertTrue(check test(targetPath + "nested-file.txt", EXISTS));
+        string readContent = check io:fileReadString(targetPath);
+        test:assertEquals(readContent, "Hi");
     }
-    
-}
-
-@test:Config {
-    dependsOn: [testCopyDir2]
-}
-function testRemoveDirrecursiveTrue() returns error? {
-    error? removeResult = remove(tmpdir + "/dir-new", RECURSIVE);
-    if removeResult is error {
-        string expectedErrMsg = "Error while deleting";
-        test:assertTrue(removeResult.message().includes(expectedErrMsg));
-    }
+    check remove(targetPath);
 }
 
 @test:Config {dependsOn: [testCopyDir]}
@@ -271,6 +247,7 @@ function testCreateDirWithoutParentDir() {
 
 @test:Config {}
 function testCopyFile() {
+    io:println("@@@@@@@@@@@@@@@@@@@@@@@@@@@");
     MetaData|error srcmetadata = getMetaData(srcFile);
     if srcmetadata is MetaData {
         srcFileLength = srcmetadata.size;
@@ -280,7 +257,7 @@ function testCopyFile() {
 
     error? copyResult = copy(srcFile, tmpdir + copyFile);
     if copyResult is error {
-        test:assertFail("File not copied!");
+        test:assertFail("File not copied!" + copyResult.toString());
     } else {
         MetaData|error metadata = getMetaData(tmpdir + copyFile);
         if (metadata is MetaData) {
@@ -290,6 +267,7 @@ function testCopyFile() {
             test:assertFail("Error retrieving destination file size!");
         }
     }
+    io:println("@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 }
 
 @test:Config {dependsOn: [testCopyFile]}

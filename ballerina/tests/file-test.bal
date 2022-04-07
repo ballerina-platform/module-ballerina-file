@@ -247,7 +247,6 @@ function testCreateDirWithoutParentDir() {
 
 @test:Config {}
 function testCopyFile() {
-    io:println("@@@@@@@@@@@@@@@@@@@@@@@@@@@");
     MetaData|error srcmetadata = getMetaData(srcFile);
     if srcmetadata is MetaData {
         srcFileLength = srcmetadata.size;
@@ -267,7 +266,6 @@ function testCopyFile() {
             test:assertFail("Error retrieving destination file size!");
         }
     }
-    io:println("@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 }
 
 @test:Config {dependsOn: [testCopyFile]}

@@ -81,15 +81,14 @@ function testCopyDir() {
 @test:Config {}
 function testCopyDir2() returns error? {
     string targetPath = "tests/resources/temp-dir/nested-file.txt";
-    check create(targetPath);
     error? copyResult = copy(srcDir, "tests/resources/temp-dir", REPLACE_EXISTING);
     if copyResult is error {
         test:assertFail("Directory not copied!");
     } else {
         string readContent = check io:fileReadString(targetPath);
         test:assertEquals(readContent, "Hi");
+        check io:fileWriteString(targetPath, "");
     }
-    check remove(targetPath);
 }
 
 @test:Config {dependsOn: [testCopyDir]}

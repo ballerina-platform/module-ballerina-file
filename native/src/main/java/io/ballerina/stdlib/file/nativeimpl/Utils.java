@@ -302,6 +302,16 @@ public class Utils {
             }
             return CONTINUE;
         }
+
+        @Override
+        public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+            return FileVisitResult.CONTINUE;
+        }
+
+        @Override
+        public FileVisitResult visitFileFailed(Path file, IOException exc) {
+            return CONTINUE;
+        }
     }
 
     public static Object createTemp(Object suffix, Object prefix, Object dir) {

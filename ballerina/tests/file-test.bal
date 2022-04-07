@@ -15,6 +15,7 @@
 // under the License.
 
 import ballerina/test;
+import ballerina/lang.runtime;
 import ballerina/jballerina.java;
 
 string tmpdir = getTmpDir();
@@ -74,6 +75,44 @@ function testCopyDir() {
     error? copyResult = copy(srcDir, tmpdir + "/src-dir");
     if copyResult is error {
         test:assertFail("Directory not copied!");
+    }
+}
+
+@test:Config {}
+function testCopyDir1() returns error? {
+    string targetPath = tmpdir + "/dir-new" ;
+    _ = check create(targetPath);
+    error? copyResult = copy(srcDir, targetPath);
+    if copyResult is error {
+        test:assertFail("Directory not copied!");
+    } else {
+        test:assertFalse(check test(targetPath + "/nested-file.txt", EXISTS));
+    }
+}
+
+@test:Config {
+    dependsOn: [testCopyDir1]
+}
+function testCopyDir2() returns error? {
+     string targetPath = tmpdir + "/dir-new" ;
+    error? copyResult = copy(srcDir, targetPath, REPLACE_EXISTING);
+    runtime:sleep(10);
+    if copyResult is error {
+        test:assertFail("Directory not copied!");
+    } else {
+        test:assertTrue(check test(targetPath + "nested-file.txt", EXISTS));
+    }
+    
+}
+
+@test:Config {
+    dependsOn: [testCopyDir2]
+}
+function testRemoveDirrecursiveTrue() returns error? {
+    error? removeResult = remove(tmpdir + "/dir-new", RECURSIVE);
+    if removeResult is error {
+        string expectedErrMsg = "Error while deleting";
+        test:assertTrue(removeResult.message().includes(expectedErrMsg));
     }
 }
 

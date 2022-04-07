@@ -2,6 +2,10 @@
 
 This module provides APIs to create, delete, rename the file/directory, retrieve metadata of the given file, and manipulate the file paths in a way that is compatible with the operating system, and a `Directory Listener`, which is used to listen to the file changes in a directory in the local file system.
 
+This also provides the following separators which are widely used in file path creation:
+-  `file:pathSeparator`: It is a character used to separate the parent directories that make up the path to a specific location. For windows, it’s ‘\’ and for UNIX it’s ‘/’
+-  `file:pathListSeparator`: It is a character commonly used by the operating system to separate paths in the path list. For windows, it’s ‘;‘ and for UNIX it’s ‘:’
+
 ### Directory listener
 
 The `file:Listener` is used to monitor all the files and subdirectories inside the specified directory. 

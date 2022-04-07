@@ -256,7 +256,7 @@ function testCopyFile() {
 
     error? copyResult = copy(srcFile, tmpdir + copyFile);
     if copyResult is error {
-        test:assertFail("File not copied!" + copyResult.toString());
+        test:assertFail("File not copied!");
     } else {
         MetaData|error metadata = getMetaData(tmpdir + copyFile);
         if (metadata is MetaData) {

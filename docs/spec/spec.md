@@ -45,9 +45,7 @@ The conforming implementation of the specification is released and included in t
 
 # 1. Overview
 Ballerina file standard library provides functionalities related to manipulating and working with files and directories.
-All operations are supported on both Windows and Unix-based operating systems. It provides the following separators as constants which are widely used in file path creation:
--  `file:pathSeparator`: It is a character used to separate the parent directories that make up the path to a specific location. For windows, it’s ‘\’ and for UNIX it’s ‘/’
--  `file:pathListSeparator`: It is a character commonly used by the operating system to separate paths in the path list. For windows, it’s ‘;‘ and for UNIX it’s ‘:’
+All operations are supported on both Windows and Unix-based operating systems. 
 
 # 2. File Metadata
 Metadata information of files and directories will contain the following

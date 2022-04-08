@@ -20,8 +20,8 @@ import ballerina/regex;
 import ballerina/jballerina.java;
 
 final boolean isWindows = os:getEnv("OS") != "";
-final string pathSeparator = isWindows ? "\\" : "/";
-final string pathListSeparator = isWindows ? ";" : ":";
+public final string pathSeparator = isWindows ? "\\" : "/";
+public final string pathListSeparator = isWindows ? ";" : ":";
 
 # Retrieves the absolute path from the provided location.
 # ```ballerina

@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- [Change the path separator variables' type from private to public](https://github.com/ballerina-platform/ballerina-standard-library/issues/2831)
+
+## [1.1.0] - 2021-12-13
+
 ### Added
 - [Introduce a distinct File service type](https://github.com/ballerina-platform/ballerina-standard-library/issues/2398)
 

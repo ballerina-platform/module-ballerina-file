@@ -16,6 +16,7 @@
 
 import ballerina/test;
 import ballerina/jballerina.java;
+import ballerina/io;
 
 string tmpdir = getTmpDir();
 string srcDir = "tests/resources/src-dir";
@@ -74,6 +75,19 @@ function testCopyDir() {
     error? copyResult = copy(srcDir, tmpdir + "/src-dir");
     if copyResult is error {
         test:assertFail("Directory not copied!");
+    }
+}
+
+@test:Config {}
+function testCopyDir2() returns error? {
+    string targetPath = "tests/resources/temp-dir/nested-file.txt";
+    error? copyResult = copy(srcDir, "tests/resources/temp-dir", REPLACE_EXISTING);
+    if copyResult is error {
+        test:assertFail("Directory not copied!");
+    } else {
+        string readContent = check io:fileReadString(targetPath);
+        test:assertEquals(readContent, "Hi");
+        check io:fileWriteString(targetPath, "");
     }
 }
 

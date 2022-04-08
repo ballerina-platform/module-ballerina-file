@@ -260,7 +260,11 @@ public class Utils {
                     "File not found: " + sourcePath);
         }
         try {
-            Files.walkFileTree(srcPath, new RecursiveFileCopyVisitor(srcPath, destPath, ops));
+            if (srcPath.toFile().isDirectory()) {
+                Files.walkFileTree(srcPath, new RecursiveDirCopyVisitor(srcPath, destPath, ops));
+            } else {
+                Files.walkFileTree(srcPath, new RecursiveFileCopyVisitor(srcPath, destPath, ops));
+            }
         } catch (IOException ex) {
             return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR, ex);
         }
@@ -300,6 +304,34 @@ public class Utils {
                 log.debug(e.getMessage());
                 return SKIP_SUBTREE; // skip processing
             }
+            return CONTINUE;
+        }
+    }
+
+    static class RecursiveDirCopyVisitor extends SimpleFileVisitor<Path> {
+
+        final Path source;
+        final Path target;
+        final CopyOption[] copyOptions;
+
+        RecursiveDirCopyVisitor(Path source, Path target, CopyOption... copyOptions) {
+            this.source = source;
+            this.target = target;
+            this.copyOptions = copyOptions;
+        }
+
+        @Override
+        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+            Path targetPath = target.resolve(source.relativize(dir));
+            if (!Files.exists(targetPath)) {
+                Files.createDirectory(targetPath);
+            }
+            return CONTINUE;
+        }
+
+        @Override
+        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+            Files.copy(file, target.resolve(source.relativize(file)), copyOptions);
             return CONTINUE;
         }
     }

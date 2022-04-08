@@ -265,11 +265,10 @@ public class Utils {
             } else {
                 Files.walkFileTree(srcPath, new RecursiveFileCopyVisitor(srcPath, destPath, ops));
             }
+        } catch (NoSuchFileException ex) {
+            return FileUtils.getBallerinaError(FileConstants.FILE_NOT_FOUND_ERROR,
+                    "The target directory does not exist: " + ex.getMessage());
         } catch (IOException ex) {
-            if (ex.toString().contains("NoSuchFileException")) {
-                return FileUtils.getBallerinaError(FileConstants.FILE_NOT_FOUND_ERROR,
-                        "The target directory does not exist: " + ex.getMessage());
-            }
             return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR,
                     "An error occurred when copying the file/s: " + ex.getMessage());
         }

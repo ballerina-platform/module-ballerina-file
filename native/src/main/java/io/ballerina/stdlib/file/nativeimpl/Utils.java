@@ -266,7 +266,11 @@ public class Utils {
                 Files.walkFileTree(srcPath, new RecursiveFileCopyVisitor(srcPath, destPath, ops));
             }
         } catch (IOException ex) {
-            return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR, ex);
+            return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR,
+                    "An error occurred when copying the file/s: " + ex);
+        } catch (NullPointerException ex) {
+            return FileUtils.getBallerinaError(FileConstants.FILE_NOT_FOUND_ERROR,
+                    "The target directory does not exist: " + ex);
         }
         return null;
     }

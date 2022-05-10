@@ -206,7 +206,7 @@ function testNormcase() {
         string path = "/hoMe/UseR/";
         string|error normpath = normalizePath(path, NORMCASE);
         if normpath is string {
-            test:assertEquals(normpath, "\\home\\user\\");
+            test:assertEquals(normpath, "\\\\home\\\\user\\\\");
         } else {
             test:assertFail("Error normalizing case!");
         }

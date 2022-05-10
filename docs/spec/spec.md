@@ -32,6 +32,7 @@ The conforming implementation of the specification is released and included in t
    * 3.10. [Create Temporary Directory](#310-create-temporary-directory)
    * 3.11. [Test](#311-test)
 4. [Path Operations](#4-path-operations)
+   * 4.1 [Path Constants](#41-path-constants)
    * 4.1 [Get Absolute Path](#41-get-absolute-path)
    * 4.2 [Is Absolute](#42-is-absolute)
    * 4.3 [Get Basename](#43-get-basename)
@@ -44,9 +45,7 @@ The conforming implementation of the specification is released and included in t
 
 # 1. Overview
 Ballerina file standard library provides functionalities related to manipulating and working with files and directories.
-All operations are supported on both Windows and Unix-based operating systems. It provides the following separators as constants which are widely used in file path creation:
--  `file:pathSeparator`: It is a character used to separate the parent directories that make up the path to a specific location. For windows, it’s ‘\’ and for UNIX it’s ‘/’
--  `file:pathListSeparator`: It is a character commonly used by the operating system to separate paths in the path list. For windows, it’s ‘;‘ and for UNIX it’s ‘:’
+All operations are supported on both Windows and Unix-based operating systems. 
 
 # 2. File Metadata
 Metadata information of files and directories will contain the following
@@ -156,31 +155,36 @@ public isolated function test(string path, TestOption testOption) returns boolea
 The following are used to create and manipulate paths. Compatibility with both Windows and Unix-based operating 
 systems are ensured.
 
-## 4.1 Get Absolute Path
+## 4.1 Path Constants
+OS-specific path constants
+-  `pathSeparator`: The character used to separate the parent directories that make up the path to a specific location. For windows, it’s ‘\’ and for UNIX it’s ‘/’
+-  `pathListSeparator`: The character commonly used by the operating system to separate paths in the path list. For windows, it’s ‘;‘ and for UNIX it’s ‘:’
+
+## 4.2 Get Absolute Path
 This is used to retrieve the absolute path reference from the provided relative path.
 ```ballerina
 public isolated function getAbsolutePath(string path) returns string|Error;
 ```
 
-## 4.2 Is Absolute
+## 4.3 Is Absolute
 This is used to determine whether the provided path is absolute or not.
 ```ballerina
 public isolated function isAbsolutePath(string path) returns boolean|Error;
 ```
 
-## 4.3 Get Basename
+## 4.4 Get Basename
 This is used to retrieve the base name of the file or directory at the provided path. 
 ```ballerina
 public isolated function basename(string path) returns string|Error;
 ```
 
-## 4.4 Get Parent Path
+## 4.5 Get Parent Path
 This is used to retrieve the parent directory of the provided file or directory.
 ```ballerina
 public isolated function parentPath(string path) returns string|Error;
 ```
 
-## 4.5 Normalize Path
+## 4.6 Normalize Path
 This is used to normalize the provided path value. Options can be provided to indicate how the normalization should
 be performed.
 * Get shortest name equivalent
@@ -190,19 +194,19 @@ be performed.
 public isolated function normalizePath(string path, NormOption option) returns string|Error;
 ```
 
-## 4.6 Split Path
+## 4.7 Split Path
 This is used to split the provided path into an array of path components.
 ```ballerina
 public isolated function splitPath(string path) returns string[]|Error;
 ```
 
-## 4.7 Join Path
+## 4.8 Join Path
 This is used to combine multiple path components to create a single path.
 ```ballerina
 public isolated function joinPath(string... parts) returns string|Error;
 ```
 
-## 4.8 Get Relative Path
+## 4.9 Get Relative Path
 This is used to generate a logically equivalent relative path to the provided target path from the provided base path. 
 ```ballerina
 public isolated function relativePath(string base, string target) returns string|Error;

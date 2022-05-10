@@ -16,7 +16,6 @@
 
 import ballerina/test;
 import ballerina/os;
-import ballerina/io;
 import ballerina/jballerina.java;
 import ballerina/regex;
 import ballerina/lang.'boolean as booleans;
@@ -206,7 +205,6 @@ function testNormcase() {
     if isWin {
         string path = "/hoMe/UseR/";
         string|error normpath = normalizePath(path, NORMCASE);
-        io:println(normpath);
         if normpath is string {
             test:assertEquals(normpath, "\\\\home\\\\user\\\\");
         } else {

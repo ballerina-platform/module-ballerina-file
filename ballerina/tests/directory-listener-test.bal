@@ -49,7 +49,7 @@ function isCreateInvoked() {
     if fileResult is error {
         test:assertFail("File not opened!");
     } else {
-        runtime:sleep(2);
+        runtime:sleep(10);
         test:assertTrue(createInvoke, "File creation event not captured!");
     }
 }
@@ -60,7 +60,7 @@ function isModifyInvoked() {
     if fileResult is error {
         test:assertFail("File not modified!");
     } else {
-        runtime:sleep(2);
+        runtime:sleep(10);
         test:assertTrue(modifyInvoke, "File modification event not captured!");
     }
 }
@@ -71,7 +71,7 @@ function isDeleteInvoked() {
     if fileResult is error {
         test:assertFail("File not deleted!");
     } else {
-        runtime:sleep(2);
+        runtime:sleep(10);
         test:assertTrue(deleteInvoke, "File deletion event not captured!");
     }
 }

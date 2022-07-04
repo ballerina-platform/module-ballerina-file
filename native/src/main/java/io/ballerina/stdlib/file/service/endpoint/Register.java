@@ -101,5 +101,18 @@ public class Register {
         return paramMap;
     }
 
+    public static Object deregister(BObject listener, BObject service) {
+        LocalFileSystemServerConnector serverConnector = (LocalFileSystemServerConnector) listener
+                .getNativeData(DirectoryListenerConstants.FS_SERVER_CONNECTOR);
+        try {
+            serverConnector.stop();
+        } catch (LocalFileSystemServerConnectorException e) {
+            return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR, e.getMessage());
+        } finally {
+            listener.addNativeData(DirectoryListenerConstants.FS_SERVER_CONNECTOR, null);
+        }
+        return null;
+    }
+
     private Register() {}
 }

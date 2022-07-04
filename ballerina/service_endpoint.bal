@@ -68,7 +68,7 @@ public isolated class Listener {
     # + s - Type descriptor of the service
     # + return - () or else error upon failure to detach to the service
     public isolated function detach(Service s) returns error? {
-        return ();
+        return deregister(self, s);
     }
 }
 
@@ -89,6 +89,10 @@ isolated function initEndpoint(Listener fileListener) returns error? = @java:Met
 isolated function register(Listener fileListener, service object {} s) returns error? = @java:Method {
     'class: "io.ballerina.stdlib.file.service.endpoint.Register",
     name: "register"
+} external;
+
+isolated function deregister(Listener fileListener, service object {} s) returns error? = @java:Method {
+    'class: "io.ballerina.stdlib.file.service.endpoint.Register"
 } external;
 
 isolated function startEndpoint(Listener fileListener) returns error? = @java:Method {

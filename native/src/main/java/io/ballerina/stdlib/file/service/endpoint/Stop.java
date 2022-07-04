@@ -31,12 +31,14 @@ import org.wso2.transport.localfilesystem.server.exception.LocalFileSystemServer
 public class Stop {
 
     public static Object stop(BObject listener) {
-        LocalFileSystemServerConnector serverConnector = (LocalFileSystemServerConnector) listener
-                .getNativeData(DirectoryListenerConstants.FS_SERVER_CONNECTOR);
-        try {
-            serverConnector.stop();
-        } catch (LocalFileSystemServerConnectorException e) {
-            return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR, e.getMessage());
+        if (listener.getNativeData(DirectoryListenerConstants.FS_SERVER_CONNECTOR) != null) {
+            LocalFileSystemServerConnector serverConnector = (LocalFileSystemServerConnector) listener
+                    .getNativeData(DirectoryListenerConstants.FS_SERVER_CONNECTOR);
+            try {
+                serverConnector.stop();
+            } catch (LocalFileSystemServerConnectorException e) {
+                return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR, e.getMessage());
+            }
         }
         return null;
     }

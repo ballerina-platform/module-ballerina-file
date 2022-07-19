@@ -10,11 +10,13 @@ license = ["Apache-2.0"]
 distribution = "2201.2.0"
 
 [[platform.java11.dependency]]
+groupId = "file.ballerina.stdlib"
+artifactId = "file-native"
+version = "1.4.0"
 path = "../native/build/libs/file-native-1.4.0-SNAPSHOT.jar"
 
 [[platform.java11.dependency]]
 path = "./lib/org.wso2.transport.local-file-system-6.0.55.jar"
-
 
 [[platform.java11.dependency]]
 path = "../test-utils/build/libs/file-test-utils-1.4.0-SNAPSHOT.jar"

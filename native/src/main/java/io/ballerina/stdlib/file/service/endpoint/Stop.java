@@ -32,12 +32,14 @@ public class Stop {
 
     public static Object stop(BObject listener) {
         if (listener.getNativeData(DirectoryListenerConstants.FS_SERVER_CONNECTOR) != null) {
-            FileSystemServerConnector serverConnector = (FileSystemServerConnector) listener
-                    .getNativeData(DirectoryListenerConstants.FS_SERVER_CONNECTOR);
-            try {
-                serverConnector.stop();
-            } catch (LocalFileSystemServerConnectorException e) {
-                return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR, e.getMessage());
+            Object fsServerConnector = listener.getNativeData(DirectoryListenerConstants.FS_SERVER_CONNECTOR);
+            if (fsServerConnector instanceof FileSystemServerConnector) {
+                try {
+                    FileSystemServerConnector serverConnector = (FileSystemServerConnector) fsServerConnector;
+                    serverConnector.stop();
+                } catch (LocalFileSystemServerConnectorException e) {
+                    return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR, e.getMessage());
+                }
             }
         }
         return null;

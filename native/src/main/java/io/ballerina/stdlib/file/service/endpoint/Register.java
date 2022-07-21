@@ -36,10 +36,12 @@ import java.util.Map;
 public class Register {
 
     public static Object register(BObject listener, BObject service) {
-        FileSystemServerConnector serverConnector = (FileSystemServerConnector) listener.getNativeData(
-                DirectoryListenerConstants.FS_SERVER_CONNECTOR);
-        FSListener fsListener = serverConnector.getDirectoryListener();
-        fsListener.addService(service, getResourceRegistry(service));
+        Object fsServerConnector = listener.getNativeData(DirectoryListenerConstants.FS_SERVER_CONNECTOR);
+        if (fsServerConnector instanceof FileSystemServerConnector) {
+            FileSystemServerConnector serverConnector = (FileSystemServerConnector) fsServerConnector;
+            FSListener fsListener = serverConnector.getDirectoryListener();
+            fsListener.addService(service, getResourceRegistry(service));
+        }
         return null;
     }
 
@@ -73,10 +75,12 @@ public class Register {
     }
 
     public static Object deregister(BObject listener, BObject service) {
-        FileSystemServerConnector serverConnector = (FileSystemServerConnector) listener.getNativeData(
-                DirectoryListenerConstants.FS_SERVER_CONNECTOR);
-        FSListener fsListener = serverConnector.getDirectoryListener();
-        fsListener.removeService(service);
+        Object fsServerConnector = listener.getNativeData(DirectoryListenerConstants.FS_SERVER_CONNECTOR);
+        if (fsServerConnector instanceof FileSystemServerConnector) {
+            FileSystemServerConnector serverConnector = (FileSystemServerConnector) fsServerConnector;
+            FSListener fsListener = serverConnector.getDirectoryListener();
+            fsListener.removeService(service);
+        }
         return null;
     }
 

@@ -40,7 +40,6 @@ import java.util.Map;
 /**
  * Initialize endpoints.
  */
-
 public class InitEndpoint {
 
     public static Object initEndpoint(Environment env, BObject listener) {

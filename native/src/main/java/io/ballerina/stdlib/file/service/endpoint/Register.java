@@ -32,7 +32,6 @@ import java.util.Map;
 /**
  * Register file listener service.
  */
-
 public class Register {
 
     public static Object register(BObject listener, BObject service) {

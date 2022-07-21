@@ -28,7 +28,6 @@ import org.wso2.transport.localfilesystem.server.exception.LocalFileSystemServer
 /**
  * Start server connector.
  */
-
 public class Start {
 
     public static Object start(BObject listener) {

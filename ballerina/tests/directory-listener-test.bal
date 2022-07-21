@@ -173,7 +173,7 @@ function testService1() returns error? {
         check temporaryLoader.'start();
         check temporaryLoader.immediateStop();
     } else {
-        test:assertFail("Test Failed!");
+        test:assertFail("The temporaryLoader is not a Listener");
     }
 }
 

@@ -20,9 +20,9 @@ package io.ballerina.stdlib.file.service.endpoint;
 
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.stdlib.file.service.DirectoryListenerConstants;
+import io.ballerina.stdlib.file.transport.contract.FileSystemServerConnector;
 import io.ballerina.stdlib.file.utils.FileConstants;
 import io.ballerina.stdlib.file.utils.FileUtils;
-import org.wso2.transport.localfilesystem.server.connector.contract.LocalFileSystemServerConnector;
 import org.wso2.transport.localfilesystem.server.exception.LocalFileSystemServerConnectorException;
 
 /**
@@ -32,7 +32,7 @@ public class Stop {
 
     public static Object stop(BObject listener) {
         if (listener.getNativeData(DirectoryListenerConstants.FS_SERVER_CONNECTOR) != null) {
-            LocalFileSystemServerConnector serverConnector = (LocalFileSystemServerConnector) listener
+            FileSystemServerConnector serverConnector = (FileSystemServerConnector) listener
                     .getNativeData(DirectoryListenerConstants.FS_SERVER_CONNECTOR);
             try {
                 serverConnector.stop();

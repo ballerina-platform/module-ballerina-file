@@ -18,14 +18,24 @@
 
 package io.ballerina.stdlib.file.service.endpoint;
 
+import io.ballerina.runtime.api.Environment;
+import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.stdlib.file.service.DirectoryListenerConstants;
+import io.ballerina.stdlib.file.service.FSListener;
+import io.ballerina.stdlib.file.transport.contract.FileSystemConnectorFactory;
+import io.ballerina.stdlib.file.transport.contract.FileSystemServerConnector;
+import io.ballerina.stdlib.file.transport.contractimpl.FileSystemConnectorFactoryImpl;
 import io.ballerina.stdlib.file.utils.FileConstants;
 import io.ballerina.stdlib.file.utils.FileUtils;
+import org.wso2.transport.localfilesystem.server.exception.LocalFileSystemServerConnectorException;
+import org.wso2.transport.localfilesystem.server.util.Constants;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Initialize endpoints.
@@ -33,9 +43,9 @@ import java.nio.file.Paths;
 
 public class InitEndpoint {
 
-    public static Object initEndpoint(BObject listener) {
-        String path = listener.getMapValue(DirectoryListenerConstants.SERVICE_ENDPOINT_CONFIG).
-                    getStringValue(DirectoryListenerConstants.ANNOTATION_PATH).getValue();
+    public static Object initEndpoint(Environment env, BObject listener) {
+        BMap serviceEndpointConfig = listener.getMapValue(DirectoryListenerConstants.SERVICE_ENDPOINT_CONFIG);
+        String path = serviceEndpointConfig.getStringValue(DirectoryListenerConstants.ANNOTATION_PATH).getValue();
         if (path.isEmpty()) {
             return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR, "'path' field is empty");
         }
@@ -46,7 +56,31 @@ public class InitEndpoint {
         if (!Files.isDirectory(dirPath)) {
             return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR, "Unable to find a directory: " + path);
         }
+        FileSystemConnectorFactory connectorFactory = new FileSystemConnectorFactoryImpl();
+
+        final Map<String, String> paramMap = getParamMap(serviceEndpointConfig);
+        FileSystemServerConnector serverConnector = null;
+        try {
+            serverConnector = connectorFactory.createServerConnector(listener.getType().getName(), paramMap,
+                    new FSListener(env.getRuntime()));
+            listener.addNativeData(DirectoryListenerConstants.FS_SERVER_CONNECTOR, serverConnector);
+        } catch (LocalFileSystemServerConnectorException e) {
+            return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR,
+                    "Unable to initialize server connector: " + e.getMessage());
+        }
         return null;
+    }
+
+    private static Map<String, String> getParamMap(BMap serviceEndpointConfig) {
+        final String path = serviceEndpointConfig.getStringValue(DirectoryListenerConstants.ANNOTATION_PATH).getValue();
+        final boolean recursive = serviceEndpointConfig
+                .getBooleanValue(DirectoryListenerConstants.ANNOTATION_DIRECTORY_RECURSIVE);
+        Map<String, String> paramMap = new HashMap<>(3);
+        paramMap.put(Constants.FILE_URI, path);
+        paramMap.put(Constants.DIRECTORY_WATCH_EVENTS,
+                Constants.EVENT_CREATE + "," + Constants.EVENT_MODIFY + "," + Constants.EVENT_DELETE);
+        paramMap.put(Constants.DIRECTORY_WATCH_RECURSIVE, String.valueOf(recursive));
+        return paramMap;
     }
 
     private InitEndpoint() {}

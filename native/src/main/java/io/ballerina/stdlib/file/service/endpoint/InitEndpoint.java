@@ -76,8 +76,9 @@ public class InitEndpoint {
                 .getBooleanValue(DirectoryListenerConstants.ANNOTATION_DIRECTORY_RECURSIVE);
         Map<String, String> paramMap = new HashMap<>(3);
         paramMap.put(Constants.FILE_URI, path);
-        paramMap.put(Constants.DIRECTORY_WATCH_EVENTS,
-                Constants.EVENT_CREATE + "," + Constants.EVENT_MODIFY + "," + Constants.EVENT_DELETE);
+        String event = String.join(",", Constants.EVENT_CREATE, Constants.EVENT_MODIFY,
+                Constants.EVENT_DELETE);
+        paramMap.put(Constants.DIRECTORY_WATCH_EVENTS, event);
         paramMap.put(Constants.DIRECTORY_WATCH_RECURSIVE, String.valueOf(recursive));
         return paramMap;
     }

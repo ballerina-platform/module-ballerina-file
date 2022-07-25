@@ -10,7 +10,7 @@ license = ["Apache-2.0"]
 distribution = "2201.2.0"
 
 [[platform.java11.dependency]]
-groupId = "file.ballerina.stdlib"
+groupId = "io.ballerina.stdlib"
 artifactId = "file-native"
 version = "@toml.version@"
 path = "../native/build/libs/file-native-@project.version@.jar"

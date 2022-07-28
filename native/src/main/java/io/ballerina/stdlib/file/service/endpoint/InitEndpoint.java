@@ -57,10 +57,10 @@ public class InitEndpoint {
         }
         FileSystemConnectorFactory connectorFactory = new FileSystemConnectorFactoryImpl();
 
-        final Map<String, String> paramMap = getParamMap(serviceEndpointConfig);
+        final Map<String, String> configMap = readConfiguration(serviceEndpointConfig);
         FileSystemServerConnector serverConnector = null;
         try {
-            serverConnector = connectorFactory.createServerConnector(listener.getType().getName(), paramMap,
+            serverConnector = connectorFactory.createServerConnector(listener.getType().getName(), configMap,
                     new FSListener(env.getRuntime()));
             listener.addNativeData(DirectoryListenerConstants.FS_SERVER_CONNECTOR, serverConnector);
         } catch (LocalFileSystemServerConnectorException e) {
@@ -70,7 +70,7 @@ public class InitEndpoint {
         return null;
     }
 
-    private static Map<String, String> getParamMap(BMap serviceEndpointConfig) {
+    private static Map<String, String> readConfiguration(BMap serviceEndpointConfig) {
         final String path = serviceEndpointConfig.getStringValue(DirectoryListenerConstants.ANNOTATION_PATH).getValue();
         final boolean recursive = serviceEndpointConfig
                 .getBooleanValue(DirectoryListenerConstants.ANNOTATION_DIRECTORY_RECURSIVE);

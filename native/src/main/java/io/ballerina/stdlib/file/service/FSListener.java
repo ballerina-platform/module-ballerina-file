@@ -47,7 +47,7 @@ public class FSListener implements LocalFileSystemListener {
 
     private static final Logger log = LoggerFactory.getLogger(FSListener.class);
     private Runtime runtime;
-    private Map<BObject, Map<String, MethodType>> attachedFunctionRegistries = new HashMap<>();
+    private Map<BObject, Map<String, MethodType>> serviceRegistry = new HashMap<>();
     private static final StrandMetadata ON_MESSAGE_METADATA = new StrandMetadata(ModuleUtils.getModule().getOrg(),
             ModuleUtils.getModule().getName(), ModuleUtils.getModule().getVersion(), RESOURCE_NAME_ON_MESSAGE);
 
@@ -58,18 +58,17 @@ public class FSListener implements LocalFileSystemListener {
     @Override
     public void onMessage(LocalFileSystemEvent fileEvent) {
         Object[] parameters = getJvmSignatureParameters(fileEvent);
-        for (Map.Entry<BObject, Map<String, MethodType>> attachedFunctionRegistry:
-                attachedFunctionRegistries.entrySet()) {
-            MethodType resource = getMethodType(attachedFunctionRegistry.getValue(), fileEvent.getEvent());
-            if (resource != null) {
-                String resourceName = resource.getName();
-                BObject service  = attachedFunctionRegistry.getKey();
-                if (service.getType().isIsolated() && service.getType().isIsolated(resourceName)) {
-                    runtime.invokeMethodAsyncConcurrently(service, resourceName, null,
+        for (Map.Entry<BObject, Map<String, MethodType>> serviceEntry: serviceRegistry.entrySet()) {
+            MethodType serviceFunction = serviceEntry.getValue().get(fileEvent.getEvent());
+            if (serviceFunction != null) {
+                String functionName = serviceFunction.getName();
+                BObject service  = serviceEntry.getKey();
+                if (service.getType().isIsolated() && service.getType().isIsolated(functionName)) {
+                    runtime.invokeMethodAsyncConcurrently(service, functionName, null,
                             ON_MESSAGE_METADATA, new DirectoryCallback(), null, PredefinedTypes.TYPE_NULL,
                             parameters);
                 } else {
-                    runtime.invokeMethodAsyncSequentially(service, resourceName, null,
+                    runtime.invokeMethodAsyncSequentially(service, functionName, null,
                             ON_MESSAGE_METADATA, new DirectoryCallback(), null, PredefinedTypes.TYPE_NULL,
                             parameters);
                 }
@@ -86,15 +85,11 @@ public class FSListener implements LocalFileSystemListener {
         return new Object[] { eventStruct, true };
     }
 
-    private MethodType getMethodType(Map<String, MethodType> attachedFunctionRegistry, String event) {
-        return attachedFunctionRegistry.get(event);
-    }
-
-    public void addService(BObject service, Map<String, MethodType> attachedFunctionRegistry) {
-        this.attachedFunctionRegistries.put(service, attachedFunctionRegistry);
+    public void addService(BObject service, Map<String, MethodType> attachedFunctions) {
+        this.serviceRegistry.put(service, attachedFunctions);
     }
 
     public void removeService(BObject service) {
-        this.attachedFunctionRegistries.remove(service);
+        this.serviceRegistry.remove(service);
     }
 }

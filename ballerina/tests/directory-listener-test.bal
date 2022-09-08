@@ -165,6 +165,18 @@ function testService() returns error? {
     }
 }
 
+@test:Config {}
+function testService1() returns error? {
+    Listener|error temporaryLoader = localFolder5;
+    if temporaryLoader is Listener {
+        check temporaryLoader.attach(attachService1);
+        check temporaryLoader.'start();
+        check temporaryLoader.immediateStop();
+    } else {
+        test:assertFail("The temporaryLoader is not a Listener");
+    }
+}
+
 function createTestFile() returns error? = @java:Method {
     'class: "io.ballerina.stdlib.file.testutils.TestUtil"
 } external;

@@ -18,21 +18,13 @@
 
 package io.ballerina.stdlib.file.service.endpoint;
 
-import io.ballerina.runtime.api.Runtime;
 import io.ballerina.runtime.api.creators.ErrorCreator;
 import io.ballerina.runtime.api.types.MethodType;
 import io.ballerina.runtime.api.utils.StringUtils;
-import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.stdlib.file.service.DirectoryListenerConstants;
 import io.ballerina.stdlib.file.service.FSListener;
-import io.ballerina.stdlib.file.utils.FileConstants;
-import io.ballerina.stdlib.file.utils.FileUtils;
-import org.wso2.transport.localfilesystem.server.connector.contract.LocalFileSystemConnectorFactory;
-import org.wso2.transport.localfilesystem.server.connector.contract.LocalFileSystemServerConnector;
-import org.wso2.transport.localfilesystem.server.connector.contractimpl.LocalFileSystemConnectorFactoryImpl;
-import org.wso2.transport.localfilesystem.server.exception.LocalFileSystemServerConnectorException;
-import org.wso2.transport.localfilesystem.server.util.Constants;
+import io.ballerina.stdlib.file.transport.contract.FileSystemServerConnector;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,23 +32,14 @@ import java.util.Map;
 /**
  * Register file listener service.
  */
-
 public class Register {
 
     public static Object register(BObject listener, BObject service) {
-        BMap serviceEndpointConfig = listener.getMapValue(DirectoryListenerConstants.SERVICE_ENDPOINT_CONFIG);
-        try {
-            final Map<String, MethodType> resourceRegistry = getResourceRegistry(service);
-            final String events = String.join(",", resourceRegistry.keySet());
-            final Map<String, String> paramMap = getParamMap(serviceEndpointConfig, events);
-            LocalFileSystemConnectorFactory connectorFactory = new LocalFileSystemConnectorFactoryImpl();
-            LocalFileSystemServerConnector serverConnector = connectorFactory
-                    .createServerConnector(service.getType().getName(), paramMap,
-                            new FSListener(Runtime.getCurrentRuntime(), service, resourceRegistry));
-            listener.addNativeData(DirectoryListenerConstants.FS_SERVER_CONNECTOR, serverConnector);
-        } catch (LocalFileSystemServerConnectorException e) {
-            return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR,
-                    "Unable to initialize server connector: " + e.getMessage());
+        Object fsServerConnector = listener.getNativeData(DirectoryListenerConstants.FS_SERVER_CONNECTOR);
+        if (fsServerConnector instanceof FileSystemServerConnector) {
+            FileSystemServerConnector serverConnector = (FileSystemServerConnector) fsServerConnector;
+            FSListener fsListener = serverConnector.getDirectoryListener();
+            fsListener.addService(service, getResourceRegistry(service));
         }
         return null;
     }
@@ -90,15 +73,14 @@ public class Register {
         return registry;
     }
 
-    private static Map<String, String> getParamMap(BMap serviceEndpointConfig, String events) {
-        final String path = serviceEndpointConfig.getStringValue(DirectoryListenerConstants.ANNOTATION_PATH).getValue();
-        final boolean recursive = serviceEndpointConfig
-                .getBooleanValue(DirectoryListenerConstants.ANNOTATION_DIRECTORY_RECURSIVE);
-        Map<String, String> paramMap = new HashMap<>(3);
-        paramMap.put(Constants.FILE_URI, path);
-        paramMap.put(Constants.DIRECTORY_WATCH_EVENTS, events);
-        paramMap.put(Constants.DIRECTORY_WATCH_RECURSIVE, String.valueOf(recursive));
-        return paramMap;
+    public static Object deregister(BObject listener, BObject service) {
+        Object fsServerConnector = listener.getNativeData(DirectoryListenerConstants.FS_SERVER_CONNECTOR);
+        if (fsServerConnector instanceof FileSystemServerConnector) {
+            FileSystemServerConnector serverConnector = (FileSystemServerConnector) fsServerConnector;
+            FSListener fsListener = serverConnector.getDirectoryListener();
+            fsListener.removeService(service);
+        }
+        return null;
     }
 
     private Register() {}

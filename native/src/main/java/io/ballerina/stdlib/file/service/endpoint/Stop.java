@@ -20,9 +20,9 @@ package io.ballerina.stdlib.file.service.endpoint;
 
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.stdlib.file.service.DirectoryListenerConstants;
+import io.ballerina.stdlib.file.transport.contract.FileSystemServerConnector;
 import io.ballerina.stdlib.file.utils.FileConstants;
 import io.ballerina.stdlib.file.utils.FileUtils;
-import org.wso2.transport.localfilesystem.server.connector.contract.LocalFileSystemServerConnector;
 import org.wso2.transport.localfilesystem.server.exception.LocalFileSystemServerConnectorException;
 
 /**
@@ -31,12 +31,16 @@ import org.wso2.transport.localfilesystem.server.exception.LocalFileSystemServer
 public class Stop {
 
     public static Object stop(BObject listener) {
-        LocalFileSystemServerConnector serverConnector = (LocalFileSystemServerConnector) listener
-                .getNativeData(DirectoryListenerConstants.FS_SERVER_CONNECTOR);
-        try {
-            serverConnector.stop();
-        } catch (LocalFileSystemServerConnectorException e) {
-            return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR, e.getMessage());
+        if (listener.getNativeData(DirectoryListenerConstants.FS_SERVER_CONNECTOR) != null) {
+            Object fsServerConnector = listener.getNativeData(DirectoryListenerConstants.FS_SERVER_CONNECTOR);
+            if (fsServerConnector instanceof FileSystemServerConnector) {
+                try {
+                    FileSystemServerConnector serverConnector = (FileSystemServerConnector) fsServerConnector;
+                    serverConnector.stop();
+                } catch (LocalFileSystemServerConnectorException e) {
+                    return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR, e.getMessage());
+                }
+            }
         }
         return null;
     }

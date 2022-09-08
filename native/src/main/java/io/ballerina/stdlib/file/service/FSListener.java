@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.wso2.transport.localfilesystem.server.connector.contract.LocalFileSystemEvent;
 import org.wso2.transport.localfilesystem.server.connector.contract.LocalFileSystemListener;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static io.ballerina.stdlib.file.service.DirectoryListenerConstants.FILE_SYSTEM_EVENT;
@@ -46,36 +47,32 @@ public class FSListener implements LocalFileSystemListener {
 
     private static final Logger log = LoggerFactory.getLogger(FSListener.class);
     private Runtime runtime;
-    private BObject service;
-    private Map<String, MethodType> attachedFunctionRegistry;
+    private Map<BObject, Map<String, MethodType>> serviceRegistry = new HashMap<>();
     private static final StrandMetadata ON_MESSAGE_METADATA = new StrandMetadata(ModuleUtils.getModule().getOrg(),
             ModuleUtils.getModule().getName(), ModuleUtils.getModule().getVersion(), RESOURCE_NAME_ON_MESSAGE);
 
-    public FSListener(Runtime runtime, BObject service, Map<String, MethodType> resourceRegistry) {
+    public FSListener(Runtime runtime) {
         this.runtime = runtime;
-        this.service = service;
-        this.attachedFunctionRegistry = resourceRegistry;
     }
 
     @Override
     public void onMessage(LocalFileSystemEvent fileEvent) {
         Object[] parameters = getJvmSignatureParameters(fileEvent);
-        MethodType resource = getMethodType(fileEvent.getEvent());
-        if (resource != null) {
-            String resourceName = resource.getName();
-            if (service.getType().isIsolated()
-                    && service.getType().isIsolated(resourceName)) {
-                runtime.invokeMethodAsyncConcurrently(service, resourceName, null,
-                        ON_MESSAGE_METADATA, new DirectoryCallback(), null, PredefinedTypes.TYPE_NULL,
-                        parameters);
-            } else {
-                runtime.invokeMethodAsyncSequentially(service, resourceName, null,
-                        ON_MESSAGE_METADATA, new DirectoryCallback(), null, PredefinedTypes.TYPE_NULL,
-                        parameters);
+        for (Map.Entry<BObject, Map<String, MethodType>> serviceEntry: serviceRegistry.entrySet()) {
+            MethodType serviceFunction = serviceEntry.getValue().get(fileEvent.getEvent());
+            if (serviceFunction != null) {
+                String functionName = serviceFunction.getName();
+                BObject service  = serviceEntry.getKey();
+                if (service.getType().isIsolated() && service.getType().isIsolated(functionName)) {
+                    runtime.invokeMethodAsyncConcurrently(service, functionName, null,
+                            ON_MESSAGE_METADATA, new DirectoryCallback(), null, PredefinedTypes.TYPE_NULL,
+                            parameters);
+                } else {
+                    runtime.invokeMethodAsyncSequentially(service, functionName, null,
+                            ON_MESSAGE_METADATA, new DirectoryCallback(), null, PredefinedTypes.TYPE_NULL,
+                            parameters);
+                }
             }
-        } else {
-            log.warn(String.format("FileEvent received for unregistered resource: [%s] %s", fileEvent.getEvent(),
-                    fileEvent.getFileName()));
         }
     }
 
@@ -88,7 +85,11 @@ public class FSListener implements LocalFileSystemListener {
         return new Object[] { eventStruct, true };
     }
 
-    private MethodType getMethodType(String event) {
-        return attachedFunctionRegistry.get(event);
+    public void addService(BObject service, Map<String, MethodType> attachedFunctions) {
+        this.serviceRegistry.put(service, attachedFunctions);
+    }
+
+    public void removeService(BObject service) {
+        this.serviceRegistry.remove(service);
     }
 }

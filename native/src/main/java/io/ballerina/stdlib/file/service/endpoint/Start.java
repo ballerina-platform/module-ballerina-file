@@ -20,24 +20,25 @@ package io.ballerina.stdlib.file.service.endpoint;
 
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.stdlib.file.service.DirectoryListenerConstants;
+import io.ballerina.stdlib.file.transport.contract.FileSystemServerConnector;
 import io.ballerina.stdlib.file.utils.FileConstants;
 import io.ballerina.stdlib.file.utils.FileUtils;
-import org.wso2.transport.localfilesystem.server.connector.contract.LocalFileSystemServerConnector;
 import org.wso2.transport.localfilesystem.server.exception.LocalFileSystemServerConnectorException;
 
 /**
  * Start server connector.
  */
-
 public class Start {
 
     public static Object start(BObject listener) {
-        LocalFileSystemServerConnector serverConnector = (LocalFileSystemServerConnector) listener
-                .getNativeData(DirectoryListenerConstants.FS_SERVER_CONNECTOR);
-        try {
-            serverConnector.start();
-        } catch (LocalFileSystemServerConnectorException e) {
-            return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR, e.getMessage());
+        Object fsServerConnector = listener.getNativeData(DirectoryListenerConstants.FS_SERVER_CONNECTOR);
+        if (fsServerConnector instanceof FileSystemServerConnector) {
+            try {
+                FileSystemServerConnector serverConnector = (FileSystemServerConnector) fsServerConnector;
+                serverConnector.start();
+            } catch (LocalFileSystemServerConnectorException e) {
+                return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR, e.getMessage());
+            }
         }
         return null;
     }

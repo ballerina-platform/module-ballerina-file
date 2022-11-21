@@ -23,7 +23,9 @@ import io.ballerina.runtime.api.Runtime;
 import io.ballerina.runtime.api.async.StrandMetadata;
 import io.ballerina.runtime.api.creators.ValueCreator;
 import io.ballerina.runtime.api.types.MethodType;
+import io.ballerina.runtime.api.types.ObjectType;
 import io.ballerina.runtime.api.utils.StringUtils;
+import io.ballerina.runtime.api.utils.TypeUtils;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
@@ -63,7 +65,8 @@ public class FSListener implements LocalFileSystemListener {
             if (serviceFunction != null) {
                 String functionName = serviceFunction.getName();
                 BObject service  = serviceEntry.getKey();
-                if (service.getType().isIsolated() && service.getType().isIsolated(functionName)) {
+                ObjectType type = (ObjectType) TypeUtils.getReferredType(service.getType());
+                if (type.isIsolated() && type.isIsolated(functionName)) {
                     runtime.invokeMethodAsyncConcurrently(service, functionName, null,
                             ON_MESSAGE_METADATA, new DirectoryCallback(), null, PredefinedTypes.TYPE_NULL,
                             parameters);

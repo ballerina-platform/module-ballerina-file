@@ -20,7 +20,9 @@ package io.ballerina.stdlib.file.service.endpoint;
 
 import io.ballerina.runtime.api.creators.ErrorCreator;
 import io.ballerina.runtime.api.types.MethodType;
+import io.ballerina.runtime.api.types.ObjectType;
 import io.ballerina.runtime.api.utils.StringUtils;
+import io.ballerina.runtime.api.utils.TypeUtils;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.stdlib.file.service.DirectoryListenerConstants;
 import io.ballerina.stdlib.file.service.FSListener;
@@ -46,7 +48,7 @@ public class Register {
 
     private static Map<String, MethodType> getResourceRegistry(BObject service) {
         Map<String, MethodType> registry = new HashMap<>(5);
-        final MethodType[] attachedFunctions = service.getType().getMethods();
+        final MethodType[] attachedFunctions = ((ObjectType) TypeUtils.getReferredType(service.getType())).getMethods();
         for (MethodType resource : attachedFunctions) {
             switch (resource.getName()) {
                 case DirectoryListenerConstants.RESOURCE_NAME_ON_CREATE:

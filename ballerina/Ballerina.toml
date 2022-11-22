@@ -1,23 +1,23 @@
 [package]
 org = "ballerina"
 name = "file"
-version = "1.5.0"
+version = "1.6.0"
 authors = ["Ballerina"]
 keywords = ["file", "path", "directory", "filepath"]
 repository = "https://github.com/ballerina-platform/module-ballerina-file"
 icon = "icon.png"
 license = ["Apache-2.0"]
-distribution = "2201.3.0"
+distribution = "2201.4.0"
 
 [[platform.java11.dependency]]
 groupId = "io.ballerina.stdlib"
 artifactId = "file-native"
-version = "1.5.0"
-path = "../native/build/libs/file-native-1.5.0-SNAPSHOT.jar"
+version = "1.6.0"
+path = "../native/build/libs/file-native-1.6.0-SNAPSHOT.jar"
 
 [[platform.java11.dependency]]
 path = "./lib/org.wso2.transport.local-file-system-6.0.55.jar"
 
 [[platform.java11.dependency]]
-path = "../test-utils/build/libs/file-test-utils-1.5.0-SNAPSHOT.jar"
+path = "../test-utils/build/libs/file-test-utils-1.6.0-SNAPSHOT.jar"
 scope = "testOnly"

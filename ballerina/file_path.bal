@@ -211,7 +211,7 @@ public isolated function normalizePath(string path, NormOption option) returns s
         NORMCASE => {
             if isWindows {
                 string lowerCasePath = path.toLowerAscii();
-                lowerCasePath = re `,`.replaceAll(lowerCasePath, "\\\\");
+                lowerCasePath = re `/`.replaceAll(lowerCasePath, "\\\\");
                 return lowerCasePath;
             }
             return path;

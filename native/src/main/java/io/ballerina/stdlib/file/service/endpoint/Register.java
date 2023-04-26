@@ -48,7 +48,8 @@ public class Register {
 
     private static Map<String, MethodType> getResourceRegistry(BObject service) {
         Map<String, MethodType> registry = new HashMap<>(5);
-        final MethodType[] attachedFunctions = ((ObjectType) TypeUtils.getReferredType(service.getType())).getMethods();
+        final MethodType[] attachedFunctions =
+                ((ObjectType) TypeUtils.getReferredType(TypeUtils.getType(service))).getMethods();
         for (MethodType resource : attachedFunctions) {
             switch (resource.getName()) {
                 case DirectoryListenerConstants.RESOURCE_NAME_ON_CREATE:

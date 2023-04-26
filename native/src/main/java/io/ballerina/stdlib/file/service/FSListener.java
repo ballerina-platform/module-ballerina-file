@@ -65,7 +65,7 @@ public class FSListener implements LocalFileSystemListener {
             if (serviceFunction != null) {
                 String functionName = serviceFunction.getName();
                 BObject service  = serviceEntry.getKey();
-                ObjectType type = (ObjectType) TypeUtils.getReferredType(service.getType());
+                ObjectType type = (ObjectType) TypeUtils.getReferredType(TypeUtils.getType(service));
                 if (type.isIsolated() && type.isIsolated(functionName)) {
                     runtime.invokeMethodAsyncConcurrently(service, functionName, null,
                             ON_MESSAGE_METADATA, new DirectoryCallback(), null, PredefinedTypes.TYPE_NULL,

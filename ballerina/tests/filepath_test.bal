@@ -17,7 +17,6 @@
 import ballerina/test;
 import ballerina/os;
 import ballerina/jballerina.java;
-import ballerina/regex;
 import ballerina/lang.'boolean as booleans;
 
 boolean isWin = os:getEnv("OS") != "";
@@ -279,7 +278,7 @@ isolated function validateSplitPath(string input, string expected) {
     } else {
         test:assertTrue(path is string[]);
         if path is string[] {
-            string[] exvalues = regex:split(expected, ",");
+            string[] exvalues = re`,`.split(expected);
             int i = 0;
             int arrSize = path.length();
             while i < arrSize {

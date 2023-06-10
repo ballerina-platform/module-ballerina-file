@@ -19,6 +19,7 @@
 package io.ballerina.stdlib.file.service.endpoint;
 
 import io.ballerina.runtime.api.Environment;
+import io.ballerina.runtime.api.utils.TypeUtils;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.stdlib.file.service.DirectoryListenerConstants;
@@ -60,7 +61,7 @@ public class InitEndpoint {
         final Map<String, String> configMap = readConfiguration(serviceEndpointConfig);
         FileSystemServerConnector serverConnector = null;
         try {
-            serverConnector = connectorFactory.createServerConnector(listener.getType().getName(), configMap,
+            serverConnector = connectorFactory.createServerConnector(TypeUtils.getType(listener).getName(), configMap,
                     new FSListener(env.getRuntime()));
             listener.addNativeData(DirectoryListenerConstants.FS_SERVER_CONNECTOR, serverConnector);
         } catch (LocalFileSystemServerConnectorException e) {

@@ -12,9 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository_owner == 'ballerina-platform'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up JDK 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 17
@@ -37,9 +37,9 @@ jobs:
         run: |
           ./gradlew publish --scan --no-daemon
       - name: Generate Codecov Report
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
       - name: Upload Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ballerina-runtime
           path: target/ballerina-runtime/

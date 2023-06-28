@@ -78,8 +78,8 @@ public class FileServiceValidator implements AnalysisTask<SyntaxNodeAnalysisCont
 
                         });
             } else {
-                reportErrorDiagnostic(serviceDeclarationNode.absoluteResourcePath().get(0).location(),
-                        syntaxNodeAnalysisContext, ErrorCodes.FILE_106);
+                reportErrorDiagnostic(serviceDeclarationNode.location(), syntaxNodeAnalysisContext,
+                        ErrorCodes.FILE_106);
             }
         }
     }

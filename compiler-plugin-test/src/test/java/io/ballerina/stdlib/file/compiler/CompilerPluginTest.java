@@ -90,6 +90,17 @@ public class CompilerPluginTest {
     }
 
     @Test
+    public void testCompilerPluginWithoutResourcePath() {
+        Package currentPackage = loadPackage("package_10");
+        PackageCompilation compilation = currentPackage.getCompilation();
+        String errMsg = "at least a single remote function required in the service";
+        DiagnosticResult diagnosticResult = compilation.diagnosticResult();
+        Assert.assertEquals(diagnosticResult.errors().size(), 1);
+        Assert.assertTrue(diagnosticResult.errors().stream().anyMatch(
+                diagnostic -> diagnostic.toString().contains(errMsg)));
+    }
+
+    @Test
     public void testCompilerPluginWithRemoteFunc() {
         Package currentPackage = loadPackage("package_05");
         PackageCompilation compilation = currentPackage.getCompilation();

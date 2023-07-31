@@ -9,18 +9,18 @@ icon = "icon.png"
 license = ["Apache-2.0"]
 distribution = "2201.7.0"
 
-[platform.java11]
+[platform.java17]
 graalvmCompatible = true
 
-[[platform.java11.dependency]]
+[[platform.java17.dependency]]
 groupId = "io.ballerina.stdlib"
 artifactId = "file-native"
 version = "1.8.1"
 path = "../native/build/libs/file-native-1.8.1.jar"
 
-[[platform.java11.dependency]]
+[[platform.java17.dependency]]
 path = "./lib/org.wso2.transport.local-file-system-6.0.55.jar"
 
-[[platform.java11.dependency]]
+[[platform.java17.dependency]]
 path = "../test-utils/build/libs/file-test-utils-1.8.1.jar"
 scope = "testOnly"

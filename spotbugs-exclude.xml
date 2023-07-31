@@ -20,4 +20,13 @@
      <Match>
          <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
      </Match>
+    <Match>
+        <Class name="io.ballerina.stdlib.file.transport.contractimpl.FileSystemServerConnectorImpl"/>
+        <Method name="getDirectoryListener"/>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+    <Match>
+        <Class name="io.ballerina.stdlib.file.transport.contractimpl.FileSystemServerConnectorImpl"/>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
 </FindBugsFilter>

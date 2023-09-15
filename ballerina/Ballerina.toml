@@ -16,11 +16,11 @@ graalvmCompatible = true
 groupId = "io.ballerina.stdlib"
 artifactId = "file-native"
 version = "1.9.0"
-path = "../native/build/libs/file-native-1.9.0-SNAPSHOT.jar"
+path = "../native/build/libs/file-native-1.9.0.jar"
 
 [[platform.java17.dependency]]
 path = "./lib/org.wso2.transport.local-file-system-6.0.55.jar"
 
 [[platform.java17.dependency]]
-path = "../test-utils/build/libs/file-test-utils-1.9.0-SNAPSHOT.jar"
+path = "../test-utils/build/libs/file-test-utils-1.9.0.jar"
 scope = "testOnly"

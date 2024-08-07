@@ -18,9 +18,14 @@
 
 package io.ballerina.stdlib.file.nativeimpl;
 
+import io.ballerina.runtime.api.PredefinedTypes;
 import io.ballerina.runtime.api.creators.ErrorCreator;
 import io.ballerina.runtime.api.creators.TypeCreator;
 import io.ballerina.runtime.api.creators.ValueCreator;
+import io.ballerina.runtime.api.types.ArrayType;
+import io.ballerina.runtime.api.types.Field;
+import io.ballerina.runtime.api.types.RecordType;
+import io.ballerina.runtime.api.types.Type;
 import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.values.BError;
 import io.ballerina.runtime.api.values.BString;
@@ -44,7 +49,9 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -61,6 +68,23 @@ public class Utils {
     private static final String CURRENT_DIR_PROPERTY_KEY = "user.dir";
     private static final String TEMP_DIR_PROPERTY_KEY = "java.io.tmpdir";
     private static final String ERROR_MSG = "Error while deleting the file/directory: ";
+
+    // This represents the fields of `MetaData` record in file_meta_data.bal file. Any changes to that type must be
+    // reflected here as well
+    private static final List<RecordField> METADATA_RECORD_FIELDS = List.of(
+        new RecordField("absPath", PredefinedTypes.TYPE_STRING),
+        new RecordField("size", PredefinedTypes.TYPE_INT),
+        // time:Utc
+        new RecordField("modifiedTime", TypeCreator.createTupleType(List.of(PredefinedTypes.TYPE_INT,
+                PredefinedTypes.TYPE_DECIMAL), PredefinedTypes.TYPE_NEVER, 0, true)),
+        new RecordField("dir", PredefinedTypes.TYPE_BOOLEAN),
+        new RecordField("readable", PredefinedTypes.TYPE_BOOLEAN),
+        new RecordField("writable", PredefinedTypes.TYPE_BOOLEAN)
+    );
+
+    private static final RecordType METADATA_TYPE = createMetaDataType();
+    private static final ArrayType METADATA_ARRAY_TYPE = TypeCreator.createArrayType(METADATA_TYPE);
+
 
     public static BString getCurrentDirectory() {
         return StringUtils.fromString(FileUtils.getSystemProperty(CURRENT_DIR_PROPERTY_KEY));
@@ -226,14 +250,21 @@ public class Utils {
                     throw ErrorCreator.createError(StringUtils.fromString("Error while accessing file info"), e);
                 }
             }).skip(1).toArray(Object[]::new);
-            return ValueCreator.createArrayValue(results,
-                    TypeCreator.createArrayType(TypeCreator.createRecordType(FileConstants.METADATA,
-                            ModuleUtils.getModule(), 0, true, 0)));
+            return ValueCreator.createArrayValue(results, METADATA_ARRAY_TYPE);
         } catch (IOException | BError ex) {
             return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR, ex);
         } catch (SecurityException ex) {
             return FileUtils.getBallerinaError(FileConstants.PERMISSION_ERROR, ex);
         }
+    }
+
+    private static RecordType createMetaDataType() {
+        Map<String, Field> fields = METADATA_RECORD_FIELDS.stream()
+                .collect(HashMap::new,
+                        (m, v) -> m.put(v.name(), TypeCreator.createField(v.type(), v.name(), 0)),
+                        Map::putAll);
+        return TypeCreator.createRecordType(FileConstants.METADATA, ModuleUtils.getModule(), 0, fields,
+                PredefinedTypes.TYPE_NEVER, true, 0);
     }
 
     public static Object copy(BString sourcePath, BString destinationPath, BString... copyOptions) {
@@ -441,5 +472,7 @@ public class Utils {
     }
 
     private Utils() {}
+
+    private record RecordField(String name, Type type) { }
 }
 

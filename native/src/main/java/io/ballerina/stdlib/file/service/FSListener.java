@@ -46,7 +46,7 @@ public class FSListener implements LocalFileSystemListener {
             if (serviceFunction != null) {
                 String functionName = serviceFunction.getName();
                 BObject service  = serviceEntry.getKey();
-                runtime.call(service, functionName);
+                runtime.callMethod(service, functionName, null);
             }
         }
     }

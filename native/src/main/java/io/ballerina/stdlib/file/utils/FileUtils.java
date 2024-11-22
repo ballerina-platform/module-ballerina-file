@@ -92,7 +92,7 @@ public class FileUtils {
     public static String getSystemProperty(String key) {
         String value = System.getProperty(key);
         if (value == null) {
-            return io.ballerina.runtime.api.PredefinedTypes.TYPE_STRING.getZeroValue();
+            return io.ballerina.runtime.api.types.PredefinedTypes.TYPE_STRING.getZeroValue();
         }
         return value;
     }

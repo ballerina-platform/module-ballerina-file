@@ -19,7 +19,10 @@
 package io.ballerina.stdlib.file.service;
 
 import io.ballerina.runtime.api.Runtime;
+import io.ballerina.runtime.api.concurrent.StrandMetadata;
 import io.ballerina.runtime.api.types.MethodType;
+import io.ballerina.runtime.api.types.ObjectType;
+import io.ballerina.runtime.api.utils.TypeUtils;
 import io.ballerina.runtime.api.values.BObject;
 import org.wso2.transport.localfilesystem.server.connector.contract.LocalFileSystemEvent;
 import org.wso2.transport.localfilesystem.server.connector.contract.LocalFileSystemListener;
@@ -41,14 +44,18 @@ public class FSListener implements LocalFileSystemListener {
 
     @Override
     public void onMessage(LocalFileSystemEvent fileEvent) {
-        for (Map.Entry<BObject, Map<String, MethodType>> serviceEntry: serviceRegistry.entrySet()) {
-            MethodType serviceFunction = serviceEntry.getValue().get(fileEvent.getEvent());
-            if (serviceFunction != null) {
-                String functionName = serviceFunction.getName();
-                BObject service  = serviceEntry.getKey();
-                runtime.callMethod(service, functionName, null);
+        Thread.startVirtualThread(() -> {
+            for (Map.Entry<BObject, Map<String, MethodType>> serviceEntry: serviceRegistry.entrySet()) {
+                MethodType serviceFunction = serviceEntry.getValue().get(fileEvent.getEvent());
+                if (serviceFunction != null) {
+                    String functionName = serviceFunction.getName();
+                    BObject service  = serviceEntry.getKey();
+                    ObjectType type = (ObjectType) TypeUtils.getReferredType(TypeUtils.getType(service));
+                    boolean isConcurrentSafe = type.isIsolated() && type.isIsolated(functionName);
+                    runtime.callMethod(service, functionName, new StrandMetadata(isConcurrentSafe, null));
+                }
             }
-        }
+        });
     }
 
     public void addService(BObject service, Map<String, MethodType> attachedFunctions) {

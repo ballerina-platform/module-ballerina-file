@@ -28,7 +28,7 @@ public isolated class Listener {
     # Creates a new Directory listener.
     # 
     # + listenerConfig - The `ListenerConfig` record with the directory details 
-    public isolated function init(ListenerConfig listenerConfig) returns error? {
+    public isolated function init(*ListenerConfig listenerConfig) returns error? {
         self.config = listenerConfig.cloneReadOnly();
         return initEndpoint(self);
     }

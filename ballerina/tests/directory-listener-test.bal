@@ -19,10 +19,10 @@ import ballerina/test;
 import ballerina/lang.runtime as runtime;
 import ballerina/jballerina.java;
 
-listener Listener localFolder = new ({
-    path: "tests/resources",
-    recursive: false
-});
+listener Listener localFolder = new (
+    path = "tests/resources",
+    recursive = false
+);
 
 boolean createInvoke = false;
 boolean modifyInvoke = false;
@@ -76,10 +76,10 @@ function isDeleteInvoked() {
     }
 }
 
-Listener|error localFolder1 = new ({
-    path: "tests/test",
-    recursive: false
-});
+Listener|error localFolder1 = new (
+    path = "tests/test",
+    recursive = false
+);
 
 @test:Config {}
 function testDirectoryNotExist() {
@@ -122,10 +122,10 @@ function testNotDirectory() {
 }
 
 
-Listener|error localFolder5 = new ({
-    path: "tests/resources",
-    recursive: false
-});
+Listener|error localFolder5 = new (
+    path = "tests/resources",
+    recursive = false
+);
 
 Service attachService = service object {
 };

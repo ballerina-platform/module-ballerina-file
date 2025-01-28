@@ -28,11 +28,7 @@ configurable string toAddress = ?;
 // Create the email client.
 final email:SmtpClient smtpClient = check new (host, username , password, port = port);
 
-listener file:Listener inFolder = new ({
-    path: directoryPath
-});
-
-isolated service "fileObserver" on inFolder {
+isolated service "fileObserver" on new file:Listener(path = directoryPath) {
 
     isolated remote function onCreate(file:FileEvent m) {
         sendEmail("New File Created", "Created file path: " + m.name);

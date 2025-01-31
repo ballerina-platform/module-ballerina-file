@@ -31,15 +31,15 @@ boolean deleteInvoke = false;
 service Service "filesystem" on localFolder {
 
     remote function onCreate(FileEvent m) {
-        createInvoke = true;
+        createInvoke = m.operation == "create";
     }
 
     remote function onModify(FileEvent m) {
-        modifyInvoke = true;
+        modifyInvoke = m.operation == "modify";
     }
 
     remote function onDelete(FileEvent m) {
-        deleteInvoke = true;
+        deleteInvoke = m.operation == "delete";
     }
 }
 

@@ -53,7 +53,7 @@ public class FSListener implements LocalFileSystemListener {
     @Override
     public void onMessage(LocalFileSystemEvent fileEvent) {
         Thread.startVirtualThread(() -> {
-            Object[] parameters = getJvmSignatureParameters(fileEvent);
+            Object balFileEvent = createBallerinaFileEvent(fileEvent);
             for (Map.Entry<BObject, Map<String, MethodType>> serviceEntry: serviceRegistry.entrySet()) {
                 MethodType serviceFunction = serviceEntry.getValue().get(fileEvent.getEvent());
                 if (serviceFunction != null) {
@@ -61,19 +61,19 @@ public class FSListener implements LocalFileSystemListener {
                     BObject service  = serviceEntry.getKey();
                     ObjectType type = (ObjectType) TypeUtils.getReferredType(TypeUtils.getType(service));
                     boolean isConcurrentSafe = type.isIsolated() && type.isIsolated(functionName);
-                    runtime.callMethod(service, functionName, new StrandMetadata(isConcurrentSafe, null), parameters);
+                    runtime.callMethod(service, functionName, new StrandMetadata(isConcurrentSafe, null), balFileEvent);
                 }
             }
         });
     }
 
-    private Object[] getJvmSignatureParameters(LocalFileSystemEvent fileEvent) {
+    private Object createBallerinaFileEvent(LocalFileSystemEvent fileEvent) {
         BMap<BString, Object> eventStruct = ValueCreator.createRecordValue(ModuleUtils.getModule(), FILE_SYSTEM_EVENT);
         eventStruct.put(StringUtils.fromString(FileConstants.FILE_EVENT_NAME),
                 StringUtils.fromString(fileEvent.getFileName()));
         eventStruct.put(StringUtils.fromString(FileConstants.FILE_EVENT_OPERATION),
                 StringUtils.fromString(fileEvent.getEvent()));
-        return new Object[] {eventStruct};
+        return eventStruct;
     }
 
     public void addService(BObject service, Map<String, MethodType> attachedFunctions) {

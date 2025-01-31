@@ -20,15 +20,23 @@ package io.ballerina.stdlib.file.service;
 
 import io.ballerina.runtime.api.Runtime;
 import io.ballerina.runtime.api.concurrent.StrandMetadata;
+import io.ballerina.runtime.api.creators.ValueCreator;
 import io.ballerina.runtime.api.types.MethodType;
 import io.ballerina.runtime.api.types.ObjectType;
+import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.utils.TypeUtils;
+import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
+import io.ballerina.runtime.api.values.BString;
+import io.ballerina.stdlib.file.utils.FileConstants;
+import io.ballerina.stdlib.file.utils.ModuleUtils;
 import org.wso2.transport.localfilesystem.server.connector.contract.LocalFileSystemEvent;
 import org.wso2.transport.localfilesystem.server.connector.contract.LocalFileSystemListener;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static io.ballerina.stdlib.file.service.DirectoryListenerConstants.FILE_SYSTEM_EVENT;
 
 /**
  * File System connector listener for Ballerina.
@@ -45,6 +53,7 @@ public class FSListener implements LocalFileSystemListener {
     @Override
     public void onMessage(LocalFileSystemEvent fileEvent) {
         Thread.startVirtualThread(() -> {
+            Object balFileEvent = createBallerinaFileEvent(fileEvent);
             for (Map.Entry<BObject, Map<String, MethodType>> serviceEntry: serviceRegistry.entrySet()) {
                 MethodType serviceFunction = serviceEntry.getValue().get(fileEvent.getEvent());
                 if (serviceFunction != null) {
@@ -52,10 +61,19 @@ public class FSListener implements LocalFileSystemListener {
                     BObject service  = serviceEntry.getKey();
                     ObjectType type = (ObjectType) TypeUtils.getReferredType(TypeUtils.getType(service));
                     boolean isConcurrentSafe = type.isIsolated() && type.isIsolated(functionName);
-                    runtime.callMethod(service, functionName, new StrandMetadata(isConcurrentSafe, null));
+                    runtime.callMethod(service, functionName, new StrandMetadata(isConcurrentSafe, null), balFileEvent);
                 }
             }
         });
+    }
+
+    private Object createBallerinaFileEvent(LocalFileSystemEvent fileEvent) {
+        BMap<BString, Object> eventStruct = ValueCreator.createRecordValue(ModuleUtils.getModule(), FILE_SYSTEM_EVENT);
+        eventStruct.put(StringUtils.fromString(FileConstants.FILE_EVENT_NAME),
+                StringUtils.fromString(fileEvent.getFileName()));
+        eventStruct.put(StringUtils.fromString(FileConstants.FILE_EVENT_OPERATION),
+                StringUtils.fromString(fileEvent.getEvent()));
+        return eventStruct;
     }
 
     public void addService(BObject service, Map<String, MethodType> attachedFunctions) {

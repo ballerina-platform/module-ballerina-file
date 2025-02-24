@@ -14,17 +14,8 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/file;
-import ballerina/os;
 import ballerina/io;
 
 public function main() {
-    string tempFolderPath = os:getEnv("TMP");
-    error? output = file:create(tempFolderPath + "/" + "myfile.txt");
-
-    if (output is error) {
-        io:println("Error occurred: " + output.message());
-    } else {
-        io:println("File created successfully: " + tempFolderPath + "/" + "myfile.txt");
-    }
+    io:println("Hello, World!");
 }

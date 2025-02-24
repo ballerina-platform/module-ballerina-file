@@ -29,4 +29,7 @@ public class Constants {
     public static final String GET_ENV = "getEnv";
     public static final String FILE = "file";
     public static final String FILE_CREATE = "create";
+    public static final String FILE_REMOVE = "file:remove";
+    public static final String FILE_READ = "file:read";
+    public static final String FILE_WRITE = "file:write";
 }

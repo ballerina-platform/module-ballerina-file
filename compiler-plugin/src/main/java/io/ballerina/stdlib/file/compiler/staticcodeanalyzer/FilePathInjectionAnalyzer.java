@@ -40,7 +40,9 @@ import io.ballerina.projects.plugins.SyntaxNodeAnalysisContext;
 import io.ballerina.scan.Reporter;
 import io.ballerina.tools.diagnostics.Location;
 
-
+import static io.ballerina.stdlib.file.compiler.Constants.FILE_REMOVE;
+import static io.ballerina.stdlib.file.compiler.Constants.FILE_READ;
+import static io.ballerina.stdlib.file.compiler.Constants.FILE_WRITE;
 import static io.ballerina.stdlib.file.compiler.staticcodeanalyzer.FileRule.AVOID_PATH_INJECTION;
 
 /**
@@ -65,8 +67,8 @@ public class FilePathInjectionAnalyzer implements AnalysisTask<SyntaxNodeAnalysi
         String functionName = functionCall.functionName().toString();
 
         // Detect vulnerable file function calls
-        if ("file:remove".equals(functionName) || "file:read".equals(functionName) ||
-                "file:write".equals(functionName)) {
+        if (FILE_REMOVE.equals(functionName) || FILE_READ.equals(functionName) ||
+                FILE_WRITE.equals(functionName)) {
             if (!isSafePath(functionCall, context)) {
                 Location location = functionCall.location();
                 this.reporter.reportIssue(document, location, AVOID_PATH_INJECTION.getId());

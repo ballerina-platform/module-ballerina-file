@@ -14,8 +14,17 @@
 // specific language governing permissions and limitations
 // under the License.
 
+import ballerina/file;
 import ballerina/io;
 
+public function executeCommand(string fileName) returns file:Error? {
+    string unsafeFilePath = "./target/" + fileName;
+    file:Error? remove = file:remove(unsafeFilePath);
+
+    return remove;
+}
+
 public function main() {
-    io:println("Hello, World!");
+    file:Error? result = executeCommand("sample.json");
+    io:println("Result: ", result);
 }

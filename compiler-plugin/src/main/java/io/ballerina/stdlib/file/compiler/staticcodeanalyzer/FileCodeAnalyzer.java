@@ -37,6 +37,6 @@ public class FileCodeAnalyzer extends CodeAnalyzer {
     public void init(CodeAnalysisContext codeAnalysisContext) {
         codeAnalysisContext.addSyntaxNodeAnalysisTask(new FileServiceValidator(), SyntaxKind.SERVICE_DECLARATION);
         codeAnalysisContext.addSyntaxNodeAnalysisTask(new InsecureDirectoryAccessAnalyzer(reporter),
-                SyntaxKind.METHOD_CALL);
+                SyntaxKind.FUNCTION_CALL);
     }
 }

@@ -1,0 +1,22 @@
+[
+  {
+    "location": {
+      "filePath": "main.bal",
+      "startLine": 5,
+      "endLine": 5,
+      "startColumn": 28,
+      "endColumn": 44,
+      "startOffset": 119,
+      "length": 16
+    },
+    "rule": {
+      "id": "ballerina/file:1",
+      "numericId": 1,
+      "description": "Avoid using publicly writable directories for file operations without proper access controls",
+      "ruleKind": "VULNERABILITY"
+    },
+    "source": "BUILT_IN",
+    "fileName": "os_test/main.bal",
+    "filePath": "/Users/sachink/Desktop/os-test/main.bal"
+  }
+]

@@ -25,4 +25,8 @@ public class Constants {
     private Constants() {}
 
     public static final String SCANNER_CONTEXT = "ScannerContext";
+    public static final String OS = "os";
+    public static final String GET_ENV = "getEnv";
+    public static final String FILE = "file";
+    public static final String FILE_CREATE = "create";
 }

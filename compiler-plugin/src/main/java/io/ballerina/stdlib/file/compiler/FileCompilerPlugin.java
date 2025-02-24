@@ -20,6 +20,10 @@ package io.ballerina.stdlib.file.compiler;
 
 import io.ballerina.projects.plugins.CompilerPlugin;
 import io.ballerina.projects.plugins.CompilerPluginContext;
+import io.ballerina.scan.ScannerContext;
+import io.ballerina.stdlib.file.compiler.staticcodeanalyzer.FileCodeAnalyzer;
+
+import static io.ballerina.stdlib.file.compiler.Constants.SCANNER_CONTEXT;
 
 /**
  * File compiler plugin.
@@ -27,7 +31,10 @@ import io.ballerina.projects.plugins.CompilerPluginContext;
 public class FileCompilerPlugin extends CompilerPlugin {
 
     @Override
-    public void init(CompilerPluginContext compilerPluginContext) {
-        compilerPluginContext.addCodeAnalyzer(new FileCodeAnalyzer());
+    public void init(CompilerPluginContext context) {
+        Object object = context.userData().get(SCANNER_CONTEXT);
+        if (object instanceof ScannerContext scannerContext) {
+            context.addCodeAnalyzer(new FileCodeAnalyzer(scannerContext.getReporter()));
+        }
     }
 }

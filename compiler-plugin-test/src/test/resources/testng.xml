@@ -19,10 +19,14 @@
 
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
-<suite name="BallerinaGraphqlCompilerPluginTests">
+<suite name="BallerinaFileCompilerPluginTests">
     <test name="UnitTests">
+        <packages>
+            <package name="io.ballerina.stdlib.file.compiler.staticcodeanalyzer"/>
+        </packages>
         <classes>
             <class name="io.ballerina.stdlib.file.compiler.CompilerPluginTest"/>
+            <class name="io.ballerina.stdlib.file.compiler.staticcodeanalyzer.StaticCodeAnalyzerTest"/>
         </classes>
     </test>
 </suite>

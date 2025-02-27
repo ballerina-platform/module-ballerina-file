@@ -16,29 +16,19 @@
  * under the License.
  */
 
-package io.ballerina.stdlib.file.compiler.staticcodeanalyzer;
+package io.ballerina.stdlib.file.compiler;
 
 import io.ballerina.compiler.syntax.tree.SyntaxKind;
 import io.ballerina.projects.plugins.CodeAnalysisContext;
 import io.ballerina.projects.plugins.CodeAnalyzer;
-import io.ballerina.scan.Reporter;
+import io.ballerina.stdlib.file.compiler.staticcodeanalyzer.FileServiceValidator;
 
 /**
  * File code analyser.
  */
 public class FileCodeAnalyzer extends CodeAnalyzer {
-    private final Reporter reporter;
-
-    public FileCodeAnalyzer(Reporter reporter) {
-        this.reporter = reporter;
-    }
-
     @Override
     public void init(CodeAnalysisContext codeAnalysisContext) {
         codeAnalysisContext.addSyntaxNodeAnalysisTask(new FileServiceValidator(), SyntaxKind.SERVICE_DECLARATION);
-        codeAnalysisContext.addSyntaxNodeAnalysisTask(new InsecureDirectoryAccessAnalyzer(reporter),
-                SyntaxKind.FUNCTION_CALL);
-        codeAnalysisContext.addSyntaxNodeAnalysisTask(new FilePathInjectionAnalyzer(reporter),
-                SyntaxKind.FUNCTION_CALL);
     }
 }

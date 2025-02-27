@@ -98,18 +98,17 @@ public class FilePathInjectionAnalyzer implements AnalysisTask<SyntaxNodeAnalysi
         // Direct concatenation detection
         if (argument instanceof BinaryExpressionNode binaryExpression) {
             if (binaryExpression.operator().kind() == SyntaxKind.PLUS_TOKEN) {
-                return false; // Unsafe concatenation detected
+                return false;
             }
         }
 
-        // Variable reference detection
         if (argument instanceof SimpleNameReferenceNode variableRef) {
-            return isVariableSafe(variableRef, context);
+            return isVariableSafe(variableRef);
         }
         return true;
     }
 
-    private boolean isVariableSafe(SimpleNameReferenceNode variableRef, SyntaxNodeAnalysisContext context) {
+    private boolean isVariableSafe(SimpleNameReferenceNode variableRef) {
         String variableName = variableRef.name().text();
         Node currentNode = variableRef.parent();
         while (currentNode != null) {
@@ -149,21 +148,17 @@ public class FilePathInjectionAnalyzer implements AnalysisTask<SyntaxNodeAnalysi
         Node currentNode = variableRef.parent();
         while (currentNode != null) {
             if (currentNode instanceof FunctionDefinitionNode functionDef) {
-                // Check if function is public
-                boolean isPublic = functionDef.qualifierList().stream()
-                        .anyMatch(q -> q.kind() == SyntaxKind.PUBLIC_KEYWORD);
-
                 // Iterate over function parameters to check direct reference
                 for (ParameterNode param : functionDef.functionSignature().parameters()) {
                     if (param instanceof RequiredParameterNode reqParam) {
                         // Check direct parameter reference
                         if (reqParam.paramName().isPresent() &&
                                 reqParam.paramName().get().text().equals(paramName)) {
-                            return !isPublic;
+                            return false;
                         }
                         // Check indirect reference chain (assignments)
                         if (isIndirectFunctionParameter(variableRef, reqParam)) {
-                            return !isPublic;
+                            return false;
                         }
                     }
                 }
@@ -221,7 +216,6 @@ public class FilePathInjectionAnalyzer implements AnalysisTask<SyntaxNodeAnalysi
      */
     private boolean isIndirectFunctionParameterFromBinary(BinaryExpressionNode binaryExpr,
                                                           RequiredParameterNode reqParam) {
-        // Check both the left and right sides of the binary expression
         if (binaryExpr.lhsExpr() instanceof SimpleNameReferenceNode leftRef) {
             if (leftRef.name().text().equals(reqParam.paramName().get().text())) {
                 return true;

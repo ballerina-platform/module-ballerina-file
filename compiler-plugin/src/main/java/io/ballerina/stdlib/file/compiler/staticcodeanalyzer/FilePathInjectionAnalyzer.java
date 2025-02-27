@@ -145,11 +145,10 @@ public class FilePathInjectionAnalyzer implements AnalysisTask<SyntaxNodeAnalysi
         Node currentNode = variableRef.parent();
 
         while (currentNode != null) {
-            if (currentNode instanceof FunctionDefinitionNode functionDef) {
-                if (hasDirectParameterReference(functionDef, paramName) ||
-                        hasIndirectParameterReference(variableRef, functionDef)) {
-                    return false;
-                }
+            if (currentNode instanceof FunctionDefinitionNode functionDef
+                    && (hasDirectParameterReference(functionDef, paramName) ||
+                    hasIndirectParameterReference(variableRef, functionDef))) {
+                return false;
             }
             currentNode = currentNode.parent();
         }

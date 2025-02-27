@@ -67,12 +67,10 @@ public class FilePathInjectionAnalyzer implements AnalysisTask<SyntaxNodeAnalysi
         String functionName = functionCall.functionName().toString();
 
         // Detect vulnerable file function calls
-        if (FILE_REMOVE.equals(functionName) || FILE_READ.equals(functionName) ||
-                FILE_WRITE.equals(functionName)) {
-            if (!isSafePath(functionCall)) {
-                Location location = functionCall.location();
-                this.reporter.reportIssue(document, location, AVOID_PATH_INJECTION.getId());
-            }
+        if ((FILE_REMOVE.equals(functionName) || FILE_READ.equals(functionName) ||
+                FILE_WRITE.equals(functionName)) && !isSafePath(functionCall)) {
+            Location location = functionCall.location();
+            this.reporter.reportIssue(document, location, AVOID_PATH_INJECTION.getId());
         }
     }
 
@@ -110,55 +108,47 @@ public class FilePathInjectionAnalyzer implements AnalysisTask<SyntaxNodeAnalysi
     private boolean isVariableSafe(SimpleNameReferenceNode variableRef) {
         String variableName = variableRef.name().text();
         Node currentNode = variableRef.parent();
+
         while (currentNode != null) {
             if (currentNode instanceof FunctionBodyBlockNode functionBody) {
                 for (StatementNode statement : functionBody.statements()) {
-                    if (statement instanceof VariableDeclarationNode varDecl) {
-                        if (varDecl.typedBindingPattern().bindingPattern() instanceof
-                                CaptureBindingPatternNode bindingPattern) {
-                            if (bindingPattern.variableName().text().equals(variableName)) {
-                                // Check if assigned using concatenation
-                                if (varDecl.initializer().orElse(null) instanceof BinaryExpressionNode) {
-                                    BinaryExpressionNode binaryExpr = (BinaryExpressionNode)
-                                            varDecl.initializer().get();
-                                    if (binaryExpr.operator().kind() == SyntaxKind.PLUS_TOKEN) {
-                                        return isFunctionParameter(variableRef);
-                                    }
-                                }
-                                if (varDecl.initializer().orElse(null) instanceof SimpleNameReferenceNode) {
-                                    SimpleNameReferenceNode initializer = (SimpleNameReferenceNode)
-                                            varDecl.initializer().get();
-                                    return isFunctionParameter(initializer);
-                                }
-                                return true;
-                            }
+                    if (statement instanceof VariableDeclarationNode varDecl &&
+                            isMatchingVariable(varDecl, variableName)) {
+                        if (hasConcatenationAssignment(varDecl) || isAssignedFromFunctionParameter(varDecl)) {
+                            return isFunctionParameter(variableRef);
                         }
+                        return true;
                     }
                 }
             }
             currentNode = currentNode.parent();
         }
         return true;
+    }
+
+    private boolean isMatchingVariable(VariableDeclarationNode varDecl, String variableName) {
+        return varDecl.typedBindingPattern().bindingPattern() instanceof CaptureBindingPatternNode bindingPattern
+                && bindingPattern.variableName().text().equals(variableName);
+    }
+
+    private boolean hasConcatenationAssignment(VariableDeclarationNode varDecl) {
+        return varDecl.initializer().orElse(null) instanceof BinaryExpressionNode binaryExpr
+                && binaryExpr.operator().kind() == SyntaxKind.PLUS_TOKEN;
+    }
+
+    private boolean isAssignedFromFunctionParameter(VariableDeclarationNode varDecl) {
+        return varDecl.initializer().orElse(null) instanceof SimpleNameReferenceNode;
     }
 
     private boolean isFunctionParameter(SimpleNameReferenceNode variableRef) {
         String paramName = variableRef.name().text();
         Node currentNode = variableRef.parent();
+
         while (currentNode != null) {
             if (currentNode instanceof FunctionDefinitionNode functionDef) {
-                // Iterate over function parameters to check direct reference
-                for (ParameterNode param : functionDef.functionSignature().parameters()) {
-                    if (param instanceof RequiredParameterNode reqParam) {
-                        // Check direct parameter reference
-                        if (reqParam.paramName().isPresent() &&
-                                reqParam.paramName().get().text().equals(paramName)) {
-                            return false;
-                        }
-                        // Check indirect reference chain (assignments)
-                        if (isIndirectFunctionParameter(variableRef, reqParam)) {
-                            return false;
-                        }
-                    }
+                if (hasDirectParameterReference(functionDef, paramName) ||
+                        hasIndirectParameterReference(variableRef, functionDef)) {
+                    return false;
                 }
             }
             currentNode = currentNode.parent();
@@ -166,40 +156,35 @@ public class FilePathInjectionAnalyzer implements AnalysisTask<SyntaxNodeAnalysi
         return true;
     }
 
-    /**
-     * Checks if the variable is indirectly referencing a function parameter
-     * by tracing back the assignment chain.
-     */
+    private boolean hasDirectParameterReference(FunctionDefinitionNode functionDef, String paramName) {
+        for (ParameterNode param : functionDef.functionSignature().parameters()) {
+            if (param instanceof RequiredParameterNode reqParam && reqParam.paramName().isPresent()
+                    && reqParam.paramName().get().text().equals(paramName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean hasIndirectParameterReference(SimpleNameReferenceNode variableRef,
+                                                  FunctionDefinitionNode functionDef) {
+        for (ParameterNode param : functionDef.functionSignature().parameters()) {
+            if (param instanceof RequiredParameterNode reqParam && isIndirectFunctionParameter(variableRef, reqParam)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private boolean isIndirectFunctionParameter(SimpleNameReferenceNode variableRef, RequiredParameterNode reqParam) {
         Node currentNode = variableRef.parent();
+
         while (currentNode != null) {
             if (currentNode instanceof FunctionBodyBlockNode functionBody) {
                 for (StatementNode statement : functionBody.statements()) {
-                    if (statement instanceof VariableDeclarationNode varDecl) {
-                        if (varDecl.typedBindingPattern().bindingPattern() instanceof
-                                CaptureBindingPatternNode bindingPattern) {
-                            if (bindingPattern.variableName().text().equals(variableRef.name().text())) {
-                                // Now check if this variable is assigned to another variable
-                                if (varDecl.initializer().isPresent()) {
-                                    ExpressionNode initializer = varDecl.initializer().get();
-                                    // If it's a reference to the function parameter, return true
-                                    if (initializer instanceof SimpleNameReferenceNode initializerRef) {
-                                        if (initializerRef.name().text().equals(reqParam.paramName().get().text())) {
-                                            return true;
-                                        }
-                                    }
-                                    // If it's a binary expression (like concatenation), recurse
-                                    if (initializer instanceof BinaryExpressionNode binaryExpr) {
-                                        if (binaryExpr.operator().kind() == SyntaxKind.PLUS_TOKEN) {
-                                            // Recursively check both sides of the binary expression
-                                            if (isIndirectFunctionParameterFromBinary(binaryExpr, reqParam)) {
-                                                return true;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                    if (statement instanceof VariableDeclarationNode varDecl
+                            && isBindingPatternMatch(varDecl, variableRef)) {
+                        return checkVariableInitializer(varDecl, reqParam);
                     }
                 }
             }
@@ -208,10 +193,29 @@ public class FilePathInjectionAnalyzer implements AnalysisTask<SyntaxNodeAnalysi
         return false;
     }
 
-    /**
-     * Recursively checks both sides of the binary expression (e.g., concatenation) for a reference to the
-     * function parameter.
-     */
+    private boolean isBindingPatternMatch(VariableDeclarationNode varDecl, SimpleNameReferenceNode variableRef) {
+        return varDecl.typedBindingPattern().bindingPattern() instanceof CaptureBindingPatternNode bindingPattern
+                && bindingPattern.variableName().text().equals(variableRef.name().text());
+    }
+
+    private boolean checkVariableInitializer(VariableDeclarationNode varDecl, RequiredParameterNode reqParam) {
+        ExpressionNode initializer = varDecl.initializer().orElse(null);
+        if (initializer == null) {
+            return false;
+        }
+
+        if (initializer instanceof SimpleNameReferenceNode initializerRef) {
+            return initializerRef.name().text().equals(reqParam.paramName().get().text());
+        }
+
+        if (initializer instanceof BinaryExpressionNode binaryExpr) {
+            return binaryExpr.operator().kind() == SyntaxKind.PLUS_TOKEN
+                    && isIndirectFunctionParameterFromBinary(binaryExpr, reqParam);
+        }
+
+        return false;
+    }
+
     private boolean isIndirectFunctionParameterFromBinary(BinaryExpressionNode binaryExpr,
                                                           RequiredParameterNode reqParam) {
         if (binaryExpr.lhsExpr() instanceof SimpleNameReferenceNode leftRef &&

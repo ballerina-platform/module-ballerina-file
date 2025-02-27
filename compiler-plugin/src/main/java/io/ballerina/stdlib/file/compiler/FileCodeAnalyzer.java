@@ -21,7 +21,6 @@ package io.ballerina.stdlib.file.compiler;
 import io.ballerina.compiler.syntax.tree.SyntaxKind;
 import io.ballerina.projects.plugins.CodeAnalysisContext;
 import io.ballerina.projects.plugins.CodeAnalyzer;
-import io.ballerina.stdlib.file.compiler.staticcodeanalyzer.FileServiceValidator;
 
 /**
  * File code analyser.

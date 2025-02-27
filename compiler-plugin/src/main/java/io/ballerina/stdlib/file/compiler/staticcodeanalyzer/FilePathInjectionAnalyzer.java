@@ -69,7 +69,7 @@ public class FilePathInjectionAnalyzer implements AnalysisTask<SyntaxNodeAnalysi
         // Detect vulnerable file function calls
         if (FILE_REMOVE.equals(functionName) || FILE_READ.equals(functionName) ||
                 FILE_WRITE.equals(functionName)) {
-            if (!isSafePath(functionCall, context)) {
+            if (!isSafePath(functionCall)) {
                 Location location = functionCall.location();
                 this.reporter.reportIssue(document, location, AVOID_PATH_INJECTION.getId());
             }
@@ -80,7 +80,7 @@ public class FilePathInjectionAnalyzer implements AnalysisTask<SyntaxNodeAnalysi
         return context.currentPackage().module(context.moduleId()).document(context.documentId());
     }
 
-    private boolean isSafePath(FunctionCallExpressionNode functionCall, SyntaxNodeAnalysisContext context) {
+    private boolean isSafePath(FunctionCallExpressionNode functionCall) {
         NodeList<FunctionArgumentNode> arguments = functionCall.arguments();
         if (arguments.isEmpty()) {
             return true;
@@ -96,10 +96,9 @@ public class FilePathInjectionAnalyzer implements AnalysisTask<SyntaxNodeAnalysi
         }
 
         // Direct concatenation detection
-        if (argument instanceof BinaryExpressionNode binaryExpression) {
-            if (binaryExpression.operator().kind() == SyntaxKind.PLUS_TOKEN) {
-                return false;
-            }
+        if (argument instanceof BinaryExpressionNode binaryExpression &&
+                binaryExpression.operator().kind() == SyntaxKind.PLUS_TOKEN) {
+            return false;
         }
 
         if (argument instanceof SimpleNameReferenceNode variableRef) {
@@ -126,7 +125,6 @@ public class FilePathInjectionAnalyzer implements AnalysisTask<SyntaxNodeAnalysi
                                         return isFunctionParameter(variableRef);
                                     }
                                 }
-                                // Check if assigned directly from a function parameter
                                 if (varDecl.initializer().orElse(null) instanceof SimpleNameReferenceNode) {
                                     SimpleNameReferenceNode initializer = (SimpleNameReferenceNode)
                                             varDecl.initializer().get();
@@ -216,16 +214,11 @@ public class FilePathInjectionAnalyzer implements AnalysisTask<SyntaxNodeAnalysi
      */
     private boolean isIndirectFunctionParameterFromBinary(BinaryExpressionNode binaryExpr,
                                                           RequiredParameterNode reqParam) {
-        if (binaryExpr.lhsExpr() instanceof SimpleNameReferenceNode leftRef) {
-            if (leftRef.name().text().equals(reqParam.paramName().get().text())) {
-                return true;
-            }
+        if (binaryExpr.lhsExpr() instanceof SimpleNameReferenceNode leftRef &&
+                leftRef.name().text().equals(reqParam.paramName().get().text())) {
+            return true;
         }
-        if (binaryExpr.rhsExpr() instanceof SimpleNameReferenceNode rightRef) {
-            if (rightRef.name().text().equals(reqParam.paramName().get().text())) {
-                return true;
-            }
-        }
-        return false;
+        return binaryExpr.rhsExpr() instanceof SimpleNameReferenceNode rightRef &&
+                rightRef.name().text().equals(reqParam.paramName().get().text());
     }
 }

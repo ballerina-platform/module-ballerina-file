@@ -20,9 +20,15 @@ plugins {
     id 'java'
     id 'checkstyle'
     id 'com.github.spotbugs'
+    id 'jacoco'
 }
 
 description = 'Ballerina - file Compiler Plugin Test'
+
+jacoco {
+    toolVersion = "${jacocoVersion}"
+    reportsDirectory = file("$project.buildDir/reports/jacoco")
+}
 
 def ballerinaDist = "${project.rootDir}/target/ballerina-runtime"
 

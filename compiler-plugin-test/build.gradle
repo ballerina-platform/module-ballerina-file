@@ -30,6 +30,15 @@ jacoco {
     reportsDirectory = file("$project.buildDir/reports/jacoco")
 }
 
+jacocoTestReport {
+    reports {
+        xml.required = true
+        csv.required = false
+        html.required = false
+    }
+    sourceSets project(':file-compiler-plugin').sourceSets.main
+}
+
 def ballerinaDist = "${project.rootDir}/target/ballerina-runtime"
 
 dependencies {

@@ -25,6 +25,9 @@ import io.ballerina.compiler.syntax.tree.FunctionArgumentNode;
 import io.ballerina.compiler.syntax.tree.FunctionBodyBlockNode;
 import io.ballerina.compiler.syntax.tree.FunctionCallExpressionNode;
 import io.ballerina.compiler.syntax.tree.FunctionDefinitionNode;
+import io.ballerina.compiler.syntax.tree.ImportOrgNameNode;
+import io.ballerina.compiler.syntax.tree.ImportPrefixNode;
+import io.ballerina.compiler.syntax.tree.ModulePartNode;
 import io.ballerina.compiler.syntax.tree.Node;
 import io.ballerina.compiler.syntax.tree.NodeList;
 import io.ballerina.compiler.syntax.tree.ParameterNode;
@@ -38,11 +41,13 @@ import io.ballerina.projects.Document;
 import io.ballerina.projects.plugins.AnalysisTask;
 import io.ballerina.projects.plugins.SyntaxNodeAnalysisContext;
 import io.ballerina.scan.Reporter;
-import io.ballerina.tools.diagnostics.Location;
 
-import static io.ballerina.stdlib.file.compiler.Constants.FILE_REMOVE;
-import static io.ballerina.stdlib.file.compiler.Constants.FILE_READ;
-import static io.ballerina.stdlib.file.compiler.Constants.FILE_WRITE;
+import java.util.ArrayList;
+import java.util.List;
+
+import static io.ballerina.stdlib.file.compiler.Constants.BALLERINA_ORG;
+import static io.ballerina.stdlib.file.compiler.Constants.FILE;
+import static io.ballerina.stdlib.file.compiler.Constants.FILE_FUNCTIONS;
 import static io.ballerina.stdlib.file.compiler.staticcodeanalyzer.FileRule.AVOID_PATH_INJECTION;
 
 /**
@@ -63,14 +68,29 @@ public class FilePathInjectionAnalyzer implements AnalysisTask<SyntaxNodeAnalysi
         }
 
         Document document = getDocument(context);
+        List<String> importPrefix = new ArrayList<>();
+        if (document.syntaxTree().rootNode() instanceof ModulePartNode modulePartNode) {
+            importPrefix = modulePartNode.imports().stream()
+                    .filter(importDeclarationNode -> {
+                        ImportOrgNameNode importOrgNameNode = importDeclarationNode.orgName().orElse(null);
+                        return importOrgNameNode != null && BALLERINA_ORG.equals(importOrgNameNode.orgName().text());
+                    })
+                    .filter(importDeclarationNode -> importDeclarationNode.moduleName().stream().anyMatch(
+                            moduleNameNode -> FILE.equals(moduleNameNode.text())))
+                    .map(importDeclarationNode -> {
+                        ImportPrefixNode importPrefixNode = importDeclarationNode.prefix().orElse(null);
+                        return importPrefixNode != null ? importPrefixNode.prefix().text() : FILE;
+                    }).toList();
+        }
 
         String functionName = functionCall.functionName().toString();
 
-        // Detect vulnerable file function calls
-        if ((FILE_REMOVE.equals(functionName) || FILE_READ.equals(functionName) ||
-                FILE_WRITE.equals(functionName)) && !isSafePath(functionCall)) {
-            Location location = functionCall.location();
-            this.reporter.reportIssue(document, location, AVOID_PATH_INJECTION.getId());
+        boolean isFileOperation = importPrefix.stream().anyMatch(prefix ->
+                FILE_FUNCTIONS.stream().anyMatch(func -> functionName.equals(prefix + ":" + func))
+        );
+
+        if (isFileOperation && !isSafePath(functionCall)) {
+            this.reporter.reportIssue(document, functionCall.location(), AVOID_PATH_INJECTION.getId());
         }
     }
 
@@ -93,7 +113,6 @@ public class FilePathInjectionAnalyzer implements AnalysisTask<SyntaxNodeAnalysi
             return true;
         }
 
-        // Direct concatenation detection
         if (argument instanceof BinaryExpressionNode binaryExpression &&
                 binaryExpression.operator().kind() == SyntaxKind.PLUS_TOKEN) {
             return false;
@@ -199,20 +218,14 @@ public class FilePathInjectionAnalyzer implements AnalysisTask<SyntaxNodeAnalysi
 
     private boolean checkVariableInitializer(VariableDeclarationNode varDecl, RequiredParameterNode reqParam) {
         ExpressionNode initializer = varDecl.initializer().orElse(null);
-        if (initializer == null) {
-            return false;
-        }
-
-        if (initializer instanceof SimpleNameReferenceNode initializerRef) {
-            return initializerRef.name().text().equals(reqParam.paramName().get().text());
-        }
-
-        if (initializer instanceof BinaryExpressionNode binaryExpr) {
-            return binaryExpr.operator().kind() == SyntaxKind.PLUS_TOKEN
+        return switch (initializer) {
+            case null -> false;
+            case SimpleNameReferenceNode initializerRef ->
+                    initializerRef.name().text().equals(reqParam.paramName().get().text());
+            case BinaryExpressionNode binaryExpr -> binaryExpr.operator().kind() == SyntaxKind.PLUS_TOKEN
                     && isIndirectFunctionParameterFromBinary(binaryExpr, reqParam);
-        }
-
-        return false;
+            default -> false;
+        };
     }
 
     private boolean isIndirectFunctionParameterFromBinary(BinaryExpressionNode binaryExpr,

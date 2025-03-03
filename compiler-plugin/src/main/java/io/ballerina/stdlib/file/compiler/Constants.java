@@ -18,6 +18,8 @@
 
 package io.ballerina.stdlib.file.compiler;
 
+import java.util.List;
+
 /**
  * Constants related to compiler plugin implementation.
  */
@@ -28,8 +30,33 @@ public class Constants {
     public static final String OS = "os";
     public static final String GET_ENV = "getEnv";
     public static final String FILE = "file";
-    public static final String FILE_CREATE = "create";
-    public static final String FILE_REMOVE = "file:remove";
-    public static final String FILE_READ = "file:read";
-    public static final String FILE_WRITE = "file:write";
+    public static final String BALLERINA_ORG = "ballerina";
+
+    public static final List<String> FILE_FUNCTIONS = List.of(
+            "getAbsolutePath",
+            "isAbsolutePath",
+            "basename",
+            "parentPath",
+            "normalizePath",
+            "splitPath",
+            "joinPath",
+            "relativePath",
+            "joinPath",
+            "test",
+            "copy",
+            "readDir",
+            "read",
+            "write",
+            "remove",
+            "create",
+            "getMetaData",
+            "createTemp",
+            "createTempDir"
+    );
+
+    public static final List<String> PUBLIC_DIRECTORIES = List.of(
+            "\"TMP\"",
+            "\"TEMP\"",
+            "\"TMPDIR\""
+    );
 }

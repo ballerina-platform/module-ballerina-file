@@ -33,10 +33,11 @@ import io.ballerina.scan.Reporter;
 import io.ballerina.tools.diagnostics.Location;
 import org.ballerinalang.model.tree.expressions.StringTemplateLiteralNode;
 
+import static io.ballerina.stdlib.file.compiler.Constants.FILE_FUNCTIONS;
 import static io.ballerina.stdlib.file.compiler.Constants.OS;
 import static io.ballerina.stdlib.file.compiler.Constants.GET_ENV;
 import static io.ballerina.stdlib.file.compiler.Constants.FILE;
-import static io.ballerina.stdlib.file.compiler.Constants.FILE_CREATE;
+import static io.ballerina.stdlib.file.compiler.Constants.PUBLIC_DIRECTORIES;
 import static io.ballerina.stdlib.file.compiler.staticcodeanalyzer.FileRule.AVOID_INSECURE_DIRECTORY_ACCESS;
 
 public class InsecureDirectoryAccessAnalyzer implements AnalysisTask<SyntaxNodeAnalysisContext> {
@@ -74,8 +75,7 @@ public class InsecureDirectoryAccessAnalyzer implements AnalysisTask<SyntaxNodeA
                     String functionName = qNode.identifier().text();
                     if (modulePrefix.equals(OS) && functionName.equals(GET_ENV)) {
                         String envVarName = currentMethodCall.arguments().get(0).toString();
-                        if (envVarName.equals("\"TMP\"") || envVarName.equals("\"TEMP\"") ||
-                                envVarName.equals("\"TMPDIR\"")) {
+                        if (PUBLIC_DIRECTORIES.contains(envVarName)) {
                             return true;
                         }
                     }
@@ -84,7 +84,7 @@ public class InsecureDirectoryAccessAnalyzer implements AnalysisTask<SyntaxNodeA
                 if (currentMethodCall.functionName() instanceof QualifiedNameReferenceNode fileCallNode) {
                     String fileModulePrefix = fileCallNode.modulePrefix().text();
                     String fileFunctionName = fileCallNode.identifier().text();
-                    if (fileModulePrefix.equals(FILE) && fileFunctionName.equals(FILE_CREATE)) {
+                    if (fileModulePrefix.equals(FILE) && FILE_FUNCTIONS.contains(fileFunctionName)) {
                         SeparatedNodeList<FunctionArgumentNode> arguments = currentMethodCall.arguments();
                         if (arguments != null && !arguments.isEmpty()) {
                             FunctionArgumentNode pathArg = arguments.get(0);
@@ -112,6 +112,6 @@ public class InsecureDirectoryAccessAnalyzer implements AnalysisTask<SyntaxNodeA
     }
 
     private boolean isInsecureDirectory(String filePath) {
-        return filePath.contains("/tmp") || filePath.contains("TMP") || filePath.contains("TEMP");
+        return PUBLIC_DIRECTORIES.contains(filePath);
     }
 }

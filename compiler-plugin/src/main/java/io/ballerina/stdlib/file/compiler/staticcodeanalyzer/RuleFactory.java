@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2021, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org)
  *
- * WSO2 Inc. licenses this file to you under the Apache License,
+ * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,12 +16,20 @@
  * under the License.
  */
 
-module io.ballerina.stdlib.file.plugin {
-    requires io.ballerina.scan;
-    requires io.ballerina.lang;
-    requires io.ballerina.parser;
-    requires io.ballerina.tools.api;
-    requires java.xml;
-    exports io.ballerina.stdlib.file.compiler;
-    exports io.ballerina.stdlib.file.compiler.staticcodeanalyzer;
+package io.ballerina.stdlib.file.compiler.staticcodeanalyzer;
+
+import io.ballerina.scan.Rule;
+import io.ballerina.scan.RuleKind;
+
+/**
+ * {@code RuleFactory} contains the logic to create a {@link Rule}.
+ */
+public class RuleFactory {
+
+    private RuleFactory() {
+    }
+
+    public static Rule createRule(int id, String description, RuleKind kind) {
+        return new RuleImpl(id, description, kind);
+    }
 }

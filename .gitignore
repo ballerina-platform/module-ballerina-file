@@ -41,5 +41,3 @@ target
 # Ballerina
 velocity.log*
 *Ballerina.lock
-
-compiler-plugin-test/**/target

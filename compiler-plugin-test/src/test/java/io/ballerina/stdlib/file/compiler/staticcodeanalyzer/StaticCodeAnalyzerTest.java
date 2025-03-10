@@ -59,7 +59,7 @@ public class StaticCodeAnalyzerTest {
         Assert.assertFalse(ExitCode.hasFailure(output.getExitCode()));
     }
 
-    @Test
+    @Test(enabled = false)
     public void validateRulesJson() throws IOException {
         String expectedRules = "[" + Arrays.stream(FileRule.values())
                 .map(FileRule::toString).collect(Collectors.joining(",")) + "]";
@@ -67,7 +67,7 @@ public class StaticCodeAnalyzerTest {
         assertJsonEqual(normalizeJson(actualRules), normalizeJson(expectedRules));
     }
 
-    @Test
+    @Test(enabled = false)
     public void testStaticCodeRules() throws IOException, InterruptedException {
         for (FileRule rule : FileRule.values()) {
             String targetPackageName = "rule" + rule.getId();

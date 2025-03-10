@@ -6,10 +6,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- [Add static code rules](https://github.com/ballerina-platform/ballerina-library/issues/7283)
-
-
 ### Changed
 
 - [Change the listener configuration as an included parameter](https://github.com/ballerina-platform/ballerina-library/issues/7494)

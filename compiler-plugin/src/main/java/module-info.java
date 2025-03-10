@@ -17,11 +17,8 @@
  */
 
 module io.ballerina.stdlib.file.plugin {
-    requires io.ballerina.scan;
     requires io.ballerina.lang;
     requires io.ballerina.parser;
     requires io.ballerina.tools.api;
-    requires java.xml;
     exports io.ballerina.stdlib.file.compiler;
-    exports io.ballerina.stdlib.file.compiler.staticcodeanalyzer;
 }

@@ -1,0 +1,58 @@
+[ {
+  "location" : {
+    "filePath" : "main.bal",
+    "startLine" : 22,
+    "endLine" : 22,
+    "startColumn" : 20,
+    "endColumn" : 68,
+    "startOffset" : 800,
+    "length" : 48
+  },
+  "rule" : {
+    "id" : "ballerina/file:1",
+    "numericId" : 1,
+    "description" : "Avoid using publicly writable directories for file operations without proper access controls",
+    "ruleKind" : "VULNERABILITY"
+  },
+  "source" : "BUILT_IN",
+  "fileName" : "rule1/main.bal",
+  "filePath" : "/Users/sachink/Desktop/module-ballerina-file/compiler-plugin-test/src/test/resources/static_code_analyzer/ballerina_packages/rule1/main.bal"
+}, {
+  "location" : {
+    "filePath" : "main.bal",
+    "startLine" : 25,
+    "endLine" : 25,
+    "startColumn" : 8,
+    "endColumn" : 57,
+    "startOffset" : 886,
+    "length" : 49
+  },
+  "rule" : {
+    "id" : "ballerina/file:1",
+    "numericId" : 1,
+    "description" : "Avoid using publicly writable directories for file operations without proper access controls",
+    "ruleKind" : "VULNERABILITY"
+  },
+  "source" : "BUILT_IN",
+  "fileName" : "rule1/main.bal",
+  "filePath" : "/Users/sachink/Desktop/module-ballerina-file/compiler-plugin-test/src/test/resources/static_code_analyzer/ballerina_packages/rule1/main.bal"
+}, {
+  "location" : {
+    "filePath" : "main.bal",
+    "startLine" : 27,
+    "endLine" : 27,
+    "startColumn" : 8,
+    "endColumn" : 87,
+    "startOffset" : 958,
+    "length" : 79
+  },
+  "rule" : {
+    "id" : "ballerina/file:1",
+    "numericId" : 1,
+    "description" : "Avoid using publicly writable directories for file operations without proper access controls",
+    "ruleKind" : "VULNERABILITY"
+  },
+  "source" : "BUILT_IN",
+  "fileName" : "rule1/main.bal",
+  "filePath" : "/Users/sachink/Desktop/module-ballerina-file/compiler-plugin-test/src/test/resources/static_code_analyzer/ballerina_packages/rule1/main.bal"
+} ]

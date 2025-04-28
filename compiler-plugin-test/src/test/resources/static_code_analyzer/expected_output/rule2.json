@@ -11,7 +11,7 @@
   "rule" : {
     "id" : "ballerina/file:2",
     "numericId" : 2,
-    "description" : "I/O function calls should not be vulnerable to path injection attacks",
+    "description" : "File function calls should not be vulnerable to path injection attacks",
     "ruleKind" : "VULNERABILITY"
   },
   "source" : "BUILT_IN",

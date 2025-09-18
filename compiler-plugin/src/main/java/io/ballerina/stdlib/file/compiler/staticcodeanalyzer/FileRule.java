@@ -42,8 +42,8 @@ public enum FileRule {
         return this.rule.numericId();
     }
 
-    public Rule getRule() {
-        return this.rule;
+    public String getDescription() {
+        return this.rule.description();
     }
 
     @Override

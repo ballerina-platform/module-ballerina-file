@@ -1,20 +1,42 @@
-[ {
-  "location" : {
-    "filePath" : "main.bal",
-    "startLine" : 21,
-    "endLine" : 21,
-    "startColumn" : 28,
-    "endColumn" : 44,
-    "startOffset" : 762,
-    "length" : 16
+[
+  {
+    "location": {
+      "filePath": "main.bal",
+      "startLine": 19,
+      "endLine": 19,
+      "startColumn": 0,
+      "endColumn": 6,
+      "startOffset": 707,
+      "length": 6
+    },
+    "rule": {
+      "id": "ballerina:3",
+      "numericId": 3,
+      "description": "Non isolated public function",
+      "ruleKind": "CODE_SMELL"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule2/main.bal",
+    "filePath": "/home/nureka/Documents/GitHub/module-ballerina-file/compiler-plugin-test/src/test/resources/static_code_analyzer/ballerina_packages/rule2/main.bal"
   },
-  "rule" : {
-    "id" : "ballerina/file:2",
-    "numericId" : 2,
-    "description" : "File function calls should not be vulnerable to path injection attacks",
-    "ruleKind" : "VULNERABILITY"
-  },
-  "source" : "BUILT_IN",
-  "fileName" : "rule2/main.bal",
-  "filePath" : "/Users/sachink/Desktop/module-ballerina-file/compiler-plugin-test/src/test/resources/static_code_analyzer/ballerina_packages/rule2/main.bal"
-} ]
+  {
+    "location": {
+      "filePath": "main.bal",
+      "startLine": 21,
+      "endLine": 21,
+      "startColumn": 25,
+      "endColumn": 52,
+      "startOffset": 856,
+      "length": 27
+    },
+    "rule": {
+      "id": "ballerina/file:2",
+      "numericId": 2,
+      "description": "File function calls should not be vulnerable to path injection attacks",
+      "ruleKind": "VULNERABILITY"
+    },
+    "source": "BUILT_IN",
+    "fileName": "rule2/main.bal",
+    "filePath": "/home/nureka/Documents/GitHub/module-ballerina-file/compiler-plugin-test/src/test/resources/static_code_analyzer/ballerina_packages/rule2/main.bal"
+  }
+]

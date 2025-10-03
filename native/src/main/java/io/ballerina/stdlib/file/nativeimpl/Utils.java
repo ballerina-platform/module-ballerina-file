@@ -335,6 +335,8 @@ public class Utils {
             Path newFile = target.resolve(source.relativize(file));
             try {
                 Files.copy(file, newFile, copyOptions);
+            } catch (NoSuchFileException e) {
+                throw e;
             } catch (Exception e) {
                 log.debug(e.getMessage());
                 return SKIP_SUBTREE; // skip processing

@@ -315,7 +315,6 @@ function testCopyFileReplaceTrue() {
 @test:Config {}
 function testCopyFileNonExistSource() {
     error? copyResult = copy("tests/resources/no-file.txt", tmpdir + noFile);
-    io:println(copyResult);
     if copyResult is error {
         string expectedErrMsg = "File not found";
         test:assertTrue(copyResult.message().includes(expectedErrMsg));
@@ -325,7 +324,6 @@ function testCopyFileNonExistSource() {
 @test:Config {}
 function testCopyFileNonExistDir() {
     error? copyResult = copy(srcFile, noDir + copyFile);
-    io:println(copyResult);
     if copyResult is error {
         string expectedErrMsg = "The target directory does not exist";
         test:assertTrue(copyResult.message().includes(expectedErrMsg));

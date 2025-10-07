@@ -322,6 +322,17 @@ function testCopyFileNonExistSource() {
 }
 
 @test:Config {}
+function testCopyFileNonExistDir() {
+    error? copyResult = copy(srcFile, noDir + copyFile);
+    if copyResult is error {
+        string expectedErrMsg = "The target directory does not exist";
+        test:assertTrue(copyResult.message().includes(expectedErrMsg));
+    } else {
+        test:assertFail("File copy succeeded to a non-existent destination directory!");
+    }
+}
+
+@test:Config {}
 function testGetCurrentDirectory() {
     string currentDir = getCurrentDir();
     string usrDir = getUserDir();

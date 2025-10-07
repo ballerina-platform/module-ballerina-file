@@ -247,7 +247,8 @@ function testCreateDirWithoutParentDir() {
 @test:Config {}
 function testCopyFileToNonExistentFileReplaceFalse() {
     error? removeResult = remove(tmpdir + copyFile);
-    if removeResult is error {
+    if removeResult is error && removeResult !is FileNotFoundError {
+        io:println(">>>> " + removeResult.toString());
         test:assertFail("Error removing test resource!");
     }
 

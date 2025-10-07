@@ -245,7 +245,12 @@ function testCreateDirWithoutParentDir() {
 }
 
 @test:Config {}
-function testCopyFile() {
+function testCopyFileToNonExistentFileReplaceFalse() {
+    error? removeResult = remove(tmpdir + copyFile);
+    if removeResult is error {
+        test:assertFail("Error removing test resource!");
+    }
+
     MetaData|error srcmetadata = getMetaData(srcFile);
     if srcmetadata is MetaData {
         srcFileLength = srcmetadata.size;
@@ -267,32 +272,25 @@ function testCopyFile() {
     }
 }
 
-@test:Config {dependsOn: [testCopyFile]}
-function testCopyFileReplaceFalse() {
-    MetaData|error srcMmetadata = getMetaData(srcModifiedFile);
-    if srcMmetadata is MetaData {
-        srcModifiedFileLength = srcMmetadata.size;
-    } else {
-        test:assertFail("Error retrieving source file size!");
-    }
-
-    error? copyResult = copy(srcModifiedFile, tmpdir + copyFile);
+@test:Config {dependsOn: [testCopyFileToNonExistentFileReplaceFalse]}
+function testCopyFileToExistingFileReplaceFalse() {
+    error? copyResult = copy(srcFile, tmpdir + copyFile);
     if copyResult is error {
-        test:assertFail("File not copied!");
+        string expectedErrMsg = "The target file already exists";
+        test:assertTrue(copyResult.message().includes(expectedErrMsg));
     } else {
-        MetaData|error metadata = getMetaData(tmpdir + copyFile);
-        if metadata is MetaData {
-            int destFileLength = metadata.size;
-            test:assertEquals(destFileLength, srcFileLength, "File size mismatch!");
-            test:assertNotEquals(destFileLength, srcModifiedFileLength);
-        } else {
-            test:assertFail("Error retrieving destination file size!");
-        }
+        test:assertFail("File copy succeeded to an existing file when replace false!");
     }
 }
 
-@test:Config {dependsOn: [testCopyFileReplaceFalse]}
-function testCopyFileReplaceTrue() {
+@test:Config {dependsOn: [testCopyFileToExistingFileReplaceFalse]}
+function testCopyFileToExistingFileReplaceTrue() {
+    MetaData|error srcMetadata = getMetaData(srcModifiedFile);
+    if srcMetadata is MetaData {
+        srcModifiedFileLength = srcMetadata.size;
+    } else {
+        test:assertFail("Error retrieving source file size!");
+    }
     error? copyResult = copy(srcModifiedFile, tmpdir + copyFile, REPLACE_EXISTING);
     if copyResult is error {
         test:assertFail("File not copied!");
@@ -302,6 +300,26 @@ function testCopyFileReplaceTrue() {
             int destFileLength = metadata.size;
             test:assertEquals(destFileLength, srcModifiedFileLength, "File size mismatch!");
             test:assertNotEquals(destFileLength, srcFileLength);
+            error? removeResult = remove(tmpdir + copyFile);
+            if removeResult is error {
+                test:assertFail("Error removing test resource!");
+            }
+        } else {
+            test:assertFail("Error retrieving destination file size!");
+        }
+    }
+}
+
+@test:Config {dependsOn: [testCopyFileToExistingFileReplaceTrue]}
+function testCopyFileToNonExistentFileReplaceTrue() {
+    error? copyResult = copy(srcFile, tmpdir + copyFile, REPLACE_EXISTING);
+    if copyResult is error {
+        test:assertFail("File not copied!");
+    } else {
+        MetaData|error metadata = getMetaData(tmpdir + copyFile);
+        if metadata is MetaData {
+            int destFileLength = metadata.size;
+            test:assertEquals(destFileLength, srcFileLength, "File size mismatch!");
             error? removeResult = remove(tmpdir + copyFile);
             if removeResult is error {
                 test:assertFail("Error removing test resource!");

@@ -244,14 +244,18 @@ function testCreateDirWithoutParentDir() {
     }
 }
 
-@test:Config {}
-function testCopyFileToNonExistentFileReplaceFalse() {
-    error? removeResult = remove(tmpdir + copyFile);
-    if removeResult is error && removeResult !is FileNotFoundError {
-        io:println(">>>> " + removeResult.toString());
-        test:assertFail("Error removing test resource!");
+function RemoveCopySource() returns error? {
+    boolean|error isSourceExists = test(tmpdir + copyFile, EXISTS);
+    if isSourceExists is boolean && isSourceExists {
+        check remove(tmpdir + copyFile);
     }
+}
 
+@test:Config {
+    before: RemoveCopySource,
+    dependsOn: [testRemove, testFileExists]
+}
+function testCopyFileToNonExistentFileReplaceFalse() {
     MetaData|error srcmetadata = getMetaData(srcFile);
     if srcmetadata is MetaData {
         srcFileLength = srcmetadata.size;

@@ -42,7 +42,7 @@ The following code sample shows how to create a `Service` with the `onCreate` re
 ```ballerina
 service "localObserver" on inFolder {
 
-    remote function onCreate(file:FileEvent m) {
+    remote function onCreate(file:FileEvent m)  returns error? {
         string msg = "Create: " + m.name;
         log:printInfo(msg);
     }

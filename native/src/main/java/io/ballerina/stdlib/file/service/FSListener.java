@@ -25,6 +25,7 @@ import io.ballerina.runtime.api.types.MethodType;
 import io.ballerina.runtime.api.types.ObjectType;
 import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.utils.TypeUtils;
+import io.ballerina.runtime.api.values.BError;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
@@ -61,7 +62,11 @@ public class FSListener implements LocalFileSystemListener {
                     BObject service  = serviceEntry.getKey();
                     ObjectType type = (ObjectType) TypeUtils.getReferredType(TypeUtils.getType(service));
                     boolean isConcurrentSafe = type.isIsolated() && type.isIsolated(functionName);
-                    runtime.callMethod(service, functionName, new StrandMetadata(isConcurrentSafe, null), balFileEvent);
+                    Object result = runtime.callMethod(service, functionName,
+                            new StrandMetadata(isConcurrentSafe, null), balFileEvent);
+                    if (result instanceof BError bError) {
+                        bError.printStackTrace();
+                    }
                 }
             }
         });

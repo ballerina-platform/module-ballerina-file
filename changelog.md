@@ -7,12 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- [Add static code rules](https://github.com/ballerina-platform/ballerina-library/issues/7283)
+
+- [Allow optional `error?` return type in file listener remote functions](https://github.com/ballerina-platform/ballerina-library/issues/7596)
 
 ### Changed
 
-- [Change the listener configuration as an included parameter](https://github.com/ballerina-platform/ballerina-library/issues/7494)
 - [Update the static analysis tests to use scan tool's test API](https://github.com/ballerina-platform/ballerina-library/issues/8249)
+- [Fix missing error handling in file:copy for non-existent destination directory](https://github.com/ballerina-platform/ballerina-library/issues/5738)
+
+## [1.12.0] - 2025-03-12
+
+### Added
+- [Add static code rules](https://github.com/ballerina-platform/ballerina-library/issues/7283)
+
+## [1.11.0] - 2025-02-17
+
+### Added
+- [Change the listener configuration as an included parameter](https://github.com/ballerina-platform/ballerina-library/issues/7494)
 
 ## [1.10.0] - 2024-08-20
 

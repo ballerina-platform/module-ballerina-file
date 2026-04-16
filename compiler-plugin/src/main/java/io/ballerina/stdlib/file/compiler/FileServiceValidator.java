@@ -26,8 +26,11 @@ import io.ballerina.compiler.api.symbols.TypeSymbol;
 import io.ballerina.compiler.api.symbols.UnionTypeSymbol;
 import io.ballerina.compiler.syntax.tree.FunctionDefinitionNode;
 import io.ballerina.compiler.syntax.tree.FunctionSignatureNode;
+import io.ballerina.compiler.syntax.tree.Node;
+import io.ballerina.compiler.syntax.tree.OptionalTypeDescriptorNode;
 import io.ballerina.compiler.syntax.tree.ParameterNode;
 import io.ballerina.compiler.syntax.tree.RequiredParameterNode;
+import io.ballerina.compiler.syntax.tree.ReturnTypeDescriptorNode;
 import io.ballerina.compiler.syntax.tree.SeparatedNodeList;
 import io.ballerina.compiler.syntax.tree.ServiceDeclarationNode;
 import io.ballerina.compiler.syntax.tree.SyntaxKind;
@@ -113,14 +116,36 @@ public class FileServiceValidator implements AnalysisTask<SyntaxNodeAnalysisCont
                 reportErrorDiagnostic(functionDefinitionNode.location(), syntaxNodeAnalysisContext,
                         ErrorCodes.FILE_101, value.split(" ")[0]);
             } else if (functionSignatureNode.returnTypeDesc().isPresent()) {
-                reportErrorDiagnostic(functionDefinitionNode.location(), syntaxNodeAnalysisContext,
-                        ErrorCodes.FILE_104, functionName);
+                validateReturnType(functionDefinitionNode, syntaxNodeAnalysisContext, functionName);
             }
         } else {
             reportErrorDiagnostic(functionDefinitionNode.location(), syntaxNodeAnalysisContext,
                     ErrorCodes.FILE_105);
         }
 
+    }
+
+    private void validateReturnType(FunctionDefinitionNode functionDefinitionNode,
+                                    SyntaxNodeAnalysisContext syntaxNodeAnalysisContext, String functionName) {
+        Optional<ReturnTypeDescriptorNode> returnTypeDesc = functionDefinitionNode.functionSignature().returnTypeDesc();
+        if (returnTypeDesc.isEmpty()) {
+            return;
+        }
+        Node typeNode = returnTypeDesc.get().type();
+        if (isErrorOrNilType(typeNode)) {
+            return;
+        }
+        reportErrorDiagnostic(functionDefinitionNode.location(), syntaxNodeAnalysisContext,
+                ErrorCodes.FILE_104, functionName);
+    }
+
+    private boolean isErrorOrNilType(Node typeNode) {
+        // Only allow `error?` which is an OptionalTypeDescriptorNode wrapping an error type
+        if (typeNode.kind() == SyntaxKind.OPTIONAL_TYPE_DESC) {
+            Node innerType = ((OptionalTypeDescriptorNode) typeNode).typeDescriptor();
+            return innerType.kind() == SyntaxKind.ERROR_TYPE_DESC;
+        }
+        return false;
     }
 
     public boolean isFileService(SyntaxNodeAnalysisContext syntaxNodeAnalysisContext) {

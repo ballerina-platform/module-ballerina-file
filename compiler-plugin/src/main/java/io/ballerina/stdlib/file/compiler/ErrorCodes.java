@@ -28,7 +28,7 @@ public enum ErrorCodes {
     FILE_102("missing remote keyword in the remote function `{0}`", "FILE_102"),
     FILE_103("invalid function name `{0}`, file listener only supports " +
             "`onCreate`, `onModify` and `onDelete` remote functions", "FILE_103"),
-    FILE_104("return types are not allowed in the remote function `{0}`", "FILE_104"),
+    FILE_104("invalid return type in the remote function `{0}`, only `error?` return type is allowed", "FILE_104"),
     FILE_105("the remote function should only contain file:FileEvent parameter", "FILE_105"),
     FILE_106("at least a single remote function required in the service", "FILE_106");
 

@@ -16,8 +16,22 @@
  * under the License.
  */
 
+pluginManagement {
+    repositories {
+        mavenLocal()
+        gradlePluginPortal()
+        maven {
+            url = 'https://maven.pkg.github.com/ballerina-platform/*'
+            credentials {
+                username System.getenv("packageUser")
+                password System.getenv("packagePAT")
+            }
+        }
+    }
+}
+
 plugins {
-    id "com.gradle.enterprise" version "3.13.2"
+    id "com.gradle.develocity" version "3.19.2"
 }
 
 rootProject.name = 'file'
@@ -35,10 +49,10 @@ project(':file-compiler-plugin').projectDir = file('compiler-plugin')
 project(':file-ballerina').projectDir = file('ballerina')
 project(':file-compiler-plugin-test').projectDir = file('compiler-plugin-test')
 
-gradleEnterprise {
+develocity {
     buildScan {
-        termsOfServiceUrl = 'https://gradle.com/terms-of-service'
-        termsOfServiceAgree = 'yes'
+        termsOfUseUrl = 'https://gradle.com/terms-of-service'
+        termsOfUseAgree = 'yes'
     }
 }
 

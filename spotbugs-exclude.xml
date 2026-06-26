@@ -18,6 +18,7 @@
 <FindBugsFilter>
     <!-- false positive in Java 11, see https://github.com/spotbugs/spotbugs/issues/756 -->
      <Match>
+         <Package name="~io.ballerina.stdlib.file.*"/>
          <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
      </Match>
     <Match>
@@ -32,15 +33,19 @@
 
     <!-- Pre-existing issues surfaced by SpotBugs 4.9.x (bundled in plugin >= 6.2.0) -->
     <Match>
+        <Package name="~io.ballerina.stdlib.file.*"/>
         <BugCode name="THROWS"/>
     </Match>
     <Match>
+        <Package name="~io.ballerina.stdlib.file.*"/>
         <BugCode name="AT"/>
     </Match>
     <Match>
+        <Package name="~io.ballerina.stdlib.file.*"/>
         <BugCode name="USELESS_STRING"/>
     </Match>
     <Match>
+        <Package name="~io.ballerina.stdlib.file.*"/>
         <BugCode name="DM"/>
     </Match>
 </FindBugsFilter>

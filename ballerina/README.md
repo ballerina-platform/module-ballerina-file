@@ -1,9 +1,18 @@
 ## Overview
 
-This module provides APIs to create, delete, rename the file/directory, retrieve metadata of the given file, and manipulate the file paths in a way that is compatible with the operating system, and a `Directory Listener`, which is used to listen to the file changes in a directory in the local file system.
+This module provides APIs to create, delete, and rename files and directories, retrieve file metadata, manipulate file paths in an OS-compatible way, and listen to file system changes via a Directory Listener.
 
-This also provides the following separators which are widely used in file path creation:
--  `file:pathSeparator`: It is a character used to separate the parent directories that make up the path to a specific location. For windows, it’s ‘\’ and for UNIX it’s ‘/’
+## Key Features
+
+- Create, delete, and rename files and directories
+- Retrieve file metadata
+- OS-compatible file path manipulation, including path and path-list separators
+- Directory Listener for reacting to file create, modify, and delete events
+
+### Path separators
+
+This module provides the following separators which are widely used in file path creation:
+-  `file:pathSeparator`: It is a character used to separate the parent directories that make up the path to a specific location. For Windows, it’s ‘\’ and for UNIX it’s ‘/’
 -  `file:pathListSeparator`: It is a character commonly used by the operating system to separate paths in the path list. For windows, it’s ‘;‘ and for UNIX it’s ‘:’
 
 ### Directory listener
@@ -44,5 +53,3 @@ service "localObserver" on inFolder {
     }
 }
 ```
-
-For information on the operations, which you can perform with the file module, see the below **Functions**.

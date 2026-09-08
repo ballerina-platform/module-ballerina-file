@@ -299,6 +299,9 @@ public class Utils {
         } catch (NoSuchFileException ex) {
             return FileUtils.getBallerinaError(FileConstants.FILE_NOT_FOUND_ERROR,
                     "The target directory does not exist: " + ex.getMessage());
+        } catch (FileAlreadyExistsException ex) {
+            return FileUtils.getBallerinaError(FileConstants.INVALID_OPERATION_ERROR,
+                    "The target file already exists: " + ex.getMessage());
         } catch (IOException ex) {
             return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR,
                     "An error occurred when copying the file/s: " + ex.getMessage());
@@ -335,7 +338,7 @@ public class Utils {
             Path newFile = target.resolve(source.relativize(file));
             try {
                 Files.copy(file, newFile, copyOptions);
-            } catch (NoSuchFileException e) {
+            } catch (IOException e) {
                 throw e;
             } catch (Exception e) {
                 log.debug(e.getMessage());

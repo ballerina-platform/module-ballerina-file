@@ -12,7 +12,7 @@ This module provides APIs to create, delete, and rename files and directories, r
 ### Path separators
 
 This module provides the following separators which are widely used in file path creation:
--  `file:pathSeparator`: It is a character used to separate the parent directories that make up the path to a specific location. For windows, it’s ‘\’ and for UNIX it’s ‘/’
+-  `file:pathSeparator`: It is a character used to separate the parent directories that make up the path to a specific location. For Windows, it’s ‘\’ and for UNIX it’s ‘/’
 -  `file:pathListSeparator`: It is a character commonly used by the operating system to separate paths in the path list. For windows, it’s ‘;‘ and for UNIX it’s ‘:’
 
 ### Directory listener

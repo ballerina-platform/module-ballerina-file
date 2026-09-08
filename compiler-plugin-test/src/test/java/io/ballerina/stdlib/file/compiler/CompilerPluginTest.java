@@ -145,7 +145,7 @@ public class CompilerPluginTest {
     @Test
     public void testCompilerPluginWithReturn() {
         Package currentPackage = loadPackage("package_07");
-        String errMsg = "return types are not allowed in the remote function `onCreate`";
+        String errMsg = "invalid return type in the remote function `onCreate`, only `error?` return type is allowed";
         PackageCompilation compilation = currentPackage.getCompilation();
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();
         Assert.assertEquals(diagnosticResult.errors().size(), 1);
@@ -156,14 +156,23 @@ public class CompilerPluginTest {
     @Test
     public void testCompilerPluginWithDummyAndMultipleService() {
         Package currentPackage = loadPackage("package_08");
-        String errMsg = "return types are not allowed in the remote function `onCreate`";
-        String errMsg1 = "return types are not allowed in the remote function `onCreate`";
+        String errMsg = "invalid return type in the remote function `onCreate`, only `error?` return type is allowed";
+        String errMsg1 = "invalid return type in the remote function `onCreate`, only `error?` return type is allowed";
         PackageCompilation compilation = currentPackage.getCompilation();
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();
         Assert.assertEquals(diagnosticResult.errors().size(), 2);
         Object[] errors = diagnosticResult.errors().toArray();
         Assert.assertTrue(errors[0].toString().contains(errMsg));
         Assert.assertTrue(errors[1].toString().contains(errMsg1));
+    }
+
+    @Test
+    public void testCompilerPluginWithErrorReturn() {
+        Package currentPackage = loadPackage("package_11");
+        PackageCompilation compilation = currentPackage.getCompilation();
+
+        DiagnosticResult diagnosticResult = compilation.diagnosticResult();
+        Assert.assertEquals(diagnosticResult.errors().size(), 0);
     }
 
     private Package loadPackage(String path) {

@@ -1,0 +1,457 @@
+{
+  "version": "v1.0",
+  "metadata": {
+    "kind": "file"
+  },
+  "trigger": {
+    "displayName": "Local Files",
+    "description": "Create a service to handle file create, modify, and delete events in a local directory",
+    "type": "file"
+  },
+  "readOnlyMetadata": [
+    {
+      "key": "path",
+      "displayName": "Directory Path",
+      "paramKind": "INCLUDED_FIELD",
+      "path": "path",
+      "extractor": "LISTENER_PARAM"
+    }
+  ],
+  "initForm": {
+    "fields": [
+      {
+        "target": "$listener",
+        "metadata": {
+          "label": "Listener Name",
+          "description": "Provide a name for the listener being created."
+        },
+        "state": {
+          "advanced": true,
+          "enabled": true,
+          "editable": true,
+          "optional": false
+        },
+        "key": "listenerVarName",
+        "default": "fileListener",
+        "source": {
+          "construct": {
+            "kind": "LISTENER_VAR_NAME"
+          }
+        }
+      },
+      {
+        "target": "$listener",
+        "metadata": {
+          "label": "Path",
+          "description": "Directory path to be monitored."
+        },
+        "state": {
+          "enabled": true,
+          "editable": true,
+          "optional": false,
+          "advanced": false
+        },
+        "key": "path",
+        "placeholder": "/tmp",
+        "default": "/tmp",
+        "source": {
+          "argument": {
+            "kind": "LISTENER_PARAM_INCLUDED_FIELD"
+          },
+          "path": "path"
+        }
+      },
+      {
+        "target": "$listener",
+        "metadata": {
+          "label": "Recursive",
+          "description": "Recursively monitor all sub-directories"
+        },
+        "state": {
+          "enabled": true,
+          "editable": true,
+          "optional": true,
+          "advanced": false
+        },
+        "key": "recursive",
+        "default": false,
+        "source": {
+          "argument": {
+            "kind": "LISTENER_PARAM_INCLUDED_DEFAULTABLE_FIELD"
+          },
+          "path": "recursive"
+        }
+      }
+    ]
+  },
+  "serviceTypes": [
+    {
+      "target": "$service",
+      "metadata": {
+        "label": "File Events",
+        "description": "Observes file create, modify, and delete events in the monitored directory."
+      },
+      "state": {
+        "editable": false,
+        "enabled": true
+      },
+      "handlers": [
+        {
+          "target": "$service.onCreate",
+          "metadata": {
+            "label": "onCreate",
+            "description": "The `onCreate` remote method is invoked once a new file is created in the listening directory."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$service",
+                "handler": "onCreate",
+                "name": "event"
+              },
+              "metadata": {
+                "label": "File Event",
+                "description": "The event describing the file that was created."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "event.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "file:FileEvent",
+                  "default": "file:FileEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "event.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "The event describing the file that was created."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "event"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$service.onCreate.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onCreate"
+            },
+            "module": {
+              "name": "file"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$service.onModify",
+          "metadata": {
+            "label": "onModify",
+            "description": "The `onModify` remote method is invoked once an existing file is modified in the listening directory."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$service",
+                "handler": "onModify",
+                "name": "event"
+              },
+              "metadata": {
+                "label": "File Event",
+                "description": "The event describing the file that was modified."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "event.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "file:FileEvent",
+                  "default": "file:FileEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "event.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "The event describing the file that was modified."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "event"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$service.onModify.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onModify"
+            },
+            "module": {
+              "name": "file"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        },
+        {
+          "target": "$service.onDelete",
+          "metadata": {
+            "label": "onDelete",
+            "description": "The `onDelete` remote method is invoked once an existing file is deleted from the listening directory."
+          },
+          "parameters": [
+            {
+              "target": {
+                "kind": "concreteParam",
+                "serviceType": "$service",
+                "handler": "onDelete",
+                "name": "event"
+              },
+              "metadata": {
+                "label": "File Event",
+                "description": "The event describing the file that was deleted."
+              },
+              "state": {
+                "editable": false,
+                "enabled": true,
+                "optional": false,
+                "advanced": false,
+                "hidden": false
+              },
+              "fields": [
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "event.parameter",
+                    "path": "type"
+                  },
+                  "metadata": {
+                    "label": "Parameter Type",
+                    "description": "The type of the parameter"
+                  },
+                  "state": {
+                    "editable": false,
+                    "enabled": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "type",
+                  "placeholder": "file:FileEvent",
+                  "default": "file:FileEvent"
+                },
+                {
+                  "target": {
+                    "kind": "recordField",
+                    "owner": "event.parameter",
+                    "path": "name"
+                  },
+                  "metadata": {
+                    "label": "Parameter Name",
+                    "description": "The event describing the file that was deleted."
+                  },
+                  "state": {
+                    "enabled": true,
+                    "editable": true,
+                    "optional": false,
+                    "advanced": false
+                  },
+                  "key": "name",
+                  "default": "event"
+                }
+              ],
+              "source": {
+                "construct": {
+                  "kind": "FUNCTION_PARAM"
+                }
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$service.onDelete.returns",
+            "metadata": {
+              "label": "Return Type",
+              "description": "The return type of the function."
+            },
+            "state": {
+              "editable": false,
+              "enabled": true,
+              "optional": true
+            },
+            "source": {
+              "construct": {
+                "kind": "FUNCTION_RETURN"
+              }
+            },
+            "key": "returnType",
+            "default": "error?"
+          },
+          "source": {
+            "construct": {
+              "kind": "FUNCTION"
+            },
+            "argument": {
+              "originalName": "onDelete"
+            },
+            "module": {
+              "name": "file"
+            }
+          },
+          "state": {
+            "enabled": false,
+            "editable": true,
+            "optional": true
+          },
+          "nameEditable": false,
+          "repeatable": "FALSE",
+          "canAddParameters": false
+        }
+      ],
+      "source": {
+        "construct": {
+          "kind": "SERVICE_TYPE_DESCRIPTOR"
+        },
+        "argument": {
+          "originalName": "Service"
+        },
+        "module": {
+          "name": "file"
+        }
+      },
+      "description": "Represents a File service."
+    }
+  ],
+  "artifactInfo": {
+    "displayLabel": "Local Files",
+    "icon": {
+      "lightPath": "icons/light.svg",
+      "darkPath": "icons/dark.svg"
+    }
+  }
+}

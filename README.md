@@ -1,5 +1,4 @@
-Ballerina File Library
-=======================
+# Ballerina File Library
 
   [![Build](https://github.com/ballerina-platform/module-ballerina-file/actions/workflows/build-timestamped-master.yml/badge.svg)](https://github.com/ballerina-platform/module-ballerina-file/actions/workflows/build-timestamped-master.yml)
   [![codecov](https://codecov.io/gh/ballerina-platform/module-ballerina-file/branch/master/graph/badge.svg)](https://codecov.io/gh/ballerina-platform/module-ballerina-file)
@@ -8,7 +7,15 @@ Ballerina File Library
   [![GitHub Last Commit](https://img.shields.io/github/last-commit/ballerina-platform/module-ballerina-file.svg)](https://github.com/ballerina-platform/module-ballerina-file/commits/master)
   [![Github issues](https://img.shields.io/github/issues/ballerina-platform/ballerina-standard-library/module/file.svg?label=Open%20Issues)](https://github.com/ballerina-platform/ballerina-standard-library/labels/module%2Ffile)
 
-This library provides APIs to create, delete, rename the file/directory, retrieve metadata of the given file, and manipulate the file paths in a way that is compatible with the operating system, and a `Directory Listener`, which is used to listen to the file changes in a directory in the local file system.
+## Overview
+
+This module provides APIs to create, delete, and rename files and directories, retrieve file metadata, manipulate file paths in an OS-compatible way, and listen to file system changes via a Directory Listener.
+
+### Path separators
+
+This module provides the following separators which are widely used in file path creation:
+-  `file:pathSeparator`: It is a character used to separate the parent directories that make up the path to a specific location. For windows, it’s ‘\’ and for UNIX it’s ‘/’
+-  `file:pathListSeparator`: It is a character commonly used by the operating system to separate paths in the path list. For Windows, it’s ‘;‘ and for UNIX, it’s ‘:’
 
 ### Directory listener
 
@@ -106,7 +113,7 @@ Execute the commands below to build from the source.
 
 ## Contribute to Ballerina
 
-As an open source project, Ballerina welcomes contributions from the community. 
+As an open-source project, Ballerina welcomes contributions from the community. 
 
 For more information, go to the [contribution guidelines](https://github.com/ballerina-platform/ballerina-lang/blob/master/CONTRIBUTING.md).
 

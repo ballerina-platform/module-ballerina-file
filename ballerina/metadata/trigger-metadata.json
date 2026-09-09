@@ -1,0 +1,101 @@
+{
+  "version": "v1.0",
+
+  "listeners": [
+    {
+      "id": "$listener",
+      "doc": "Polls the watched directory on its configured interval and dispatches each detected file create, modify, or delete event to the attached service.",
+      "type": { "name": "Listener" },
+      "services": ["$service"],
+      "multipleServicesAllowed": true,
+      "multipleServicesOfSameTypeAllowed": true
+    }
+  ],
+
+  "serviceTypes": [
+    {
+      "id": "$service",
+      "doc": "Receives file system change events for the watched directory: created, modified, and deleted files.",
+      "type": { "name": "Service" },
+      "concrete": false,
+      "multipleListenersAllowed": true,
+      "handlers": {
+        "backedByConcreteType": false,
+        "options": [
+          {
+            "id": "$service.onCreate",
+            "name": "onCreate",
+            "kind": "remote",
+            "doc": "Invoked when a new file appears in the watched directory, or in one of its subdirectories when the listener is configured to recurse. May return error?; the module rejects any other return type.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$service.onCreate.fileEvent",
+                "name": "fileEvent",
+                "doc": "The absolute file URI in name and the triggering operation, always \"create\", in operation.",
+                "type": { "name": "FileEvent" },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$service.onCreate.returns",
+              "type": [{ "name": "error", "builtin": true }, { "name": "()", "builtin": true }]
+            }
+          },
+          {
+            "id": "$service.onModify",
+            "name": "onModify",
+            "kind": "remote",
+            "doc": "Invoked when an existing file's contents or attributes change in the watched directory. May return error?; the module rejects any other return type.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$service.onModify.fileEvent",
+                "name": "fileEvent",
+                "doc": "The absolute file URI in name and the triggering operation, always \"modify\", in operation.",
+                "type": { "name": "FileEvent" },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$service.onModify.returns",
+              "type": [{ "name": "error", "builtin": true }, { "name": "()", "builtin": true }]
+            }
+          },
+          {
+            "id": "$service.onDelete",
+            "name": "onDelete",
+            "kind": "remote",
+            "doc": "Invoked when a file disappears from the watched directory. There is no file content or metadata beyond the event itself, because the file is already gone. May return error?; the module rejects any other return type.",
+            "presence": "optional",
+            "params": [
+              {
+                "id": "$service.onDelete.fileEvent",
+                "name": "fileEvent",
+                "doc": "The absolute file URI in name and the triggering operation, always \"delete\", in operation.",
+                "type": { "name": "FileEvent" },
+                "presence": "required"
+              }
+            ],
+            "returns": {
+              "id": "$service.onDelete.returns",
+              "type": [{ "name": "error", "builtin": true }, { "name": "()", "builtin": true }]
+            }
+          }
+        ]
+      },
+      "rules": [
+        {
+          "id": "$atLeastOneFileHandler",
+          "rule": "structure.atLeastOne",
+          "message": "A Local Files service must declare at least one of onCreate, onModify, or onDelete, otherwise no event is ever dispatched. This connector has no onError handler to mistake for one.",
+          "subjects": [
+            { "kind": "handler", "id": "$service.onCreate" },
+            { "kind": "handler", "id": "$service.onModify" },
+            { "kind": "handler", "id": "$service.onDelete" }
+          ]
+        }
+      ]
+    }
+  ]
+}

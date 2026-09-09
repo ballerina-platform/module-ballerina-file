@@ -16,7 +16,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - [Update the static analysis tests to use scan tool's test API](https://github.com/ballerina-platform/ballerina-library/issues/8249)
-- [Fix missing error handling in file:copy for non-existent destination directory](https://github.com/ballerina-platform/ballerina-library/issues/5738)
 
 ## [1.12.0] - 2025-03-12
 

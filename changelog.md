@@ -6,14 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
-- [Fix missing error handling in file:copy for non-existent destination directory](https://github.com/ballerina-platform/ballerina-library/issues/5738)
-- Add metadata files
-
 ## [1.13.1] - 2025-09-08
 
 ### Changed
 - [[#9132] Update Keywords and Reformat README for Connector Store Discoverability](https://github.com/ballerina-platform/ballerina-library/issues/9132)
+
+- [Fix missing error handling in file:copy for non-existent destination directory](https://github.com/ballerina-platform/ballerina-library/issues/5738)
+- Add metadata files
 
 ## [1.13.0] - 2025-04-16
 

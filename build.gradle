@@ -101,7 +101,7 @@ release {
     }
 }
 
-task build {
+tasks.named('build') {
     dependsOn(':file-native:build')
     dependsOn(':file-compiler-plugin:build')
     dependsOn('file-ballerina:build')

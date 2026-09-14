@@ -42,10 +42,8 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 import static io.ballerina.scan.RuleKind.VULNERABILITY;
 import static io.ballerina.stdlib.file.compiler.staticcodeanalyzer.FileRule.AVOID_INSECURE_DIRECTORY_ACCESS;
@@ -64,10 +62,23 @@ public class StaticCodeAnalyzerTest {
 
     @Test
     public void validateRulesJson() throws IOException {
-        String expectedRules = "[" + Arrays.stream(FileRule.values())
-                .map(FileRule::toString).collect(Collectors.joining(",")) + "]";
-        String actualRules = Files.readString(JSON_RULES_FILE_PATH);
-        assertJsonEqual(actualRules, expectedRules);
+        JsonNode rulesArray = new ObjectMapper().readTree(Files.readString(JSON_RULES_FILE_PATH));
+        Assert.assertEquals(rulesArray.size(), FileRule.values().length);
+        for (FileRule rule : FileRule.values()) {
+            JsonNode ruleNode = findRuleById(rulesArray, rule.getId());
+            Assert.assertNotNull(ruleNode, "Rule with id " + rule.getId() + " not found in rules.json");
+            Assert.assertEquals(ruleNode.get("kind").asText(), VULNERABILITY.toString());
+            Assert.assertEquals(ruleNode.get("description").asText(), rule.getDescription());
+        }
+    }
+
+    private JsonNode findRuleById(JsonNode rulesArray, int id) {
+        for (JsonNode ruleNode : rulesArray) {
+            if (ruleNode.get("id").asInt() == id) {
+                return ruleNode;
+            }
+        }
+        return null;
     }
 
     @Test

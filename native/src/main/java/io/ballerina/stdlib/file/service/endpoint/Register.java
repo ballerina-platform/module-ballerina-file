@@ -23,13 +23,22 @@ import io.ballerina.runtime.api.types.MethodType;
 import io.ballerina.runtime.api.types.ObjectType;
 import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.utils.TypeUtils;
+import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.stdlib.file.service.DirectoryListenerConstants;
 import io.ballerina.stdlib.file.service.FSListener;
+import io.ballerina.stdlib.file.service.FunctionConfigReader;
+import io.ballerina.stdlib.file.service.InvalidFunctionConfigException;
+import io.ballerina.stdlib.file.service.PostProcessConfig;
 import io.ballerina.stdlib.file.transport.contract.FileSystemServerConnector;
+import io.ballerina.stdlib.file.utils.FileConstants;
+import io.ballerina.stdlib.file.utils.FileUtils;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Register file listener service.
@@ -41,7 +50,25 @@ public class Register {
         if (fsServerConnector instanceof FileSystemServerConnector) {
             FileSystemServerConnector serverConnector = (FileSystemServerConnector) fsServerConnector;
             FSListener fsListener = serverConnector.getDirectoryListener();
-            fsListener.addService(service, getResourceRegistry(service));
+            Map<String, MethodType> registry = getResourceRegistry(service);
+            BMap serviceEndpointConfig = listener.getMapValue(DirectoryListenerConstants.SERVICE_ENDPOINT_CONFIG);
+            Path watchRoot = Paths.get(serviceEndpointConfig
+                    .getStringValue(DirectoryListenerConstants.ANNOTATION_PATH).getValue());
+            boolean recursive = serviceEndpointConfig
+                    .getBooleanValue(DirectoryListenerConstants.ANNOTATION_DIRECTORY_RECURSIVE);
+            ObjectType serviceType = (ObjectType) TypeUtils.getReferredType(TypeUtils.getType(service));
+            PostProcessConfig config;
+            try {
+                config = FunctionConfigReader.read(serviceType, watchRoot, recursive);
+            } catch (InvalidFunctionConfigException e) {
+                return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR, e.getMessage());
+            }
+            Optional<String> conflict = fsListener.addService(service, registry, config);
+            if (conflict.isPresent()) {
+                return FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR, "remote function '"
+                        + conflict.get() + "' already configures a post-processing action in another service "
+                        + "attached to this listener");
+            }
         }
         return null;
     }

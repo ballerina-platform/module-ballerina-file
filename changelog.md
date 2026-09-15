@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- [Add post-processing actions (`afterProcess` and `afterError`) to the file listener](https://github.com/ballerina-platform/ballerina-library/issues/9146)
+
+### Changed
+
+- A panic in a listener remote function is printed and no longer stops delivery of the event to the other attached services
+
+### Fixed
+
+- Recognize `file:FileEvent` parameters in the compiler plugin when the module is imported with an alias
+
 ## [1.13.1] - 2025-09-08
 
 ### Changed

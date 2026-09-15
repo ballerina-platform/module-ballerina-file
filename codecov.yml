@@ -1,5 +1,5 @@
 ignore:
-  - "**/testutils"
+  - "**/testutils/**"
   - "ballerina/windows_file_path.bal"
 
 coverage:

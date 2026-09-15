@@ -182,31 +182,24 @@ public class FileServiceValidator implements AnalysisTask<SyntaxNodeAnalysisCont
 
     static boolean isFileService(SemanticModel semanticModel, ServiceDeclarationNode serviceDeclarationNode) {
         Optional<Symbol> serviceDeclarationSymbol = semanticModel.symbol(serviceDeclarationNode);
-        if (serviceDeclarationSymbol.isPresent()) {
-            List<TypeSymbol> listenerTypes = ((ServiceDeclarationSymbol) serviceDeclarationSymbol.get())
-                    .listenerTypes();
-            for (TypeSymbol listenerType : listenerTypes) {
-                if (listenerType.typeKind() == TypeDescKind.UNION) {
-                    List<TypeSymbol> memberDescriptors = ((UnionTypeSymbol) listenerType).memberTypeDescriptors();
-                    for (TypeSymbol typeSymbol : memberDescriptors) {
-                        if (typeSymbol.getModule().isPresent() && typeSymbol.getModule().get().id().orgName()
-                                .equals(BALLERINA_ORG_NAME) && typeSymbol.getModule()
-                                .flatMap(Symbol::getName).orElse("").equals(PACKAGE_NAME)) {
-
-                            return true;
-                        }
-                    }
-                } else if (listenerType.typeKind() == TypeDescKind.TYPE_REFERENCE
-                        && listenerType.getModule().isPresent()
-                        && listenerType.getModule().get().id().orgName().equals(BALLERINA_ORG_NAME)
-                        && ((TypeReferenceTypeSymbol) listenerType).typeDescriptor().getModule()
-                        .flatMap(Symbol::getName).orElse("").equals(PACKAGE_NAME)) {
-
-                    return true;
-                }
-            }
+        if (serviceDeclarationSymbol.isEmpty()) {
+            return false;
         }
-        return false;
+        return ((ServiceDeclarationSymbol) serviceDeclarationSymbol.get()).listenerTypes().stream()
+                .anyMatch(FileServiceValidator::isFileListenerType);
+    }
+
+    private static boolean isFileListenerType(TypeSymbol listenerType) {
+        if (listenerType.typeKind() == TypeDescKind.UNION) {
+            return ((UnionTypeSymbol) listenerType).memberTypeDescriptors().stream()
+                    .anyMatch(FileServiceValidator::isFromFileModule);
+        }
+        return listenerType.typeKind() == TypeDescKind.TYPE_REFERENCE && isFromFileModule(listenerType)
+                && isFromFileModule(((TypeReferenceTypeSymbol) listenerType).typeDescriptor());
+    }
+
+    private static boolean isFromFileModule(Symbol symbol) {
+        return symbol.getModule().map(FunctionConfigUtil::isFileModule).orElse(false);
     }
 
     public void reportErrorDiagnostic(Location location, SyntaxNodeAnalysisContext syntaxNodeAnalysisContext,

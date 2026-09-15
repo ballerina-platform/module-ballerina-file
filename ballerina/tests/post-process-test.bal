@@ -502,6 +502,58 @@ function testAttachRejectsMoveToInsideRecursive() returns error? {
 }
 
 @test:Config {}
+function testAttachRejectsInvalidMoveToPath() returns error? {
+    string dir = check ppDir("reject-invalid-path");
+    Listener l = check new (path = dir);
+    Service svc = service object {
+        @FunctionConfig {afterProcess: {moveTo: "bad\u{0}path"}}
+        remote function onCreate(FileEvent event) {
+        }
+    };
+    string? message = attachError(l, svc);
+    test:assertTrue(message is string && message.includes("moveTo"), "attach did not fail: " + (message ?: "()"));
+}
+
+@test:Config {}
+function testAttachRejectsMoveToDeepInsideRecursive() returns error? {
+    string dir = check ppDir("reject-deep");
+    Listener l = check new (path = dir, recursive = true);
+    Service svc = service object {
+        @FunctionConfig {afterProcess: {moveTo: PP_ROOT + "/reject-deep/a/b/c"}}
+        remote function onCreate(FileEvent event) {
+        }
+    };
+    string? message = attachError(l, svc);
+    test:assertTrue(message is string, "attach with moveTo deep inside a recursively watched directory succeeded");
+}
+
+@test:Config {}
+function testMoveDestinationInsideRecursiveRootFails() returns error? {
+    resetCounters();
+    string parent = check ppDir("ancestor");
+    string dir = parent + "/in";
+    check createDirAt(dir);
+    Listener l = check new (path = dir, recursive = true);
+    Service svc = service object {
+        @FunctionConfig {afterProcess: {moveTo: PP_ROOT + "/ancestor"}}
+        remote function onCreate(FileEvent event) returns error? {
+            ppCreates += 1;
+        }
+    };
+    check l.attach(svc);
+    check l.'start();
+    // in/in/a.txt keeps the relative path in/a.txt, so the destination ancestor/in/a.txt is inside the root
+    check createWatchedDir(dir + "/in");
+    check createEmptyFileAt(dir + "/in/a.txt");
+    boolean invoked = waitUntil(() => ppCreates > 1);
+    grace();
+    check l.immediateStop();
+    test:assertTrue(invoked, "onCreate was not invoked");
+    test:assertTrue(exists(dir + "/in/a.txt"), "file was moved although the destination is inside the watched tree");
+    test:assertFalse(exists(dir + "/a.txt"), "file was moved into the watched directory");
+}
+
+@test:Config {}
 function testAttachRejectsNonDirectoryMoveTo() returns error? {
     string dir = check ppDir("reject-file");
     check createFileAt(PP_ROOT + "/reject-file.txt", "not a directory");

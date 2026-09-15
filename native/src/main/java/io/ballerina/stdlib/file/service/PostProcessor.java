@@ -84,7 +84,7 @@ public final class PostProcessor {
     }
 
     private static void executeDeleteAction(Path source, String actionContext) throws IOException {
-        Files.delete(source);
+        Files.deleteIfExists(source);
         log.debug("Deleted file during {}: {}", actionContext, source);
     }
 

@@ -41,5 +41,6 @@ target
 # Ballerina
 velocity.log*
 *Ballerina.lock
+ballerina/tests/resources/post-process/
 
 compiler-plugin-test/**/target

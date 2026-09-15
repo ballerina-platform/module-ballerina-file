@@ -1,12 +1,49 @@
 [
   {
-    "id":  1,
+    "id": 1,
     "kind": "VULNERABILITY",
-    "description": "Avoid using publicly writable directories for file operations without proper access controls"
+    "name": "Avoid using publicly writable directories for file operations without proper access controls",
+    "severity": "MEDIUM",
+    "description": "A file operation targets a publicly writable directory such as the system temporary directory.",
+    "fullDescription": "Any local user can read, replace, or remove files in a publicly writable directory, which allows information disclosure and opens the operation to symlink and race-condition attacks. Use a directory with restricted permissions, or create the file with explicit access controls.",
+    "tags": [
+      "file",
+      "permissions"
+    ],
+    "standards": {
+      "cwe": [
+        377,
+        379
+      ],
+      "owasp": [
+        {
+          "year": 2025,
+          "categories": [1]
+        }
+      ]
+    }
   },
   {
     "id": 2,
     "kind": "VULNERABILITY",
-    "description": "File function calls should not be vulnerable to path injection attacks"
+    "name": "File function calls should not be vulnerable to path injection attacks",
+    "severity": "HIGH",
+    "description": "A file path is built from user input, allowing access to files outside the intended directory.",
+    "fullDescription": "When user-controlled input is concatenated into a file path without validation, an attacker can supply traversal sequences such as `../` to read, write, or delete files outside the intended directory. Validate the input against an allow-list, or resolve the path and confirm it stays within the intended directory.",
+    "tags": [
+      "file",
+      "injection"
+    ],
+    "standards": {
+      "cwe": [
+        22
+      ],
+      "owasp": [
+        {
+          "year": 2025,
+          "categories": [1]
+        }
+      ]
+    }
   }
 ]

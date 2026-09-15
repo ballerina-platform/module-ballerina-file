@@ -6,24 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## Changed
-
 ## [1.13.1] - 2025-09-08
 
-## Changed
-
+### Changed
 - [[#9132] Update Keywords and Reformat README for Connector Store Discoverability](https://github.com/ballerina-platform/ballerina-library/issues/9132)
+
 - [Fix missing error handling in file:copy for non-existent destination directory](https://github.com/ballerina-platform/ballerina-library/issues/5738)
 - Add metadata files
 
 ## [1.13.0] - 2025-04-16
 
 ### Added
-
 - [Allow optional `error?` return type in file listener remote functions](https://github.com/ballerina-platform/ballerina-library/issues/7596)
 
 ### Changed
-
 - [Update the static analysis tests to use scan tool's test API](https://github.com/ballerina-platform/ballerina-library/issues/8249)
 
 ## [1.12.0] - 2025-03-12

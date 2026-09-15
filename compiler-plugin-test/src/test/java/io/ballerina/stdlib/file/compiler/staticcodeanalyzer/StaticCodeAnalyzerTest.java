@@ -69,7 +69,27 @@ public class StaticCodeAnalyzerTest {
             Assert.assertNotNull(ruleNode, "Rule with id " + rule.getId() + " not found in rules.json");
             Assert.assertEquals(ruleNode.get("kind").asText(), VULNERABILITY.toString());
             Assert.assertEquals(ruleNode.get("description").asText(), rule.getDescription());
+            validateEnrichedRuleMetadata(ruleNode);
         }
+    }
+
+    private void validateEnrichedRuleMetadata(JsonNode ruleNode) {
+        assertNonBlankText(ruleNode, "name");
+        assertNonBlankText(ruleNode, "severity");
+        assertNonBlankText(ruleNode, "fullDescription");
+
+        JsonNode tags = ruleNode.get("tags");
+        Assert.assertTrue(tags != null && tags.isArray() && !tags.isEmpty(), "tags should be a non-empty array");
+
+        JsonNode standards = ruleNode.get("standards");
+        Assert.assertTrue(standards != null && standards.isObject() && !standards.isEmpty(),
+                "standards should be a non-empty object");
+    }
+
+    private void assertNonBlankText(JsonNode ruleNode, String field) {
+        JsonNode fieldNode = ruleNode.get(field);
+        Assert.assertTrue(fieldNode != null && fieldNode.isTextual() && !fieldNode.asText().isBlank(),
+                field + " should be a non-blank string");
     }
 
     private JsonNode findRuleById(JsonNode rulesArray, int id) {

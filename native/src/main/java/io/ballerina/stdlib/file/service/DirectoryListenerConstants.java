@@ -45,6 +45,12 @@ public class DirectoryListenerConstants {
     public static final String RESOURCE_NAME_ON_MODIFY = "onModify";
     public static final String RESOURCE_NAME_ON_MESSAGE = "onMessage";
 
+    public static final String FUNCTION_CONFIG_ANNOTATION = "FunctionConfig";
+    public static final String ANNOTATION_AFTER_PROCESS = "afterProcess";
+    public static final String ANNOTATION_AFTER_ERROR = "afterError";
+    public static final String ANNOTATION_MOVE_TO = "moveTo";
+    public static final String ANNOTATION_PRESERVE_SUB_DIRS = "preserveSubDirs";
+
     private DirectoryListenerConstants() {
     }
 }

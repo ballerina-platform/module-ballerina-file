@@ -56,6 +56,27 @@ service "localObserver" on inFolder {
 }
 ```
 
+### Post-processing actions
+
+The `@file:FunctionConfig` annotation on `onCreate` or `onModify` declares what happens to the file after the remote
+method completes. `afterProcess` runs when the method returns successfully and `afterError` runs when it returns an
+error or panics. Each can be `file:DELETE` or a `file:Move` record whose `moveTo` directory receives the file. With
+`preserveSubDirs` (default `true`) the path relative to the listener's `path` is kept under `moveTo`. Missing
+destination directories are created, and an existing file at the destination is not overwritten.
+
+```ballerina
+service "localObserver" on inFolder {
+
+    @file:FunctionConfig {
+        afterProcess: {moveTo: "/data/archive"},
+        afterError: {moveTo: "/data/failed"}
+    }
+    remote function onCreate(file:FileEvent m) returns error? {
+        check process(m.name);
+    }
+}
+```
+
 For example demonstrations of the usage, go to [Ballerina By Examples](https://ballerina.io/learn/by-example/).
 
 ## Issues and projects

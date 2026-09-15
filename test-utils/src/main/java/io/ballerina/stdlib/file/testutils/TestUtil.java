@@ -20,6 +20,7 @@ package io.ballerina.stdlib.file.testutils;
 
 import io.ballerina.runtime.api.creators.ErrorCreator;
 import io.ballerina.runtime.api.utils.StringUtils;
+import io.ballerina.runtime.api.values.BError;
 import io.ballerina.runtime.api.values.BString;
 
 import java.io.IOException;
@@ -27,6 +28,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
+import java.util.Comparator;
+import java.util.stream.Stream;
 
 /**
  * Utils needed for Ballerina tests.
@@ -79,6 +82,78 @@ public class TestUtil {
                 ErrorCreator.createError(StringUtils.fromString("Error removing symlink!"), e);
             }
         }
+    }
+
+    public static Object createFileAt(BString path, BString content) {
+        try {
+            Files.writeString(Paths.get(path.getValue()), content.getValue());
+            return null;
+        } catch (IOException e) {
+            return toError(e);
+        }
+    }
+
+    public static Object createEmptyFileAt(BString path) {
+        try {
+            Files.createFile(Paths.get(path.getValue()));
+            return null;
+        } catch (IOException e) {
+            return toError(e);
+        }
+    }
+
+    public static Object touchFile(BString path) {
+        try {
+            Files.setLastModifiedTime(Paths.get(path.getValue()), FileTime.fromMillis(System.currentTimeMillis()));
+            return null;
+        } catch (IOException e) {
+            return toError(e);
+        }
+    }
+
+    public static Object createDirAt(BString path) {
+        try {
+            Files.createDirectories(Paths.get(path.getValue()));
+            return null;
+        } catch (IOException e) {
+            return toError(e);
+        }
+    }
+
+    public static Object createSymLinkAt(BString link, BString target) {
+        try {
+            Files.createSymbolicLink(Paths.get(link.getValue()), Paths.get(target.getValue()).toAbsolutePath());
+            return null;
+        } catch (IOException | UnsupportedOperationException e) {
+            return toError(e);
+        }
+    }
+
+    public static Object deleteTree(BString path) {
+        Path root = Paths.get(path.getValue());
+        if (Files.notExists(root)) {
+            return null;
+        }
+        try (Stream<Path> paths = Files.walk(root)) {
+            for (Path p : paths.sorted(Comparator.reverseOrder()).toList()) {
+                Files.deleteIfExists(p);
+            }
+            return null;
+        } catch (IOException e) {
+            return toError(e);
+        }
+    }
+
+    public static Object getRealPath(BString path) {
+        try {
+            return StringUtils.fromString(Paths.get(path.getValue()).toRealPath().toString());
+        } catch (IOException e) {
+            return toError(e);
+        }
+    }
+
+    private static BError toError(Exception e) {
+        return ErrorCreator.createError(StringUtils.fromString(e.getClass().getSimpleName() + ": " + e.getMessage()));
     }
 
     public static BString getSymLink() {

@@ -3,7 +3,7 @@
 _Owners_: @daneshk @kalaiyarasiganeshalingam  
 _Reviewers_: @daneshk  
 _Created_: 2021/12/10   
-_Updated_: 2022/02/17  
+_Updated_: 2026/09/17  
 _Edition_: Swan Lake  
 
 ## Introduction
@@ -41,6 +41,8 @@ The conforming implementation of the specification is released and included in t
    * 4.8. [Join](#48-join-path)
    * 4.9. [Get Relative Path](#49-get-relative-path)
 5. [Directory Listener](#5-directory-listener)
+   * 5.1. [Service](#51-service)
+   * 5.2. [Post-Processing Actions](#52-post-processing-actions)
 6. [Static Code Rules](#6-static-code-rules)
    * 6.1. [Avoid using publicly writable directories for file operations without proper access controls](#61-avoid-using-publicly-writable-directories-for-file-operations-without-proper-access-controls)
    * 6.2. [File function calls should not be vulnerable to path injection attacks](#62-file-function-calls-should-not-be-vulnerable-to-path-injection-attacks)
@@ -222,6 +224,7 @@ supported events are
 * On file delete
 * On file modification
 
+### 5.1. Service
 Each remote function accepts a `file:FileEvent` parameter and may optionally return `error?`. If no return type is
 specified, the function is treated as returning `()`.
 
@@ -232,6 +235,82 @@ remote function onCreate(file:FileEvent m) returns error? {
 
 When a remote function returns an error, the error stack trace is printed. The listener continues processing
 subsequent events without terminating.
+
+### 5.2. Post-Processing Actions
+The `@file:FunctionConfig` annotation configures what happens to a file after the `onCreate` or `onModify` remote
+function that handled it completes. It is not permitted on `onDelete`; the compiler reports an error. On one listener,
+only one service may configure an action for a given remote function; a second one is a compile-time error. Both
+rules are also checked when a service is attached at runtime.
+
+The annotation has two fields. `afterProcess` runs when the remote function returns successfully. `afterError` runs
+when the remote function returns an error or panics; the error is still printed. If the relevant field is not set,
+the file stays in place. The action runs after the remote function returns. When several services are attached to the
+listener, it runs after every service has handled the event.
+
+Each field accepts one of the following actions.
+
+- `file:DELETE` removes the file.
+- A `file:Move` record moves the file into the directory given by `moveTo`. With `preserveSubDirs` set to `true`, the
+  default, the file keeps its path relative to the listener's `path` under `moveTo`. With `false`, the file is placed
+  directly in `moveTo`. Missing directories are created. If an entry with the destination name already exists, the
+  move fails and the source file stays in place.
+
+For example, when the listener watches `/data/in` recursively and `/data/in/orders/2026/a.csv` is handled with
+`moveTo: "/data/archive"`, the file is moved to `/data/archive/orders/2026/a.csv`, or to `/data/archive/a.csv` when
+`preserveSubDirs` is `false`.
+
+Paths are resolved to absolute paths against the working directory; `moveTo` is not relative to the watched directory.
+Attaching a service fails when `moveTo` is empty, is the watched directory, is inside a recursively watched
+directory, or exists and is not a directory.
+A move whose computed destination is inside a recursively watched directory fails. With `recursive: false`, a
+subdirectory such as `/data/in/processed` is a valid destination.
+
+Only regular files are acted on; directories and symbolic links are skipped. A failure of the action is logged and is
+not reported to the service; the file stays in place. If the file is no longer present when the action runs, the
+action is skipped. The action acts on whatever regular file is at the path when it runs. Removing the file produces a
+delete event like any other removal, and `onDelete` runs in every attached service that declares it.
+
+###### Example: Delete after processing
+
+```ballerina
+service on fileListener {
+    @file:FunctionConfig {
+        afterProcess: file:DELETE
+    }
+    remote function onCreate(file:FileEvent event) returns error? {
+        check process(event.name);
+    }
+}
+```
+
+###### Example: Archive on success, quarantine on error
+
+```ballerina
+service on fileListener {
+    @file:FunctionConfig {
+        afterProcess: {moveTo: "/data/archive"},
+        afterError: {moveTo: "/data/failed"}
+    }
+    remote function onCreate(file:FileEvent event) returns error? {
+        check process(event.name);
+    }
+}
+```
+
+###### Example: Flatten into one directory
+
+```ballerina
+listener file:Listener fileListener = new (path = "/data/in", recursive = true);
+
+service on fileListener {
+    @file:FunctionConfig {
+        afterProcess: {moveTo: "/data/archive", preserveSubDirs: false}
+    }
+    remote function onCreate(file:FileEvent event) returns error? {
+        check process(event.name);
+    }
+}
+```
 
 ## 6. Static Code Rules
 

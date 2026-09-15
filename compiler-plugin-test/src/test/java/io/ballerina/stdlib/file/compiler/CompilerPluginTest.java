@@ -175,6 +175,58 @@ public class CompilerPluginTest {
         Assert.assertEquals(diagnosticResult.errors().size(), 0);
     }
 
+    @Test
+    public void testFunctionConfigValid() {
+        Package currentPackage = loadPackage("package_12");
+        PackageCompilation compilation = currentPackage.getCompilation();
+        DiagnosticResult diagnosticResult = compilation.diagnosticResult();
+        Assert.assertEquals(diagnosticResult.errors().size(), 0);
+    }
+
+    @Test
+    public void testFunctionConfigOnDelete() {
+        Package currentPackage = loadPackage("package_13");
+        String errMsg = "`FunctionConfig` annotation is not allowed on the `onDelete` remote function, only " +
+                "`onCreate` and `onModify` support post-processing actions";
+        PackageCompilation compilation = currentPackage.getCompilation();
+        DiagnosticResult diagnosticResult = compilation.diagnosticResult();
+        Assert.assertEquals(diagnosticResult.errors().size(), 1);
+        Assert.assertTrue(diagnosticResult.errors().stream().anyMatch(
+                diagnostic -> diagnostic.toString().contains(errMsg)));
+    }
+
+    @Test
+    public void testFunctionConfigSecondOwner() {
+        Package currentPackage = loadPackage("package_14");
+        String errMsg = "remote function `onCreate` already configures a post-processing action for listener " +
+                "`localFolder` in another service, only one service per listener may configure an action for a " +
+                "remote function";
+        PackageCompilation compilation = currentPackage.getCompilation();
+        DiagnosticResult diagnosticResult = compilation.diagnosticResult();
+        Assert.assertEquals(diagnosticResult.errors().size(), 1);
+        Assert.assertTrue(diagnosticResult.errors().stream().anyMatch(
+                diagnostic -> diagnostic.toString().contains(errMsg)));
+    }
+
+    @Test
+    public void testFunctionConfigWithImportAlias() {
+        Package currentPackage = loadPackage("package_15");
+        String errMsg = "`FunctionConfig` annotation is not allowed on the `onDelete` remote function";
+        PackageCompilation compilation = currentPackage.getCompilation();
+        DiagnosticResult diagnosticResult = compilation.diagnosticResult();
+        Assert.assertEquals(diagnosticResult.errors().size(), 1);
+        Assert.assertTrue(diagnosticResult.errors().stream().anyMatch(
+                diagnostic -> diagnostic.toString().contains(errMsg)));
+    }
+
+    @Test
+    public void testUserDefinedFunctionConfigAnnotation() {
+        Package currentPackage = loadPackage("package_16");
+        PackageCompilation compilation = currentPackage.getCompilation();
+        DiagnosticResult diagnosticResult = compilation.diagnosticResult();
+        Assert.assertEquals(diagnosticResult.errors().size(), 0);
+    }
+
     private Package loadPackage(String path) {
         Path projectDirPath = RESOURCE_DIRECTORY.resolve(path);
         BuildProject project = BuildProject.load(getEnvironmentBuilder(), projectDirPath);

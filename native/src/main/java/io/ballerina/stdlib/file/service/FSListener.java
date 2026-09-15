@@ -63,31 +63,42 @@ public class FSListener implements LocalFileSystemListener {
 
     @Override
     public void onMessage(LocalFileSystemEvent fileEvent) {
-        Thread.startVirtualThread(() -> {
-            Object balFileEvent = createBallerinaFileEvent(fileEvent);
-            String event = fileEvent.getEvent();
-            OwnedActions owned = actions.get(event);
-            Boolean ownerSucceeded = null;
-            for (Map.Entry<BObject, Map<String, MethodType>> serviceEntry : serviceRegistry.entrySet()) {
-                MethodType serviceFunction = serviceEntry.getValue().get(event);
-                if (serviceFunction == null) {
-                    continue;
-                }
-                BObject service = serviceEntry.getKey();
-                boolean succeeded = invokeRemoteFunction(service, serviceFunction.getName(), balFileEvent);
-                if (owned != null && owned.owner == service) {
-                    ownerSucceeded = succeeded;
-                }
+        Thread.startVirtualThread(() -> dispatch(fileEvent));
+    }
+
+    private void dispatch(LocalFileSystemEvent fileEvent) {
+        Object balFileEvent = createBallerinaFileEvent(fileEvent);
+        String event = fileEvent.getEvent();
+        OwnedActions owned = actions.get(event);
+        Boolean ownerSucceeded = invokeServices(event, balFileEvent, owned);
+        if (owned != null && ownerSucceeded != null) {
+            runOwnedAction(owned, ownerSucceeded, fileEvent.getFileName());
+        }
+    }
+
+    /** Invokes every service that handles the event; returns the owner's outcome, or null if it did not run. */
+    private Boolean invokeServices(String event, Object balFileEvent, OwnedActions owned) {
+        Boolean ownerSucceeded = null;
+        for (Map.Entry<BObject, Map<String, MethodType>> serviceEntry : serviceRegistry.entrySet()) {
+            MethodType serviceFunction = serviceEntry.getValue().get(event);
+            if (serviceFunction == null) {
+                continue;
             }
-            if (owned == null || ownerSucceeded == null) {
-                return;
+            BObject service = serviceEntry.getKey();
+            boolean succeeded = invokeRemoteFunction(service, serviceFunction.getName(), balFileEvent);
+            if (owned != null && owned.owner == service) {
+                ownerSucceeded = succeeded;
             }
-            PostProcessAction action = ownerSucceeded ? owned.afterProcess : owned.afterError;
-            if (action != null) {
-                PostProcessor.executePostProcessAction(action, fileEvent.getFileName(), watchRoot, recursive,
-                        ownerSucceeded ? ANNOTATION_AFTER_PROCESS : ANNOTATION_AFTER_ERROR, owned.methodName);
-            }
-        });
+        }
+        return ownerSucceeded;
+    }
+
+    private void runOwnedAction(OwnedActions owned, boolean ownerSucceeded, String filePath) {
+        PostProcessAction action = ownerSucceeded ? owned.afterProcess : owned.afterError;
+        if (action != null) {
+            PostProcessor.executePostProcessAction(action, filePath, watchRoot, recursive,
+                    ownerSucceeded ? ANNOTATION_AFTER_PROCESS : ANNOTATION_AFTER_ERROR, owned.methodName);
+        }
     }
 
     private boolean invokeRemoteFunction(BObject service, String functionName, Object balFileEvent) {

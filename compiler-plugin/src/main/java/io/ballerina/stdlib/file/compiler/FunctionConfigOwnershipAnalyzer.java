@@ -80,31 +80,44 @@ public class FunctionConfigOwnershipAnalyzer implements AnalysisTask<Compilation
         if (!FileServiceValidator.isFileService(semanticModel, serviceNode)) {
             return;
         }
-        List<String> listeners = new ArrayList<>();
-        for (ExpressionNode expression : serviceNode.expressions()) {
-            listenerName(expression, semanticModel).ifPresent(listeners::add);
-        }
+        List<String> listeners = listenerNames(serviceNode, semanticModel);
         if (listeners.isEmpty()) {
             return;
         }
         for (Node member : serviceNode.members()) {
-            if (member.kind() != SyntaxKind.OBJECT_METHOD_DEFINITION) {
-                continue;
-            }
-            FunctionDefinitionNode function = (FunctionDefinitionNode) member;
-            String functionName = function.functionName().text();
-            if (!POST_PROCESSING_FUNCTIONS.contains(functionName)) {
-                continue;
-            }
-            Optional<AnnotationNode> annotation = FunctionConfigUtil.findFunctionConfig(function, semanticModel);
-            if (annotation.isEmpty() || !FunctionConfigUtil.hasConfiguredAction(annotation.get())) {
-                continue;
-            }
-            for (String listener : listeners) {
-                if (!claimed.add(moduleId.toString() + ":" + listener + ":" + functionName)) {
-                    context.reportDiagnostic(FunctionConfigUtil.createDiagnostic(ErrorCodes.FILE_108,
-                            annotation.get().location(), functionName, listener));
-                }
+            configuredAction(member, semanticModel).ifPresent(annotation ->
+                    claim((FunctionDefinitionNode) member, annotation, listeners, moduleId, claimed, context));
+        }
+    }
+
+    private List<String> listenerNames(ServiceDeclarationNode serviceNode, SemanticModel semanticModel) {
+        List<String> listeners = new ArrayList<>();
+        for (ExpressionNode expression : serviceNode.expressions()) {
+            listenerName(expression, semanticModel).ifPresent(listeners::add);
+        }
+        return listeners;
+    }
+
+    /** The FunctionConfig annotation of an onCreate or onModify member that configures at least one action. */
+    private Optional<AnnotationNode> configuredAction(Node member, SemanticModel semanticModel) {
+        if (member.kind() != SyntaxKind.OBJECT_METHOD_DEFINITION) {
+            return Optional.empty();
+        }
+        FunctionDefinitionNode function = (FunctionDefinitionNode) member;
+        if (!POST_PROCESSING_FUNCTIONS.contains(function.functionName().text())) {
+            return Optional.empty();
+        }
+        return FunctionConfigUtil.findFunctionConfig(function, semanticModel)
+                .filter(FunctionConfigUtil::hasConfiguredAction);
+    }
+
+    private void claim(FunctionDefinitionNode function, AnnotationNode annotation, List<String> listeners,
+                       ModuleId moduleId, Set<String> claimed, CompilationAnalysisContext context) {
+        String functionName = function.functionName().text();
+        for (String listener : listeners) {
+            if (!claimed.add(moduleId.toString() + ":" + listener + ":" + functionName)) {
+                context.reportDiagnostic(FunctionConfigUtil.createDiagnostic(ErrorCodes.FILE_108,
+                        annotation.location(), functionName, listener));
             }
         }
     }

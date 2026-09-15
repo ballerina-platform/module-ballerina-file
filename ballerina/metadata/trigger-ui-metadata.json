@@ -397,7 +397,7 @@
                   "key": "afterError",
                   "metadata": {
                     "label": "On Error",
-                    "description": "Action when the handler returns an error."
+                    "description": "Action when the handler returns an error or panics."
                   },
                   "default": true,
                   "widget": {
@@ -855,7 +855,7 @@
                   "key": "afterError",
                   "metadata": {
                     "label": "On Error",
-                    "description": "Action when the handler returns an error."
+                    "description": "Action when the handler returns an error or panics."
                   },
                   "default": true,
                   "widget": {

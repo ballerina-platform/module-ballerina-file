@@ -27,6 +27,7 @@ import io.ballerina.runtime.api.values.BString;
 import io.ballerina.stdlib.file.utils.ModuleUtils;
 
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -83,8 +84,8 @@ public final class FunctionConfigReader {
     @SuppressWarnings("unchecked")
     private static Optional<BMap<BString, Object>> getFunctionConfigAnnotation(MethodType method) {
         Module module = ModuleUtils.getModule();
-        BString packagePath = StringUtils.fromString(module.getOrg() + "/" + module.getName() + ":"
-                + module.getMajorVersion());
+        BString packagePath = StringUtils.fromString(String.format("%s/%s:%s", module.getOrg(), module.getName(),
+                module.getMajorVersion()));
         Object annotation = method.getAnnotation(packagePath, StringUtils.fromString(FUNCTION_CONFIG_ANNOTATION));
         if (annotation instanceof BMap) {
             return Optional.of((BMap<BString, Object>) annotation);
@@ -118,10 +119,15 @@ public final class FunctionConfigReader {
 
     private static void validateMoveTo(String moveTo, String fieldName, String methodName, Path watchRoot,
                                        boolean recursive) throws InvalidFunctionConfigException {
-        Path destination = PathUtil.resolve(Paths.get(moveTo));
-        Path root = PathUtil.resolve(watchRoot);
         String prefix = "Move action in '" + fieldName + "' for remote function '" + methodName + "': '"
                 + ANNOTATION_MOVE_TO + "' path '" + moveTo + "' ";
+        Path destination;
+        try {
+            destination = PathUtil.resolve(Paths.get(moveTo));
+        } catch (InvalidPathException e) {
+            throw new InvalidFunctionConfigException(prefix + "is not a valid path: " + e.getReason());
+        }
+        Path root = PathUtil.resolve(watchRoot);
         if (destination.equals(root)) {
             throw new InvalidFunctionConfigException(prefix + "is the watched directory '" + watchRoot + "'");
         }

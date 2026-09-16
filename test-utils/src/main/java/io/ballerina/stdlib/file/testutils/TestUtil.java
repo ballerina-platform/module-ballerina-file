@@ -35,15 +35,15 @@ public class TestUtil {
     private static Path file;
     private static Path symLinkPath;
 
-    public static void createTestFile() throws Exception {
+    public static void createTestFile() throws IOException {
         file = Files.createFile(Paths.get("tests", "resources", "test1.txt"));
     }
 
-    public static void modifyTestFile() throws Exception {
+    public static void modifyTestFile() throws IOException {
         Files.setLastModifiedTime(file, FileTime.fromMillis(System.currentTimeMillis()));
     }
 
-    public static void deleteTestFile() throws Exception {
+    public static void deleteTestFile() throws IOException {
         Files.deleteIfExists(file);
     }
 

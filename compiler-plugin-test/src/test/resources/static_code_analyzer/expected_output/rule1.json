@@ -12,7 +12,7 @@
     "rule": {
       "id": "ballerina/file:1",
       "numericId": 1,
-      "description": "Avoid using publicly writable directories for file operations without proper access controls",
+      "description": "A file operation targets a publicly writable directory such as the system temporary directory.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",
@@ -32,7 +32,7 @@
     "rule": {
       "id": "ballerina/file:2",
       "numericId": 2,
-      "description": "File function calls should not be vulnerable to path injection attacks",
+      "description": "A file path is built from user input, allowing access to files outside the intended directory.",
       "ruleKind": "VULNERABILITY"
     },
     "source": "BUILT_IN",

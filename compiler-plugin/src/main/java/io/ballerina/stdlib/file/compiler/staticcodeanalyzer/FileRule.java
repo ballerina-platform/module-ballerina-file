@@ -27,10 +27,10 @@ import static io.ballerina.stdlib.file.compiler.staticcodeanalyzer.RuleFactory.c
  * Represents static code rules specific to the Ballerina File package.
  */
 public enum FileRule {
-    AVOID_INSECURE_DIRECTORY_ACCESS(createRule(1, "Avoid using publicly writable directories for file " +
-                    "operations without proper access controls", VULNERABILITY)),
-    AVOID_PATH_INJECTION(createRule(2, "File function calls should not be vulnerable to path injection " +
-                    "attacks", VULNERABILITY));
+    AVOID_INSECURE_DIRECTORY_ACCESS(createRule(1, "A file operation targets a publicly writable directory " +
+                    "such as the system temporary directory.", VULNERABILITY)),
+    AVOID_PATH_INJECTION(createRule(2, "A file path is built from user input, allowing access to files " +
+                    "outside the intended directory.", VULNERABILITY));
 
     private final Rule rule;
 

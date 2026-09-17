@@ -30,7 +30,11 @@ public enum ErrorCodes {
             "`onCreate`, `onModify` and `onDelete` remote functions", "FILE_103"),
     FILE_104("invalid return type in the remote function `{0}`, only `error?` return type is allowed", "FILE_104"),
     FILE_105("the remote function should only contain file:FileEvent parameter", "FILE_105"),
-    FILE_106("at least a single remote function required in the service", "FILE_106");
+    FILE_106("at least a single remote function required in the service", "FILE_106"),
+    FILE_107("`FunctionConfig` annotation is not allowed on the `{0}` remote function, only `onCreate` and " +
+            "`onModify` support post-processing actions", "FILE_107"),
+    FILE_108("remote function `{0}` already configures a post-processing action for listener `{1}` in another " +
+            "service, only one service per listener may configure an action for a remote function", "FILE_108");
 
     private final String error;
     private final String errorCode;

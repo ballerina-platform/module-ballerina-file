@@ -26,6 +26,7 @@ import io.ballerina.projects.directory.BuildProject;
 import io.ballerina.projects.environment.Environment;
 import io.ballerina.projects.environment.EnvironmentBuilder;
 import org.testng.Assert;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.nio.file.Path;
@@ -173,6 +174,39 @@ public class CompilerPluginTest {
 
         DiagnosticResult diagnosticResult = compilation.diagnosticResult();
         Assert.assertEquals(diagnosticResult.errors().size(), 0);
+    }
+
+    @DataProvider(name = "functionConfigValidPackages")
+    public Object[][] functionConfigValidPackages() {
+        return new Object[][]{{"package_12"}, {"package_16"}};
+    }
+
+    @Test(dataProvider = "functionConfigValidPackages")
+    public void testFunctionConfigCompiles(String packageName) {
+        DiagnosticResult diagnosticResult = loadPackage(packageName).getCompilation().diagnosticResult();
+        Assert.assertEquals(diagnosticResult.errors().size(), 0);
+    }
+
+    @DataProvider(name = "functionConfigInvalidPackages")
+    public Object[][] functionConfigInvalidPackages() {
+        return new Object[][]{
+                {"package_13", "`FunctionConfig` annotation is not allowed on the `onDelete` remote function, only " +
+                        "`onCreate` and `onModify` support post-processing actions"},
+                {"package_14", "remote function `onCreate` already configures a post-processing action for " +
+                        "listener `localFolder` in another service, only one service per listener may configure " +
+                        "an action for a remote function"},
+                {"package_15", "`FunctionConfig` annotation is not allowed on the `onDelete` remote function"},
+                {"package_17", "remote function `onCreate` already configures a post-processing action for " +
+                        "listener `lsn:shared` in another service"}
+        };
+    }
+
+    @Test(dataProvider = "functionConfigInvalidPackages")
+    public void testFunctionConfigDiagnostics(String packageName, String expectedMessage) {
+        DiagnosticResult diagnosticResult = loadPackage(packageName).getCompilation().diagnosticResult();
+        Assert.assertEquals(diagnosticResult.errors().size(), 1);
+        Assert.assertTrue(diagnosticResult.errors().stream().anyMatch(
+                diagnostic -> diagnostic.toString().contains(expectedMessage)));
     }
 
     private Package loadPackage(String path) {

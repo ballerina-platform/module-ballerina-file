@@ -28,6 +28,7 @@
             "kind": "remote",
             "doc": "Invoked when a new file appears in the watched directory, or in one of its subdirectories when the listener is configured to recurse. May return error?; the module rejects any other return type.",
             "presence": "optional",
+            "annotations": ["$functionConfig"],
             "params": [
               {
                 "id": "$service.onCreate.fileEvent",
@@ -48,6 +49,7 @@
             "kind": "remote",
             "doc": "Invoked when an existing file's contents or attributes change in the watched directory. May return error?; the module rejects any other return type.",
             "presence": "optional",
+            "annotations": ["$functionConfig"],
             "params": [
               {
                 "id": "$service.onModify.fileEvent",
@@ -96,6 +98,15 @@
           ]
         }
       ]
+    }
+  ],
+
+  "annotations": [
+    {
+      "id": "$functionConfig",
+      "type": { "name": "FunctionConfig" },
+      "attachPoint": "function",
+      "presence": "optional"
     }
   ]
 }

@@ -57,7 +57,7 @@ returns Error? = @java:Method {
 } external;
 
 # Renames(Moves) the old path with the new path.
-# If the new path already exists and it is not a directory, this replaces the file.
+# Fails with a `file:InvalidOperationError` if the new path already exists.
 # ```ballerina
 # check file:rename("/A/B/C", "/A/B/D");
 # ```

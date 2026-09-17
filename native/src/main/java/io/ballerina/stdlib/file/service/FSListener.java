@@ -30,13 +30,18 @@ import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BObject;
 import io.ballerina.runtime.api.values.BString;
 import io.ballerina.stdlib.file.utils.FileConstants;
+import io.ballerina.stdlib.file.utils.FileUtils;
 import io.ballerina.stdlib.file.utils.ModuleUtils;
 import org.wso2.transport.localfilesystem.server.connector.contract.LocalFileSystemEvent;
 import org.wso2.transport.localfilesystem.server.connector.contract.LocalFileSystemListener;
 
-import java.util.HashMap;
+import java.nio.file.Path;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
+import static io.ballerina.stdlib.file.service.DirectoryListenerConstants.ANNOTATION_AFTER_ERROR;
+import static io.ballerina.stdlib.file.service.DirectoryListenerConstants.ANNOTATION_AFTER_PROCESS;
 import static io.ballerina.stdlib.file.service.DirectoryListenerConstants.FILE_SYSTEM_EVENT;
 
 /**
@@ -44,32 +49,77 @@ import static io.ballerina.stdlib.file.service.DirectoryListenerConstants.FILE_S
  */
 public class FSListener implements LocalFileSystemListener {
 
-    private Runtime runtime;
-    private Map<BObject, Map<String, MethodType>> serviceRegistry = new HashMap<>();
+    private final Runtime runtime;
+    private final Path watchRoot;
+    private final boolean recursive;
+    private final Map<BObject, Map<String, MethodType>> serviceRegistry = new ConcurrentHashMap<>();
+    private final Map<String, OwnedActions> actions = new ConcurrentHashMap<>();
 
-    public FSListener(Runtime runtime) {
+    public FSListener(Runtime runtime, Path watchRoot, boolean recursive) {
         this.runtime = runtime;
+        this.watchRoot = watchRoot;
+        this.recursive = recursive;
     }
 
     @Override
     public void onMessage(LocalFileSystemEvent fileEvent) {
-        Thread.startVirtualThread(() -> {
-            Object balFileEvent = createBallerinaFileEvent(fileEvent);
-            for (Map.Entry<BObject, Map<String, MethodType>> serviceEntry: serviceRegistry.entrySet()) {
-                MethodType serviceFunction = serviceEntry.getValue().get(fileEvent.getEvent());
-                if (serviceFunction != null) {
-                    String functionName = serviceFunction.getName();
-                    BObject service  = serviceEntry.getKey();
-                    ObjectType type = (ObjectType) TypeUtils.getReferredType(TypeUtils.getType(service));
-                    boolean isConcurrentSafe = type.isIsolated() && type.isIsolated(functionName);
-                    Object result = runtime.callMethod(service, functionName,
-                            new StrandMetadata(isConcurrentSafe, null), balFileEvent);
-                    if (result instanceof BError bError) {
-                        bError.printStackTrace();
-                    }
-                }
+        Thread.startVirtualThread(() -> dispatch(fileEvent));
+    }
+
+    private void dispatch(LocalFileSystemEvent fileEvent) {
+        Object balFileEvent = createBallerinaFileEvent(fileEvent);
+        String event = fileEvent.getEvent();
+        OwnedActions owned = actions.get(event);
+        Boolean ownerSucceeded = invokeServices(event, balFileEvent, owned);
+        if (owned != null && ownerSucceeded != null) {
+            runOwnedAction(owned, ownerSucceeded, fileEvent.getFileName());
+        }
+    }
+
+    /** Invokes every service that handles the event; returns the owner's outcome, or null if it did not run. */
+    private Boolean invokeServices(String event, Object balFileEvent, OwnedActions owned) {
+        Boolean ownerSucceeded = null;
+        for (Map.Entry<BObject, Map<String, MethodType>> serviceEntry : serviceRegistry.entrySet()) {
+            MethodType serviceFunction = serviceEntry.getValue().get(event);
+            if (serviceFunction == null) {
+                continue;
             }
-        });
+            BObject service = serviceEntry.getKey();
+            boolean succeeded = invokeRemoteFunction(service, serviceFunction.getName(), balFileEvent);
+            if (owned != null && owned.owner == service) {
+                ownerSucceeded = succeeded;
+            }
+        }
+        return ownerSucceeded;
+    }
+
+    private void runOwnedAction(OwnedActions owned, boolean ownerSucceeded, String filePath) {
+        PostProcessAction action = ownerSucceeded ? owned.afterProcess : owned.afterError;
+        if (action != null) {
+            PostProcessor.executePostProcessAction(action, filePath, watchRoot, recursive,
+                    ownerSucceeded ? ANNOTATION_AFTER_PROCESS : ANNOTATION_AFTER_ERROR, owned.methodName);
+        }
+    }
+
+    private boolean invokeRemoteFunction(BObject service, String functionName, Object balFileEvent) {
+        try {
+            ObjectType type = (ObjectType) TypeUtils.getReferredType(TypeUtils.getType(service));
+            boolean isConcurrentSafe = type.isIsolated() && type.isIsolated(functionName);
+            Object result = runtime.callMethod(service, functionName, new StrandMetadata(isConcurrentSafe, null),
+                    balFileEvent);
+            if (result instanceof BError bError) {
+                bError.printStackTrace();
+                return false;
+            }
+            return true;
+        } catch (BError bError) {
+            bError.printStackTrace();
+            return false;
+        } catch (RuntimeException e) {
+            FileUtils.getBallerinaError(FileConstants.FILE_SYSTEM_ERROR, "Error invoking remote function "
+                    + functionName + ": " + e.getMessage()).printStackTrace();
+            return false;
+        }
     }
 
     private Object createBallerinaFileEvent(LocalFileSystemEvent fileEvent) {
@@ -81,11 +131,53 @@ public class FSListener implements LocalFileSystemListener {
         return eventStruct;
     }
 
-    public void addService(BObject service, Map<String, MethodType> attachedFunctions) {
+    /**
+     * Registers a service and claims the post-processing actions it declares.
+     *
+     * @param service           The service object
+     * @param attachedFunctions The remote functions by event name
+     * @param config            The post-processing actions declared by the service
+     * @return The name of a remote function whose action is already owned by another service, if any
+     */
+    public synchronized Optional<String> addService(BObject service, Map<String, MethodType> attachedFunctions,
+                                                    PostProcessConfig config) {
+        for (Map.Entry<String, MethodType> entry : attachedFunctions.entrySet()) {
+            String methodName = entry.getValue().getName();
+            OwnedActions existing = actions.get(entry.getKey());
+            if (config.hasPostProcessingActions(methodName) && existing != null && existing.owner != service) {
+                return Optional.of(methodName);
+            }
+        }
+        actions.values().removeIf(owned -> owned.owner == service);
+        for (Map.Entry<String, MethodType> entry : attachedFunctions.entrySet()) {
+            String methodName = entry.getValue().getName();
+            if (config.hasPostProcessingActions(methodName)) {
+                actions.put(entry.getKey(), new OwnedActions(service, methodName,
+                        config.getAfterProcessAction(methodName).orElse(null),
+                        config.getAfterErrorAction(methodName).orElse(null)));
+            }
+        }
         this.serviceRegistry.put(service, attachedFunctions);
+        return Optional.empty();
     }
 
-    public void removeService(BObject service) {
+    public synchronized void removeService(BObject service) {
         this.serviceRegistry.remove(service);
+        actions.values().removeIf(owned -> owned.owner == service);
+    }
+
+    private static final class OwnedActions {
+        private final BObject owner;
+        private final String methodName;
+        private final PostProcessAction afterProcess;
+        private final PostProcessAction afterError;
+
+        private OwnedActions(BObject owner, String methodName, PostProcessAction afterProcess,
+                             PostProcessAction afterError) {
+            this.owner = owner;
+            this.methodName = methodName;
+            this.afterProcess = afterProcess;
+            this.afterError = afterError;
+        }
     }
 }

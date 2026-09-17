@@ -18,12 +18,15 @@
 
 package io.ballerina.stdlib.file.compiler;
 
+import io.ballerina.compiler.api.SemanticModel;
+import io.ballerina.compiler.api.symbols.ParameterSymbol;
 import io.ballerina.compiler.api.symbols.ServiceDeclarationSymbol;
 import io.ballerina.compiler.api.symbols.Symbol;
 import io.ballerina.compiler.api.symbols.TypeDescKind;
 import io.ballerina.compiler.api.symbols.TypeReferenceTypeSymbol;
 import io.ballerina.compiler.api.symbols.TypeSymbol;
 import io.ballerina.compiler.api.symbols.UnionTypeSymbol;
+import io.ballerina.compiler.syntax.tree.AnnotationNode;
 import io.ballerina.compiler.syntax.tree.FunctionDefinitionNode;
 import io.ballerina.compiler.syntax.tree.FunctionSignatureNode;
 import io.ballerina.compiler.syntax.tree.Node;
@@ -50,6 +53,7 @@ import java.util.Optional;
  */
 public class FileServiceValidator implements AnalysisTask<SyntaxNodeAnalysisContext> {
     private static final String FILE_EVENT = "file:FileEvent";
+    private static final String FILE_EVENT_TYPE = "FileEvent";
     private static final String RESOURCE_NAME_ON_CREATE = "onCreate";
     private static final String RESOURCE_NAME_ON_DELETE = "onDelete";
     private static final String RESOURCE_NAME_ON_MODIFY = "onModify";
@@ -78,6 +82,7 @@ public class FileServiceValidator implements AnalysisTask<SyntaxNodeAnalysisCont
                             validateServiceFunctions(functionDefinitionNode, syntaxNodeAnalysisContext);
                             // Check params and return types
                             validateFunctionSignature(functionDefinitionNode, syntaxNodeAnalysisContext);
+                            validateFunctionConfig(functionDefinitionNode, syntaxNodeAnalysisContext);
 
                         });
             } else {
@@ -111,10 +116,9 @@ public class FileServiceValidator implements AnalysisTask<SyntaxNodeAnalysisCont
         if (parameterNodes.size() == 1) {
             RequiredParameterNode requiredParameterNode = (RequiredParameterNode)
                     functionSignatureNode.parameters().get(0);
-            String value = requiredParameterNode.toString();
-            if (!value.contains(FILE_EVENT)) {
+            if (!isFileEventParameter(requiredParameterNode, syntaxNodeAnalysisContext.semanticModel())) {
                 reportErrorDiagnostic(functionDefinitionNode.location(), syntaxNodeAnalysisContext,
-                        ErrorCodes.FILE_101, value.split(" ")[0]);
+                        ErrorCodes.FILE_101, requiredParameterNode.typeName().toString().trim());
             } else if (functionSignatureNode.returnTypeDesc().isPresent()) {
                 validateReturnType(functionDefinitionNode, syntaxNodeAnalysisContext, functionName);
             }
@@ -123,6 +127,29 @@ public class FileServiceValidator implements AnalysisTask<SyntaxNodeAnalysisCont
                     ErrorCodes.FILE_105);
         }
 
+    }
+
+    private boolean isFileEventParameter(RequiredParameterNode parameterNode, SemanticModel semanticModel) {
+        Optional<Symbol> symbol = semanticModel.symbol(parameterNode);
+        if (symbol.isPresent() && symbol.get() instanceof ParameterSymbol parameterSymbol) {
+            TypeSymbol typeSymbol = parameterSymbol.typeDescriptor();
+            return typeSymbol.typeKind() == TypeDescKind.TYPE_REFERENCE
+                    && FILE_EVENT_TYPE.equals(typeSymbol.getName().orElse(""))
+                    && typeSymbol.getModule().map(FunctionConfigUtil::isFileModule).orElse(false);
+        }
+        return parameterNode.toString().contains(FILE_EVENT);
+    }
+
+    private void validateFunctionConfig(FunctionDefinitionNode functionDefinitionNode,
+                                        SyntaxNodeAnalysisContext syntaxNodeAnalysisContext) {
+        String functionName = functionDefinitionNode.functionName().text();
+        if (functionName.equals(RESOURCE_NAME_ON_CREATE) || functionName.equals(RESOURCE_NAME_ON_MODIFY)) {
+            return;
+        }
+        Optional<AnnotationNode> annotation = FunctionConfigUtil.findFunctionConfig(functionDefinitionNode,
+                syntaxNodeAnalysisContext.semanticModel());
+        annotation.ifPresent(annotationNode -> reportErrorDiagnostic(annotationNode.location(),
+                syntaxNodeAnalysisContext, ErrorCodes.FILE_107, functionName));
     }
 
     private void validateReturnType(FunctionDefinitionNode functionDefinitionNode,
@@ -149,34 +176,30 @@ public class FileServiceValidator implements AnalysisTask<SyntaxNodeAnalysisCont
     }
 
     public boolean isFileService(SyntaxNodeAnalysisContext syntaxNodeAnalysisContext) {
-        ServiceDeclarationNode serviceDeclarationNode = (ServiceDeclarationNode) syntaxNodeAnalysisContext.node();
-        Optional<Symbol> serviceDeclarationSymbol = syntaxNodeAnalysisContext.semanticModel()
-                .symbol(serviceDeclarationNode);
-        if (serviceDeclarationSymbol.isPresent()) {
-            List<TypeSymbol> listenerTypes = ((ServiceDeclarationSymbol) serviceDeclarationSymbol.get())
-                    .listenerTypes();
-            for (TypeSymbol listenerType : listenerTypes) {
-                if (listenerType.typeKind() == TypeDescKind.UNION) {
-                    List<TypeSymbol> memberDescriptors = ((UnionTypeSymbol) listenerType).memberTypeDescriptors();
-                    for (TypeSymbol typeSymbol : memberDescriptors) {
-                        if (typeSymbol.getModule().isPresent() && typeSymbol.getModule().get().id().orgName()
-                                .equals(BALLERINA_ORG_NAME) && typeSymbol.getModule()
-                                .flatMap(Symbol::getName).orElse("").equals(PACKAGE_NAME)) {
+        return isFileService(syntaxNodeAnalysisContext.semanticModel(),
+                (ServiceDeclarationNode) syntaxNodeAnalysisContext.node());
+    }
 
-                            return true;
-                        }
-                    }
-                } else if (listenerType.typeKind() == TypeDescKind.TYPE_REFERENCE
-                        && listenerType.getModule().isPresent()
-                        && listenerType.getModule().get().id().orgName().equals(BALLERINA_ORG_NAME)
-                        && ((TypeReferenceTypeSymbol) listenerType).typeDescriptor().getModule()
-                        .flatMap(Symbol::getName).orElse("").equals(PACKAGE_NAME)) {
-
-                    return true;
-                }
-            }
+    static boolean isFileService(SemanticModel semanticModel, ServiceDeclarationNode serviceDeclarationNode) {
+        Optional<Symbol> serviceDeclarationSymbol = semanticModel.symbol(serviceDeclarationNode);
+        if (serviceDeclarationSymbol.isEmpty()) {
+            return false;
         }
-        return false;
+        return ((ServiceDeclarationSymbol) serviceDeclarationSymbol.get()).listenerTypes().stream()
+                .anyMatch(FileServiceValidator::isFileListenerType);
+    }
+
+    private static boolean isFileListenerType(TypeSymbol listenerType) {
+        if (listenerType.typeKind() == TypeDescKind.UNION) {
+            return ((UnionTypeSymbol) listenerType).memberTypeDescriptors().stream()
+                    .anyMatch(FileServiceValidator::isFromFileModule);
+        }
+        return listenerType.typeKind() == TypeDescKind.TYPE_REFERENCE && isFromFileModule(listenerType)
+                && isFromFileModule(((TypeReferenceTypeSymbol) listenerType).typeDescriptor());
+    }
+
+    private static boolean isFromFileModule(Symbol symbol) {
+        return symbol.getModule().map(FunctionConfigUtil::isFileModule).orElse(false);
     }
 
     public void reportErrorDiagnostic(Location location, SyntaxNodeAnalysisContext syntaxNodeAnalysisContext,

@@ -195,7 +195,9 @@ public class CompilerPluginTest {
                 {"package_14", "remote function `onCreate` already configures a post-processing action for " +
                         "listener `localFolder` in another service, only one service per listener may configure " +
                         "an action for a remote function"},
-                {"package_15", "`FunctionConfig` annotation is not allowed on the `onDelete` remote function"}
+                {"package_15", "`FunctionConfig` annotation is not allowed on the `onDelete` remote function"},
+                {"package_17", "remote function `onCreate` already configures a post-processing action for " +
+                        "listener `lsn:shared` in another service"}
         };
     }
 

@@ -80,20 +80,21 @@ public class FunctionConfigOwnershipAnalyzer implements AnalysisTask<Compilation
         if (!FileServiceValidator.isFileService(semanticModel, serviceNode)) {
             return;
         }
-        List<String> listeners = listenerNames(serviceNode, semanticModel);
+        List<ListenerRef> listeners = listenerRefs(serviceNode, semanticModel, moduleId);
         if (listeners.isEmpty()) {
             return;
         }
         for (Node member : serviceNode.members()) {
             configuredAction(member, semanticModel).ifPresent(annotation ->
-                    claim((FunctionDefinitionNode) member, annotation, listeners, moduleId, claimed, context));
+                    claim((FunctionDefinitionNode) member, annotation, listeners, claimed, context));
         }
     }
 
-    private List<String> listenerNames(ServiceDeclarationNode serviceNode, SemanticModel semanticModel) {
-        List<String> listeners = new ArrayList<>();
+    private List<ListenerRef> listenerRefs(ServiceDeclarationNode serviceNode, SemanticModel semanticModel,
+                                           ModuleId moduleId) {
+        List<ListenerRef> listeners = new ArrayList<>();
         for (ExpressionNode expression : serviceNode.expressions()) {
-            listenerName(expression, semanticModel).ifPresent(listeners::add);
+            listenerRef(expression, semanticModel, moduleId).ifPresent(listeners::add);
         }
         return listeners;
     }
@@ -111,27 +112,38 @@ public class FunctionConfigOwnershipAnalyzer implements AnalysisTask<Compilation
                 .filter(FunctionConfigUtil::hasConfiguredAction);
     }
 
-    private void claim(FunctionDefinitionNode function, AnnotationNode annotation, List<String> listeners,
-                       ModuleId moduleId, Set<String> claimed, CompilationAnalysisContext context) {
+    private void claim(FunctionDefinitionNode function, AnnotationNode annotation, List<ListenerRef> listeners,
+                       Set<String> claimed, CompilationAnalysisContext context) {
         String functionName = function.functionName().text();
-        for (String listener : listeners) {
-            if (!claimed.add(moduleId.toString() + ":" + listener + ":" + functionName)) {
+        for (ListenerRef listener : listeners) {
+            if (!claimed.add(listener.key + ":" + functionName)) {
                 context.reportDiagnostic(FunctionConfigUtil.createDiagnostic(ErrorCodes.FILE_108,
-                        annotation.location(), functionName, listener));
+                        annotation.location(), functionName, listener.display));
             }
         }
     }
 
-    private Optional<String> listenerName(ExpressionNode expression, SemanticModel semanticModel) {
-        if (expression.kind() != SyntaxKind.SIMPLE_NAME_REFERENCE) {
+    /**
+     * A listener variable referenced by a service, by simple or module-qualified name. The claim key is the
+     * variable's own module plus its name, so the same imported listener resolves to one key from anywhere.
+     */
+    private Optional<ListenerRef> listenerRef(ExpressionNode expression, SemanticModel semanticModel,
+                                              ModuleId moduleId) {
+        if (expression.kind() != SyntaxKind.SIMPLE_NAME_REFERENCE
+                && expression.kind() != SyntaxKind.QUALIFIED_NAME_REFERENCE) {
             return Optional.empty();
         }
         Optional<Symbol> symbol = semanticModel.symbol(expression);
         if (symbol.isPresent() && symbol.get() instanceof VariableSymbol variableSymbol
                 && variableSymbol.qualifiers().contains(Qualifier.LISTENER)) {
-            return variableSymbol.getName();
+            String name = variableSymbol.getName().orElse("");
+            String module = variableSymbol.getModule().map(m -> m.id().toString()).orElse(moduleId.toString());
+            return Optional.of(new ListenerRef(module + ":" + name, expression.toSourceCode().trim()));
         }
         return Optional.empty();
+    }
+
+    private record ListenerRef(String key, String display) {
     }
 
     private boolean hasErrors(SemanticModel semanticModel) {

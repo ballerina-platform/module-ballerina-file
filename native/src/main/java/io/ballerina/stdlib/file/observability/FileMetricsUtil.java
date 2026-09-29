@@ -47,7 +47,7 @@ public class FileMetricsUtil {
     private static final String METRIC_NAME_SEPARATOR = "_";
     private static final String FILE_CONNECTOR_NAME = "file";
     private static final String[] METRIC_FILE_EVENTS = {
-            "events_total", "Total file lifecycle and poll events"};
+            "events_total", "Total file lifecycle events"};
     private static final String[] METRIC_RESOURCE_EXECUTION_DURATION = {
             "resource_execution_duration_seconds", "Time taken to execute the resource/handler method"};
 

@@ -47,7 +47,7 @@ public class FileTracingUtil {
      *
      * @param watchedPath monitored directory path
      * @param filePath    path of the file being processed (added as a trace-only tag)
-     * @return context with parent span, or {@code null} if observability is disabled
+     * @return context with parent span, or {@code null} if tracing is disabled
      */
     public static FileObserverContext createFileLifecycleContext(String watchedPath, String filePath) {
         if (!ObserveUtils.isTracingEnabled()) {
@@ -159,10 +159,9 @@ public class FileTracingUtil {
     }
 
     /**
-     * Adds file metadata (size, modified time) directly to the lifecycle parent span.
-     * These are trace-only to avoid metric cardinality explosion — adding them to the
-     * handler's {@link ObserverContext} tags would create a retained metric entry per file.
-     * Performs no I/O if tracing is disabled or the parent span is not available.
+     * Adds file metadata (size, modified time) as properties on the handler's observer context.
+     * These are trace-only to avoid metric cardinality explosion. Using {@code addProperty}
+     * ensures they appear on the auto-instrumented child span without creating metric labels.
      *
      * @param strandProperties the strand properties map (may be null)
      * @param filePath         file path to read metadata from
@@ -175,14 +174,13 @@ public class FileTracingUtil {
         try {
             FileObserverContext ctx = (FileObserverContext) strandProperties.get(
                     ObservabilityConstants.KEY_OBSERVER_CONTEXT);
-            if (ctx == null || ctx.getParent() == null || ctx.getParent().getSpan() == null) {
+            if (ctx == null) {
                 return;
             }
-            BSpan parentSpan = ctx.getParent().getSpan();
             File file = new File(filePath);
             if (file.exists()) {
-                parentSpan.addTag(FileObserverContext.TAG_FILE_SIZE, String.valueOf(file.length()));
-                parentSpan.addTag(FileObserverContext.TAG_FILE_MODIFIED_TIME,
+                ctx.addProperty(FileObserverContext.TAG_FILE_SIZE, String.valueOf(file.length()));
+                ctx.addProperty(FileObserverContext.TAG_FILE_MODIFIED_TIME,
                         String.valueOf(file.lastModified()));
             }
         } catch (Throwable t) {

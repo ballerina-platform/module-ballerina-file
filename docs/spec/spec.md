@@ -499,9 +499,9 @@ These tags capture the sequence of events during a file's journey through the li
 | Tag             | Values                            | Metrics | Traces | Notes                                                                                      |
 |-----------------|-----------------------------------|---------|--------|--------------------------------------------------------------------------------------------|
 | `action.type`   | `file_event`                      | Yes     | Yes    | Covers all listener file lifecycle events (found, dispatched, handled).                     |
-| `file.stage`    | `found`, `dispatched`, `handled`  | Yes     | Yes    | Maps to the three-stage file lifecycle for the local file module.                           |
+| `file.stage`    | `found`, `dispatched`, `handled`  | Yes     | No     | Maps to the three-stage file lifecycle for the local file module. Present on metric counters only; no span is created for the found or dispatched stages, and the handled stage's span is auto-instrumented before the stage is known. |
 | `event.type`    | `create`, `delete`, `modify`      | No      | Yes    | Type of listener event. `create` for file creation, `delete` for deletion, `modify` for modification. Present on trace spans only. |
-| `handler.name`  | Handler method name               | Yes     | Yes    | Identifies which handler processed the file (e.g. `onCreate`, `onDelete`, `onModify`). Not present on `file.stage=found` or skipped files. |
+| `handler.name`  | Handler method name               | Yes     | Yes    | Identifies which handler processed the file (e.g. `onCreate`, `onDelete`, `onModify`). Set to `none` on `file.stage=found` or skipped files. |
 
 #### 7.2.3. Outcome Tags
 
@@ -509,8 +509,8 @@ These tags classify the final status of operations.
 
 | Tag          | Values                         | Metrics | Traces | Notes                                                                                      |
 |--------------|--------------------------------|---------|--------|--------------------------------------------------------------------------------------------|
-| `outcome`    | `success`, `failure`, `skipped`| Yes     | Yes    | Result of an operation. `skipped` indicates a file event that matched no handler.            |
-| `error.type` | Ballerina error type name, `no_handler_matched` | Yes | Yes | Only meaningful when `outcome=failure` or `outcome=skipped`. Set to `none` when not applicable. |
+| `outcome`    | `success`, `failure`, `skipped`| Yes     | No     | Result of an operation. `skipped` indicates a file event that matched no handler. Present on metric counters only; the outcome is determined after the auto-instrumented span completes. |
+| `error.type` | Ballerina error type name, `no_handler_matched` | Yes | No | Only meaningful when `outcome=failure` or `outcome=skipped`. Set to `none` when not applicable. Present on metric counters only. |
 
 #### 7.2.4. File-Scoped Tags
 

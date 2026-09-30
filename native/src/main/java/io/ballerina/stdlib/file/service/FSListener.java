@@ -74,24 +74,27 @@ public class FSListener implements LocalFileSystemListener {
     private void dispatch(LocalFileSystemEvent fileEvent) {
         String filePath = fileEvent.getFileName();
         String eventType = mapEventType(fileEvent.getEvent());
+        String event = fileEvent.getEvent();
 
-        FileMetricsUtil.reportFileStage(watchedPath, FileMetricsUtil.FILE_STAGE_FOUND,
-                null, null, null);
+        boolean hasHandler = serviceRegistry.values().stream()
+                .anyMatch(methods -> methods.containsKey(event));
+
+        if (hasHandler) {
+            FileMetricsUtil.reportFileStage(watchedPath, FileMetricsUtil.FILE_STAGE_FOUND,
+                    null, null, null);
+        } else {
+            FileMetricsUtil.reportFileStage(watchedPath, FileMetricsUtil.FILE_STAGE_FOUND,
+                    FileMetricsUtil.OUTCOME_SKIPPED, FileMetricsUtil.FAILURE_NO_HANDLER_MATCHED, null);
+            return;
+        }
 
         FileObserverContext lifecycleCtx = FileTracingUtil.createFileLifecycleContext(
                 watchedPath, filePath);
 
         Object balFileEvent = createBallerinaFileEvent(fileEvent);
-        String event = fileEvent.getEvent();
         OwnedActions owned = actions.get(event);
         Boolean ownerSucceeded = invokeServices(event, eventType, balFileEvent, owned, lifecycleCtx,
                 filePath);
-
-        if (!serviceRegistry.values().stream()
-                .anyMatch(methods -> methods.containsKey(event))) {
-            FileMetricsUtil.reportFileStage(watchedPath, FileMetricsUtil.FILE_STAGE_FOUND,
-                    FileMetricsUtil.OUTCOME_SKIPPED, FileMetricsUtil.FAILURE_NO_HANDLER_MATCHED, null);
-        }
 
         FileTracingUtil.finishFileLifecycleSpan(lifecycleCtx);
 

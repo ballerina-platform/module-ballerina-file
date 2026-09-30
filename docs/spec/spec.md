@@ -520,8 +520,8 @@ explosion and appear only on trace spans.
 | Tag                  | Values                    | Metrics | Traces | Notes                                                                     |
 |----------------------|---------------------------|---------|--------|---------------------------------------------------------------------------|
 | `file.path`          | Full path of the file     | No      | Yes    | Added as a span-only property on the lifecycle parent span and handler strand context. |
-| `file.size`          | Size in bytes             | No      | Yes    | Added as a span-only property on handler strand contexts when the file exists. |
-| `file.modified_time` | Last-modified timestamp   | No      | Yes    | Added as a span-only property on handler strand contexts when the file exists. |
+| `file.size`          | Size in bytes             | No      | Yes    | Added as a tag on the lifecycle parent span when the file exists. Written directly to the `BSpan` to remain trace-only. |
+| `file.modified_time` | Last-modified timestamp   | No      | Yes    | Added as a tag on the lifecycle parent span when the file exists. Written directly to the `BSpan` to remain trace-only. |
 
 ### 7.3. File Lifecycle
 
@@ -558,7 +558,8 @@ If the handler returns nil, the outcome is `success`. If it returns an error, th
 is set to the Ballerina error type name.
 
 The handler invocation creates an auto-instrumented child span under the per-file lifecycle parent span. The child span
-carries trace-only tags: `file.path`, `file.size`, `file.modified_time`, and `event.type`.
+carries `event.type` and `handler.name` as tags. The `file.size` and `file.modified_time` tags are written directly
+to the lifecycle parent span's `BSpan` so they remain trace-only without appearing in framework-level metrics.
 
 The `file_resource_execution_duration_seconds` metric is also recorded at this stage, measuring the elapsed time of the
 handler method invocation.
@@ -571,12 +572,12 @@ The trace structure is:
 ```
 Per-File Lifecycle Span (parent)
   |-- file.path = /watched/dir/example.txt
+  |-- file.size = 1024
+  |-- file.modified_time = 1695384000000
   |
   +-- Handler Execution Span (child)
         |-- event.type = create
         |-- handler.name = onCreate
-        |-- file.size = 1024
-        |-- file.modified_time = 1695384000000
 ```
 
 The parent span is created when the file event is discovered and finished after all handler invocations complete. Each
@@ -584,5 +585,7 @@ handler invocation (there may be multiple if several services are registered) pr
 the Ballerina runtime's auto-instrumentation when `callMethod` is invoked with the embedded observer context in the
 strand metadata.
 
-Span-only tags (`file.path`, `file.size`, `file.modified_time`) are added as properties on the observer context and
-are excluded from metric labels to prevent unbounded cardinality.
+Span-only tags (`file.path`, `file.size`, `file.modified_time`) are written directly to the lifecycle parent's `BSpan`
+rather than through `ObserverContext` tags. This keeps them trace-only: `ObserverContext.addTag` would propagate to
+framework-level metrics causing cardinality explosion, while `ObserverContext.addProperty` is not copied onto the span
+by the runtime's `TracingUtils.stopObservation`.

@@ -56,16 +56,16 @@ public class FileTracingUtil {
         try {
             FileObserverContext ctx = new FileObserverContext(
                     FileMetricsUtil.CONTEXT_LISTENER, watchedPath);
-            ctx.addTag(FileObserverContext.TAG_ACTION_TYPE, FileMetricsUtil.ACTION_TYPE_EVENT);
-            String instanceUrl = FileMetricsUtil.getInstanceUrl();
-            if (instanceUrl != null) {
-                ctx.addTag(FileObserverContext.TAG_INSTANCE_URL, instanceUrl);
-            }
             BSpan span = BSpan.start("file", "file-lifecycle", false);
             span.addTag(FileObserverContext.TAG_MODULE, FileMetricsUtil.MODULE_FILE);
             span.addTag(FileObserverContext.TAG_PROTOCOL, FileMetricsUtil.PROTOCOL_LOCAL);
             span.addTag(FileObserverContext.TAG_CONTEXT, FileMetricsUtil.CONTEXT_LISTENER);
             span.addTag(FileObserverContext.TAG_REMOTE_URL, "localhost");
+            span.addTag(FileObserverContext.TAG_ACTION_TYPE, FileMetricsUtil.ACTION_TYPE_EVENT);
+            String instanceUrl = FileMetricsUtil.getInstanceUrl();
+            if (instanceUrl != null) {
+                span.addTag(FileObserverContext.TAG_INSTANCE_URL, instanceUrl);
+            }
             if (watchedPath != null) {
                 span.addTag(FileObserverContext.TAG_WATCHED_PATH, watchedPath);
             }
@@ -159,9 +159,17 @@ public class FileTracingUtil {
     }
 
     /**
-     * Adds file metadata (size, modified time) as properties on the handler's observer context.
-     * These are trace-only to avoid metric cardinality explosion. Using {@code addProperty}
-     * ensures they appear on the auto-instrumented child span without creating metric labels.
+     * Adds file metadata (size, modified time) directly to the lifecycle parent span.
+     * These are added via {@link BSpan#addTag} on the already-created parent span rather than
+     * through {@link io.ballerina.runtime.observability.ObserverContext#addTag} or
+     * {@link io.ballerina.runtime.observability.ObserverContext#addProperty}, because:
+     * <ul>
+     *   <li>{@code ObserverContext.addTag} would propagate to framework-level metrics,
+     *       causing cardinality explosion for per-file values.</li>
+     *   <li>{@code ObserverContext.addProperty} is not copied onto the span by the runtime's
+     *       {@code TracingUtils.stopObservation}.</li>
+     * </ul>
+     * Writing directly to the {@link BSpan} is trace-only and avoids both problems.
      *
      * @param strandProperties the strand properties map (may be null)
      * @param filePath         file path to read metadata from
@@ -174,13 +182,14 @@ public class FileTracingUtil {
         try {
             FileObserverContext ctx = (FileObserverContext) strandProperties.get(
                     ObservabilityConstants.KEY_OBSERVER_CONTEXT);
-            if (ctx == null) {
+            if (ctx == null || ctx.getParent() == null || ctx.getParent().getSpan() == null) {
                 return;
             }
+            BSpan parentSpan = ctx.getParent().getSpan();
             File file = new File(filePath);
             if (file.exists()) {
-                ctx.addProperty(FileObserverContext.TAG_FILE_SIZE, String.valueOf(file.length()));
-                ctx.addProperty(FileObserverContext.TAG_FILE_MODIFIED_TIME,
+                parentSpan.addTag(FileObserverContext.TAG_FILE_SIZE, String.valueOf(file.length()));
+                parentSpan.addTag(FileObserverContext.TAG_FILE_MODIFIED_TIME,
                         String.valueOf(file.lastModified()));
             }
         } catch (Throwable t) {

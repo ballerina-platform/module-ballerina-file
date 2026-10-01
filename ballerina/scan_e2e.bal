@@ -17,3 +17,7 @@ isolated function parseScanE2ePort() returns int {
 isolated function parseScanE2eTimeout() returns int {
     return checkpanic int:fromString("30");
 }
+
+isolated function parseScanE2eRetries() returns int {
+    return checkpanic int:fromString("3");
+}

@@ -24,6 +24,7 @@ module io.ballerina.stdlib.file {
     requires org.slf4j;
     requires org.wso2.transport.local.file.system;
     exports io.ballerina.stdlib.file.nativeimpl;
+    exports io.ballerina.stdlib.file.observability;
     exports io.ballerina.stdlib.file.service;
     exports io.ballerina.stdlib.file.service.endpoint;
     exports io.ballerina.stdlib.file.utils;

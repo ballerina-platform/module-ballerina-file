@@ -1,6 +1,7 @@
 ignore:
   - "**/testutils/**"
   - "ballerina/windows_file_path.bal"
+  - "**/observability/**"
 
 coverage:
   precision: 2

@@ -13,3 +13,7 @@ public isolated function runScanE2eCommand(string userArg) returns error? {
 isolated function parseScanE2ePort() returns int {
     return checkpanic int:fromString("9090");
 }
+
+isolated function parseScanE2eTimeout() returns int {
+    return checkpanic int:fromString("30");
+}

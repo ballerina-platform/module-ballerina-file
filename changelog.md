@@ -6,9 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.14.0] - 2026-10-08
+
 ### Added
 
 - [Add post-processing actions (`afterProcess` and `afterError`) to the file listener](https://github.com/ballerina-platform/ballerina-library/issues/9146)
+- [Add observability support for the directory listener](https://github.com/ballerina-platform/module-ballerina-file/pull/596)
+- [Add help URIs and documentation for the static code analysis rules](https://github.com/ballerina-platform/module-ballerina-file/pull/598)
 
 ### Changed
 
@@ -18,8 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Recognize `file:FileEvent` parameters in the compiler plugin when the module is imported with an alias
 - Fix the trigger metadata icons failing to render by removing the license header placed before the XML declaration
+- [Exclude path-utility functions from the path injection sink check](https://github.com/ballerina-platform/module-ballerina-file/pull/595)
 
-## [1.13.1] - 2025-09-08
+## [1.13.1] - 2026-09-08
 
 ### Changed
 - [[#9132] Update Keywords and Reformat README for Connector Store Discoverability](https://github.com/ballerina-platform/ballerina-library/issues/9132)
@@ -27,7 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [Fix missing error handling in file:copy for non-existent destination directory](https://github.com/ballerina-platform/ballerina-library/issues/5738)
 - Add metadata files
 
-## [1.13.0] - 2025-04-16
+## [1.13.0] - 2026-04-16
 
 ### Added
 - [Allow optional `error?` return type in file listener remote functions](https://github.com/ballerina-platform/ballerina-library/issues/7596)

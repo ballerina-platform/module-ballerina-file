@@ -54,6 +54,6 @@ isolated function sendEmail(string subject, string body) {
     if sendMessage is email:Error {
         log:printError("Failed to send the mail", 'error = sendMessage);
     } else {
-        log:printInfo("The email has been sent", recipient = toAddress);
+        log:printInfo("The email has been sent");
     }
 }
